@@ -1,3 +1,22 @@
+// @title Mini Study API
+// @version 0.1.0
+// @description 企业学习平台后端 API 文档
+// @termsOfService http://swagger.io/terms/
+//
+// @contact.name API Support
+// @contact.email support@example.com
+//
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+//
+// @host localhost:8080
+// @BasePath /api/v1
+// @schemes http https
+//
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
+// @description 使用 "Bearer {token}" 格式，token 通过登录接口获取
 package main
 
 import (
