@@ -1,0 +1,22 @@
+<view class="page-wrap">
+  <view class="section-title">{{categoryName || '课程列表'}}</view>
+  <view class="list-wrapper">
+    <view
+      class="card course-card"
+      wx:for="{{courses}}"
+      wx:key="id"
+      bindtap="handleSelectCourse"
+      data-id="{{item.id}}"
+    >
+      <image class="course-cover" src="{{item.cover}}" mode="aspectFill" />
+      <view class="course-info">
+        <text class="course-title">{{item.title}}</text>
+        <text class="course-summary">{{item.summary || '课程简介待补充'}}</text>
+        <view class="course-type-pill">
+          {{item.type === 'video' ? '视频课程' : '图文课程'}} · {{item.duration || '--'}}
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+

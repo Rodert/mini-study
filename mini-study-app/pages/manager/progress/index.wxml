@@ -1,0 +1,30 @@
+<view class="page-wrap">
+  <view class="section-title">课堂考核进度</view>
+  <view class="grid auto-fit">
+    <view class="card progress-card" wx:for="{{progress}}" wx:key="courseId">
+      <text class="course-title">{{item.courseName}}</text>
+      <view class="progress-bar">
+        <view class="progress-fill" style="width: {{item.completionPercent}}%;"></view>
+      </view>
+      <text class="course-type">完成度：{{item.completionPercent}}%</text>
+    </view>
+  </view>
+
+  <view class="section-title">学员完成情况</view>
+  <view class="card employee-card" wx:for="{{employees}}" wx:key="id">
+    <view class="employee-header">
+      <view>
+        <text class="employee-name">{{item.name}}</text>
+        <text class="employee-store">{{item.store}}</text>
+      </view>
+      <text class="employee-percent">{{item.percent}}%</text>
+    </view>
+    <view class="progress-bar small">
+      <view class="progress-fill" style="width: {{item.percent}}%;"></view>
+    </view>
+    <view class="employee-meta">
+      已完成：{{item.completed}} / {{item.total}} · 待补：{{item.pending}}
+    </view>
+  </view>
+</view>
+

@@ -1,0 +1,13 @@
+@import "../../../styles/theme.wxss";
+@import "../../../styles/layout.wxss";
+
+.category-card {
+  padding: 28rpx;
+  text-align: center;
+}
+
+.category-name {
+  font-size: 28rpx;
+  font-weight: 500;
+}
+

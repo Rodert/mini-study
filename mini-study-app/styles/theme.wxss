@@ -1,0 +1,36 @@
+:root,
+page {
+  --brand: #2563eb;
+  --brand-dark: #1e3a8a;
+  --accent: #f97316;
+  --accent-soft: #fde4cf;
+  --bg: #f4f6fb;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --border: #e2e8f0;
+  --radius: 24rpx;
+}
+
+.brand-gradient {
+  background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+  color: #fff;
+}
+
+.card {
+  background-color: var(--card);
+  border-radius: var(--radius);
+  box-shadow: 0 12rpx 32rpx rgba(15, 23, 42, 0.08);
+  border: 1rpx solid rgba(37, 99, 235, 0.08);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8rpx 20rpx;
+  font-size: 24rpx;
+  border-radius: 999rpx;
+  background-color: rgba(37, 99, 235, 0.1);
+  color: var(--brand);
+}
+

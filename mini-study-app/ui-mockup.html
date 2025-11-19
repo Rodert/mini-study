@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>企业培训小程序 · UI 设计稿（HTML Mock）</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "SF Pro Display", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+      --brand: #2563eb;
+      --brand-dark: #1e3a8a;
+      --accent: #f97316;
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      color: #fff;
+      padding: 32px clamp(24px, 6vw, 96px) 56px;
+      border-bottom-left-radius: 32px;
+      border-bottom-right-radius: 32px;
+      box-shadow: 0 8px 26px rgba(37, 99, 235, 0.3);
+    }
+    header h1 {
+      margin: 0 0 12px;
+      font-size: clamp(28px, 4vw, 48px);
+      letter-spacing: 0.02em;
+    }
+    header p {
+      margin: 0;
+      font-size: clamp(16px, 2vw, 20px);
+      max-width: 640px;
+      opacity: 0.95;
+    }
+    nav {
+      margin-top: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    nav a {
+      text-decoration: none;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.35);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      backdrop-filter: blur(4px);
+      transition: background 0.2s ease;
+    }
+    nav a:hover {
+      background: rgba(255,255,255,0.18);
+    }
+    main {
+      padding: 40px clamp(24px, 6vw, 96px) 120px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    section {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 32px;
+      box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08);
+      border: 1px solid rgba(37, 99, 235, 0.08);
+    }
+    h2 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    h2 span {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: normal;
+    }
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+    .grid.cols-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .card {
+      background: #f8fafc;
+      border-radius: 14px;
+      padding: 20px;
+      border: 1px solid rgba(15, 23, 42, 0.05);
+    }
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.1);
+      color: var(--brand);
+      font-size: 13px;
+      margin-right: 8px;
+    }
+    .banner-mock {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+    }
+    .banner {
+      min-width: 240px;
+      border-radius: 18px;
+      padding: 18px;
+      color: #fff;
+      font-size: 16px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    .banner::after {
+      content: attr(data-type);
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 4px 10px;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 999px;
+      font-size: 12px;
+    }
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: 999px;
+      background: var(--brand);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 16px;
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
+    }
+    .cta.secondary {
+      background: rgba(37, 99, 235, 0.08);
+      color: var(--brand);
+      box-shadow: none;
+      border: 1px solid rgba(37, 99, 235, 0.3);
+    }
+    .split {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      align-items: start;
+    }
+    .device {
+      background: #0f172a;
+      border-radius: 32px;
+      padding: 18px;
+      color: #fff;
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.05), 0 25px 50px rgba(15, 23, 42, 0.35);
+    }
+    .screen {
+      border-radius: 26px;
+      background: #fff;
+      color: #0f172a;
+      padding: 22px;
+      min-height: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .tab {
+      display: inline-flex;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.12);
+      color: var(--brand);
+      font-size: 13px;
+    }
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .list-item {
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px dashed rgba(37, 99, 235, 0.4);
+      background: rgba(37, 99, 235, 0.05);
+    }
+    .progress {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.3);
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-bar span {
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+    }
+    footer {
+      text-align: center;
+      padding: 32px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>企业培训小程序 · MVP UI 设计稿</h1>
+    <p>覆盖员工 / 店长双角色的学习体验，支持 Banner 资讯、学习中心、课程链路、课堂考核进度与我的页面。全部基于 mock 数据，便于前后端并行开发。</p>
+    <nav>
+      <a href="#login">登录</a>
+      <a href="#register">注册</a>
+      <a href="#home">首页</a>
+      <a href="#learning">学习中心</a>
+      <a href="#courses">课程</a>
+      <a href="#progress">考核进度</a>
+      <a href="#profile">我的</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="login">
+      <h2>登录页 <span>手机号 + 工号 + 密码</span></h2>
+      <div class="split">
+        <div class="device">
+          <div class="screen">
+            <div class="tab">登录 · 切换角色</div>
+            <div class="list">
+              <div class="list-item">
+                <strong>手机号</strong>
+                <p>139 **** 0000</p>
+              </div>
+              <div class="list-item">
+                <strong>工号</strong>
+                <p>1001</p>
+              </div>
+              <div class="list-item">
+                <strong>密码</strong>
+                <p>••••••</p>
+              </div>
+            </div>
+            <a class="cta">立即登录</a>
+            <a class="cta secondary" href="#register">还没有账号？去注册</a>
+            <a class="cta secondary" style="margin-top:8px;">快速切换：员工 / 店长</a>
+          </div>
+        </div>
+        <div>
+          <p>登录后写入本地 session，后续页面依赖 role 决定展示内容。快速切换按钮可直接写 mock 账号，方便演示两种视角。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="register">
+      <h2>注册页 <span>支持手机号 + 工号 + 角色选择</span></h2>
+      <div class="split">
+        <div class="device">
+          <div class="screen">
+            <div class="tab">创建新账号</div>
+            <div class="list">
+              <div class="list-item">
+                <strong>手机号</strong>
+                <p>请输入 11 位手机号</p>
+              </div>
+              <div class="list-item">
+                <strong>工号 / 员工号</strong>
+                <p>示例：1008</p>
+              </div>
+              <div class="list-item">
+                <strong>姓名</strong>
+                <p>张晓</p>
+              </div>
+              <div class="list-item">
+                <strong>角色</strong>
+                <p>员工 / 店长（单选）</p>
+              </div>
+              <div class="list-item">
+                <strong>密码设置</strong>
+                <p>••••••</p>
+              </div>
+            </div>
+            <a class="cta">创建账号并登录</a>
+            <a class="cta secondary" href="#login">已有账号？返回登录</a>
+          </div>
+        </div>
+        <div>
+          <p>注册提交后直接落地本地 mock user 列表。为了配合演示，可附带“模拟验证码已发送”提示，并自动跳转回登录页。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="home">
+      <h2>首页 <span>Banner + 入口 + 管理端快捷卡片</span></h2>
+      <div class="grid cols-2">
+        <div>
+          <div class="banner-mock">
+            <div class="banner" data-type="WEB" style="background-image: linear-gradient(135deg,#f97316,#fb923c);">
+              企业新闻 · 营销战报
+            </div>
+            <div class="banner" data-type="MINI" style="background-image: linear-gradient(135deg,#34d399,#10b981);">
+              新人训 · 快速入口
+            </div>
+            <div class="banner" data-type="VIDEO" style="background-image: linear-gradient(135deg,#6366f1,#8b5cf6);">
+              视频教学 · 销售技巧
+            </div>
+          </div>
+          <a class="cta">进入学习中心</a>
+          <a class="cta secondary">课堂考核进度（管理端）</a>
+        </div>
+        <div class="card">
+          <h3>信息架构</h3>
+          <p>顶部轮播承载公告 / 资讯。主按钮进入学习中心，管理者多一个「课堂考核进度」入口。用户信息展示在右上角，支持进入“我的”页面。</p>
+          <div class="pill">角色自适应</div>
+          <div class="pill">动态跳转（web/mini/video）</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="learning">
+      <h2>学习中心 <span>分类根据角色动态渲染</span></h2>
+      <div class="grid cols-3">
+        <div class="card">
+          <h3>员工视角</h3>
+          <p>专题特训 / 金牌课程 / 新人养成 / 短视频教学 / 营销推广 / 学习执行 / 销售技巧</p>
+        </div>
+        <div class="card">
+          <h3>管理者视角</h3>
+          <p>店长特训 / 新员工培训 / 老员工进阶 / 管理知识与自我提升</p>
+        </div>
+        <div class="card">
+          <h3>设计要点</h3>
+          <ul>
+            <li>分类按钮为正方或圆角矩形</li>
+            <li>后端返回 category 列表，前端按 role 过滤</li>
+            <li>点击进入课程列表页</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="courses">
+      <h2>课程列表 & 详情 <span>视频 / 图文双形态</span></h2>
+      <div class="split">
+        <div class="device">
+          <div class="screen">
+            <div class="tab">课程列表 · 专题特训</div>
+            <div class="list">
+              <div class="list-item">
+                <strong>销售基础特训 01</strong>
+                <p>视频 · 12 分钟入门，覆盖基础销售模型</p>
+              </div>
+              <div class="list-item">
+                <strong>销售基础特训 02</strong>
+                <p>图文 · 课程大纲与实战案例</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="device">
+          <div class="screen">
+            <div class="tab">课程详情 · 视频课程</div>
+            <div class="card" style="background:#0f172a;color:#fff;border:none;">
+              <p>视频播放器占位（支持 mock 播放完成状态）</p>
+            </div>
+            <div class="list-item">
+              <strong>课程简介</strong>
+              <p>核心目标、学习要点、适合人群</p>
+            </div>
+            <div class="pill">已学习 · 80%</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="progress">
+      <h2>课堂考核进度（管理端） <span>Mock 数据看板</span></h2>
+      <div class="split">
+        <div class="card">
+          <h3>课程维度</h3>
+          <div class="progress">
+            <div>
+              <strong>店长管理基础 01</strong>
+              <div class="progress-bar"><span style="width:78%;background:var(--brand);"></span></div>
+              <small>78% 员工完成</small>
+            </div>
+            <div>
+              <strong>店长管理基础 02</strong>
+              <div class="progress-bar"><span style="width:42%;background:var(--accent);"></span></div>
+              <small>42% 员工完成</small>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>学员维度</h3>
+          <div class="list">
+            <div class="list-item">
+              <strong>王晓 · 门店 01</strong>
+              <p>已完成 4/5 课程 · 待补：老员工进阶</p>
+            </div>
+            <div class="list-item">
+              <strong>李静 · 门店 03</strong>
+              <p>已完成 2/5 课程 · 待补：管理知识</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="profile">
+      <h2>我的页面 <span>个人信息 + 学习摘要</span></h2>
+      <div class="split">
+        <div class="device">
+          <div class="screen">
+            <div class="tab">我的 · Employee</div>
+            <div class="card">
+              <strong>王明 · 1001</strong>
+              <p>门店：上海一店 · 角色：员工</p>
+            </div>
+            <div class="list">
+              <div class="list-item">本月学习时长 · 12h</div>
+              <div class="list-item">已完成课程 · 6 / 8</div>
+              <div class="list-item">快捷入口 · 账号设置 / 退出登录</div>
+            </div>
+            <a class="cta secondary" href="#login">退出登录并返回登录页</a>
+          </div>
+        </div>
+        <div>
+          <p>“我的”页面聚合账号信息、学习统计与快捷操作。后续可扩展到学习日历、积分、证书等模块。现阶段全部 mock，提供基本结构即可。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>© 2025 企业培训小程序 · HTML Mock 仅供视觉/交互参考</footer>
+</body>
+</html>
+

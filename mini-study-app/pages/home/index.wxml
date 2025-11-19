@@ -1,0 +1,108 @@
+<view class="home-page">
+  <!-- 顶部欢迎栏 -->
+  <view class="welcome-bar">
+    <view class="welcome-content">
+      <view class="welcome-greeting">
+        <text class="greeting-icon">👋</text>
+        <view>
+          <view class="greeting-text">你好，{{user.name || '未登录'}}</view>
+          <view class="greeting-time">{{currentTime}}</view>
+        </view>
+      </view>
+      <view class="header-buttons">
+        <view class="header-btn" wx:if="{{user.role === 'admin'}}" bindtap="goUserManagement">
+          <text class="btn-icon">👥</text>
+        </view>
+        <view class="header-btn" bindtap="goProfile">
+          <text class="btn-icon">👤</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 企业资讯（非管理员显示） -->
+  <view class="section" wx:if="{{user.role !== 'admin'}}">
+    <view class="section-header">
+      <view class="section-title-group">
+        <text class="section-icon">📢</text>
+        <view>
+          <view class="section-title">企业资讯</view>
+          <view class="section-subtitle">最新培训公告 / 资讯</view>
+        </view>
+      </view>
+      <button class="btn-refresh" bindtap="reloadBanners">🔄</button>
+    </view>
+    
+    <view class="banner-card" wx:if="{{banners.length}}">
+      <swiper circular autoplay interval="5000" indicator-dots>
+        <block wx:for="{{banners}}" wx:key="id">
+          <swiper-item>
+            <view class="banner-item" bindtap="handleBannerTap" data-item="{{item}}">
+              <image class="banner-img" src="{{item.cover}}" mode="aspectFill" />
+              <view class="banner-mask">
+                <view class="banner-content">
+                  <text class="banner-title">{{item.title}}</text>
+                  <view class="banner-tag">{{item.type}}</view>
+                </view>
+              </view>
+            </view>
+          </swiper-item>
+        </block>
+      </swiper>
+    </view>
+  </view>
+
+  <!-- 员工列表（管理员显示） -->
+  <view class="section" wx:if="{{user.role === 'admin'}}">
+    <view class="section-title-group">
+      <text class="section-icon">👥</text>
+      <view>
+        <view class="section-title">员工管理</view>
+        <view class="section-subtitle">查看和管理所有员工</view>
+      </view>
+    </view>
+
+    <button class="btn-view-all" bindtap="goEmployeesList">
+      <text class="btn-icon">📋</text>
+      <text class="btn-text">查看完整员工列表</text>
+      <text class="btn-arrow">→</text>
+    </button>
+  </view>
+
+  <!-- 学习入口（管理员不显示） -->
+  <view class="section" wx:if="{{user.role !== 'admin'}}">
+    <view class="section-title-group">
+      <text class="section-icon">📚</text>
+      <view>
+        <view class="section-title">学习入口</view>
+        <view class="section-subtitle">选择课程开始学习</view>
+      </view>
+    </view>
+
+    <view class="entry-grid">
+      <view
+        class="entry-card"
+        wx:for="{{categories}}"
+        wx:key="id"
+        bindtap="handleSelectCategory"
+        data-item="{{item}}"
+      >
+        <view class="entry-icon">{{item.icon || '📖'}}</view>
+        <view class="entry-title">{{item.name}}</view>
+        <view class="entry-desc">{{item.count || 0}} 门课程</view>
+        <view class="entry-arrow">→</view>
+      </view>
+
+      <button class="entry-card manager-card" bindtap="goProgress" wx:if="{{user.role === 'manager'}}">
+        <view class="entry-icon">📊</view>
+        <view class="entry-title">考核进度</view>
+        <view class="entry-desc">跟进学习状态</view>
+        <view class="entry-arrow">→</view>
+      </button>
+    </view>
+  </view>
+
+  <!-- 底部空间 -->
+  <view class="bottom-space"></view>
+</view>
+

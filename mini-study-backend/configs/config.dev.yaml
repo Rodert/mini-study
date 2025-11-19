@@ -1,0 +1,10 @@
+app:
+  env: dev
+server:
+  port: 8081
+  allowed_origins:
+    - http://localhost:3000
+jwt:
+  secret: dev-secret
+database:
+  dsn: dev:devpass@tcp(127.0.0.1:3306)/mini_study_dev?charset=utf8mb4&parseTime=True&loc=Local

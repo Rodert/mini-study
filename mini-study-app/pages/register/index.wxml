@@ -1,0 +1,148 @@
+<view class="register-page">
+  <view class="register-container">
+    <!-- 头部装饰 -->
+    <view class="header-decoration">
+      <view class="decoration-circle circle-1"></view>
+      <view class="decoration-circle circle-2"></view>
+    </view>
+
+    <!-- 标题区域 -->
+    <view class="header-section">
+      <view class="logo-icon">✍️</view>
+      <view class="header-title">注册企业账号</view>
+      <view class="header-desc">为员工和店长开通学习空间</view>
+    </view>
+
+    <!-- 表单卡片 -->
+    <view class="form-card">
+      <form bindsubmit="handleSubmit">
+        <view class="form-item">
+          <text class="label">手机号</text>
+          <view class="input-wrapper">
+            <text class="input-icon">📱</text>
+            <input 
+              class="input" 
+              type="number" 
+              maxlength="11" 
+              data-field="mobile" 
+              bindinput="handleInput" 
+              value="{{mobile}}" 
+              placeholder="请输入手机号" 
+            />
+          </view>
+        </view>
+
+        <view class="form-item">
+          <text class="label">工号</text>
+          <view class="input-wrapper">
+            <text class="input-icon">👤</text>
+            <input 
+              class="input" 
+              data-field="employeeId" 
+              bindinput="handleInput" 
+              value="{{employeeId}}" 
+              placeholder="请输入工号 / 员工号" 
+            />
+          </view>
+        </view>
+
+        <view class="form-item">
+          <text class="label">姓名</text>
+          <view class="input-wrapper">
+            <text class="input-icon">👨</text>
+            <input 
+              class="input" 
+              data-field="name" 
+              bindinput="handleInput" 
+              value="{{name}}" 
+              placeholder="请输入姓名" 
+            />
+          </view>
+        </view>
+
+        <view class="form-item">
+          <text class="label">门店 / 部门</text>
+          <view class="input-wrapper">
+            <text class="input-icon">🏢</text>
+            <input 
+              class="input" 
+              data-field="store" 
+              bindinput="handleInput" 
+              value="{{store}}" 
+              placeholder="示例：上海一店" 
+            />
+          </view>
+        </view>
+
+        <view class="form-item">
+          <text class="label">身份</text>
+          <view class="input-wrapper role-display">
+            <text class="input-icon">👨‍💼</text>
+            <view class="role-text">员工</view>
+          </view>
+        </view>
+
+        <view class="form-item">
+          <text class="label">密码</text>
+          <view class="input-wrapper">
+            <text class="input-icon">🔐</text>
+            <input 
+              class="input" 
+              password="true" 
+              data-field="password" 
+              bindinput="handleInput" 
+              value="{{password}}" 
+              placeholder="请输入登录密码" 
+            />
+          </view>
+        </view>
+
+        <view class="form-item">
+          <text class="label">选择店长 <text class="required">*</text></text>
+          <text class="label-desc">可多选，选择你属于哪个店长的员工</text>
+          <view class="manager-list">
+            <view 
+              class="manager-item {{selectedManagerIds.indexOf(manager.id) > -1 ? 'selected' : ''}}"
+              wx:for="{{managers}}"
+              wx:key="id"
+              data-manager-id="{{manager.id}}"
+              bindtap="handleManagerSelect"
+            >
+              <view class="manager-checkbox">
+                <text wx:if="{{selectedManagerIds.indexOf(manager.id) > -1}}">✓</text>
+              </view>
+              <view class="manager-info">
+                <view class="manager-name">{{manager.name}}</view>
+                <view class="manager-store">{{manager.store}}</view>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <view class="error-text" wx:if="{{error}}">
+          <text class="error-icon">⚠️</text>
+          {{error}}
+        </view>
+
+        <button 
+          class="btn-primary" 
+          form-type="submit" 
+          loading="{{loading}}" 
+          disabled="{{loading || !mobile || !employeeId || !name || !password}}"
+        >
+          创建账号并登录
+        </button>
+
+        <button class="btn-secondary" type="default" bindtap="goLogin">
+          <text class="btn-icon">←</text> 返回登录
+        </button>
+      </form>
+    </view>
+
+    <!-- 底部装饰 -->
+    <view class="footer-decoration">
+      <view class="decoration-circle circle-3"></view>
+    </view>
+  </view>
+</view>
+

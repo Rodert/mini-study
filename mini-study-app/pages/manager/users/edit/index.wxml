@@ -1,0 +1,128 @@
+<view class="edit-user-page">
+  <!-- 顶部返回栏 -->
+  <view class="top-bar">
+    <view class="back-button" bindtap="goBack">
+      <text>←</text>
+    </view>
+    <view class="top-title">编辑用户</view>
+    <view class="top-placeholder"></view>
+  </view>
+
+  <!-- 编辑表单 -->
+  <view class="form-container">
+    <!-- 用户基本信息 -->
+    <view class="form-section">
+      <view class="section-header">
+        <text class="section-icon">👤</text>
+        <view class="section-info">
+          <view class="section-title">基本信息</view>
+        </view>
+      </view>
+
+      <view class="info-row">
+        <view class="info-label">姓名</view>
+        <view class="info-value">{{user.name}}</view>
+      </view>
+      <view class="info-row">
+        <view class="info-label">工号</view>
+        <view class="info-value">{{user.username}}</view>
+      </view>
+      <view class="info-row">
+        <view class="info-label">手机号</view>
+        <view class="info-value">{{user.mobile}}</view>
+      </view>
+    </view>
+
+    <!-- 角色修改 -->
+    <view class="form-section">
+      <view class="section-header">
+        <text class="section-icon">🎭</text>
+        <view class="section-info">
+          <view class="section-title">角色</view>
+          <view class="section-desc">修改用户角色</view>
+        </view>
+      </view>
+
+      <view class="role-options">
+        <view 
+          class="role-option {{user.role === 'employee' ? 'selected' : ''}}"
+          bindtap="selectRole"
+          data-role="employee"
+        >
+          <view class="role-radio">
+            <text wx:if="{{user.role === 'employee'}}">●</text>
+          </view>
+          <view class="role-info">
+            <view class="role-name">员工</view>
+            <view class="role-desc">普通员工</view>
+          </view>
+        </view>
+
+        <view 
+          class="role-option {{user.role === 'manager' ? 'selected' : ''}}"
+          bindtap="selectRole"
+          data-role="manager"
+        >
+          <view class="role-radio">
+            <text wx:if="{{user.role === 'manager'}}">●</text>
+          </view>
+          <view class="role-info">
+            <view class="role-name">店长</view>
+            <view class="role-desc">门店管理者</view>
+          </view>
+        </view>
+
+        <view 
+          class="role-option {{user.role === 'admin' ? 'selected' : ''}}"
+          bindtap="selectRole"
+          data-role="admin"
+        >
+          <view class="role-radio">
+            <text wx:if="{{user.role === 'admin'}}">●</text>
+          </view>
+          <view class="role-info">
+            <view class="role-name">管理员</view>
+            <view class="role-desc">系统管理员</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 店长绑定 -->
+    <view class="form-section" wx:if="{{user.role === 'employee'}}">
+      <view class="section-header">
+        <text class="section-icon">👔</text>
+        <view class="section-info">
+          <view class="section-title">所属店长</view>
+          <view class="section-desc">可多选，绑定员工属于哪个店长</view>
+        </view>
+      </view>
+
+      <view class="manager-list">
+        <view 
+          class="manager-item {{selectedManagerIds.indexOf(manager.id) > -1 ? 'selected' : ''}}"
+          wx:for="{{managers}}"
+          wx:key="id"
+          data-manager-id="{{manager.id}}"
+          bindtap="handleManagerSelect"
+        >
+          <view class="manager-checkbox">
+            <text wx:if="{{selectedManagerIds.indexOf(manager.id) > -1}}">✓</text>
+          </view>
+          <view class="manager-info">
+            <view class="manager-name">{{manager.name}}</view>
+            <view class="manager-store">{{manager.store}}</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="form-hint">已选择 {{selectedManagerIds.length}} 个店长</view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="button-group">
+    <button class="btn-save" bindtap="handleSave">保存修改</button>
+    <button class="btn-cancel" bindtap="goBack">取消</button>
+  </view>
+</view>

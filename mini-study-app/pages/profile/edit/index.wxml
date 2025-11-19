@@ -1,0 +1,75 @@
+<view class="edit-page">
+  <!-- 顶部返回栏 -->
+  <view class="top-bar">
+    <view class="back-button" bindtap="goBack">
+      <text>←</text>
+    </view>
+    <view class="top-title">修改手机号</view>
+    <view class="top-placeholder"></view>
+  </view>
+
+  <!-- 编辑表单 -->
+  <view class="form-container">
+    <!-- 手机号编辑 -->
+    <view class="form-section">
+      <view class="section-header">
+        <text class="section-icon">📱</text>
+        <view class="section-info">
+          <view class="section-title">手机号</view>
+          <view class="section-desc">用于登录和接收通知</view>
+        </view>
+      </view>
+      <view class="form-item">
+        <input 
+          class="form-input" 
+          type="number"
+          maxlength="11"
+          placeholder="请输入新手机号"
+          value="{{mobile}}"
+          bindinput="handleMobileInput"
+        />
+      </view>
+      <view class="form-hint">当前手机号：{{originalMobile}}</view>
+    </view>
+
+    <!-- 其他信息展示 -->
+    <view class="form-section">
+      <view class="section-header">
+        <text class="section-icon">ℹ️</text>
+        <view class="section-info">
+          <view class="section-title">其他信息</view>
+          <view class="section-desc">以下信息无法修改</view>
+        </view>
+      </view>
+
+      <view class="info-display">
+        <view class="info-row">
+          <view class="info-label">工号</view>
+          <view class="info-value">{{user.username}}</view>
+        </view>
+        <view class="info-row">
+          <view class="info-label">姓名</view>
+          <view class="info-value">{{user.name}}</view>
+        </view>
+        <view class="info-row">
+          <view class="info-label">角色</view>
+          <view class="info-value">{{user.role === 'manager' ? '店长 / 管理' : '员工'}}</view>
+        </view>
+        <view class="info-row">
+          <view class="info-label">所属店长</view>
+          <view class="manager-tags">
+            <view class="tag" wx:for="{{userManagers}}" wx:key="id">
+              {{item.name}}
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="button-group">
+    <button class="btn-save" bindtap="handleSave">保存修改</button>
+    <button class="btn-cancel" bindtap="goBack">取消</button>
+  </view>
+</view>

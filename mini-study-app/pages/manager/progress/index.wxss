@@ -1,0 +1,63 @@
+@import "../../../styles/theme.wxss";
+@import "../../../styles/layout.wxss";
+
+.progress-card {
+  padding: 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 16rpx;
+  border-radius: 999rpx;
+  background: rgba(37, 99, 235, 0.12);
+  overflow: hidden;
+}
+
+.progress-bar.small {
+  height: 12rpx;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--brand);
+  border-radius: 999rpx;
+}
+
+.employee-card {
+  margin-bottom: 24rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.employee-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.employee-name {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.employee-store {
+  font-size: 24rpx;
+  color: var(--muted);
+  margin-left: 8rpx;
+}
+
+.employee-percent {
+  font-size: 28rpx;
+  color: var(--brand);
+  font-weight: 600;
+}
+
+.employee-meta {
+  font-size: 24rpx;
+  color: var(--muted);
+}
+

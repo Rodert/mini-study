@@ -1,0 +1,127 @@
+<view class="profile-page">
+  <!-- 顶部返回栏 -->
+  <view class="top-bar">
+    <view class="back-button" bindtap="goBack">
+      <text>←</text>
+    </view>
+    <view class="top-title">我的</view>
+    <view class="top-placeholder"></view>
+  </view>
+
+  <!-- 用户信息卡片 -->
+  <view class="user-card" wx:if="{{user.id}}">
+    <view class="user-header">
+      <view class="user-avatar">{{user.name ? user.name.charAt(0) : '?'}}</view>
+      <view class="user-details">
+        <view class="user-name">{{user.name}}</view>
+        <view class="user-meta">
+          <text class="meta-item">
+            <text class="meta-icon">🆔</text>
+            <text>{{user.username}}</text>
+          </text>
+          <text class="meta-item">
+            <text class="meta-icon">{{user.role === 'manager' ? '👔' : '👨‍💼'}}</text>
+            <text>{{user.role === 'manager' ? '店长 / 管理' : '员工'}}</text>
+          </text>
+        </view>
+      </view>
+    </view>
+    <view class="user-store">
+      <text class="store-icon">🏢</text>
+      <text>{{user.store || '未设置门店'}}</text>
+    </view>
+  </view>
+
+  <!-- 编辑信息卡片 -->
+  <view class="section" wx:if="{{user.id && user.role === 'employee'}}">
+    <view class="info-card">
+      <view class="info-item">
+        <text class="info-icon">📱</text>
+        <view class="info-content">
+          <view class="info-label">手机号</view>
+          <view class="info-value">{{user.mobile}}</view>
+        </view>
+      </view>
+      <view class="info-item">
+        <text class="info-icon">👔</text>
+        <view class="info-content">
+          <view class="info-label">所属店长</view>
+          <view class="manager-tags">
+            <view class="tag" wx:for="{{userManagers}}" wx:key="id">
+              {{item.name}}
+            </view>
+          </view>
+        </view>
+      </view>
+      <button class="btn-edit-info" bindtap="goEditPage">编辑信息</button>
+    </view>
+  </view>
+
+  <view class="login-prompt" wx:if="{{!user.id}}">
+    <view class="prompt-icon">🔐</view>
+    <view class="prompt-text">当前未登录</view>
+    <view class="prompt-desc">返回登录页体验完整功能</view>
+    <button class="btn-primary" bindtap="goLogin">前往登录</button>
+  </view>
+
+  <!-- 学习统计 -->
+  <view class="section" wx:if="{{user.id}}">
+    <view class="section-title-group">
+      <text class="section-icon">📊</text>
+      <view>
+        <view class="section-title">学习统计</view>
+        <view class="section-subtitle">你的学习数据一览</view>
+      </view>
+    </view>
+
+    <view class="stats-grid" wx:if="{{stats}}">
+      <view class="stat-card">
+        <view class="stat-icon">⏱️</view>
+        <view class="stat-value">{{stats.totalHours}}</view>
+        <view class="stat-unit">小时</view>
+        <view class="stat-label">本月学习时长</view>
+      </view>
+      <view class="stat-card">
+        <view class="stat-icon">✅</view>
+        <view class="stat-value">{{stats.completedCourses}}</view>
+        <view class="stat-unit">/ {{stats.totalCourses}}</view>
+        <view class="stat-label">课程完成度</view>
+      </view>
+      <view class="stat-card">
+        <view class="stat-icon">🔥</view>
+        <view class="stat-value">{{stats.streakDays}}</view>
+        <view class="stat-unit">天</view>
+        <view class="stat-label">连续学习</view>
+      </view>
+    </view>
+
+    <view class="stat-card empty" wx:if="{{!stats}}">
+      <text>暂无统计数据</text>
+    </view>
+  </view>
+
+  <!-- 快速操作 -->
+  <view class="section" wx:if="{{user.id}}">
+    <view class="section-title-group">
+      <text class="section-icon">⚡</text>
+      <view>
+        <view class="section-title">快速操作</view>
+      </view>
+    </view>
+
+    <view class="action-grid">
+      <view class="action-card" bindtap="goLearning">
+        <view class="action-icon">📚</view>
+        <view class="action-text">学习中心</view>
+      </view>
+      <view class="action-card" bindtap="handleLogout">
+        <view class="action-icon">🚪</view>
+        <view class="action-text">退出登录</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部空间 -->
+  <view class="bottom-space"></view>
+</view>
+

@@ -1,0 +1,24 @@
+<view class="page-wrap">
+  <view class="section-title">{{course.title || '课程详情'}}</view>
+  <view class="card detail-card" wx:if="{{course.id}}">
+    <video
+      wx:if="{{course.type === 'video'}}"
+      class="course-video"
+      src="{{course.url}}"
+      controls
+      poster="{{course.cover}}"
+    ></video>
+
+    <view wx:elif="{{course.type === 'article'}}" class="article-content">
+      <rich-text nodes="{{course.content}}"></rich-text>
+    </view>
+
+    <view class="course-meta">
+      <text>类型：{{course.type === 'video' ? '视频课程' : '图文课程'}}</text>
+      <text>时长 / 阅读：{{course.duration || '--'}}</text>
+    </view>
+    <view class="course-summary">{{course.summary}}</view>
+    <view class="status-pill">{{finished ? '已完成' : '学习中（Mock）'}}</view>
+  </view>
+</view>
+

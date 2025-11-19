@@ -1,0 +1,65 @@
+<view class="employees-page">
+  <!-- 顶部返回栏 -->
+  <view class="top-bar">
+    <view class="back-button" bindtap="goBack">
+      <text>←</text>
+    </view>
+    <view class="top-title">员工管理</view>
+    <view class="top-placeholder"></view>
+  </view>
+
+  <!-- 搜索和筛选 -->
+  <view class="search-bar">
+    <view class="search-input-wrapper">
+      <text class="search-icon">🔍</text>
+      <input 
+        class="search-input"
+        type="text"
+        placeholder="搜索员工名字或手机号"
+        value="{{searchText}}"
+        bindinput="handleSearch"
+      />
+    </view>
+  </view>
+
+  <!-- 员工列表 -->
+  <view class="employees-list">
+    <view class="employee-card" wx:for="{{filteredEmployees}}" wx:key="id" bindtap="goEmployeeDetail" data-user-id="{{item.id}}">
+      <view class="card-header">
+        <view class="employee-avatar">{{item.name.charAt(0)}}</view>
+        <view class="employee-basic">
+          <view class="employee-name">{{item.name}}</view>
+          <view class="employee-username">工号：{{item.username}}</view>
+        </view>
+      </view>
+
+      <view class="card-body">
+        <view class="info-row">
+          <text class="info-label">手机号</text>
+          <text class="info-value">{{item.mobile}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">角色</text>
+          <text class="role-badge {{item.role}}">{{item.role === 'employee' ? '员工' : item.role === 'manager' ? '店长' : '管理员'}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">所属店长</text>
+          <view class="manager-tags">
+            <view class="tag" wx:for="{{item.managers}}" wx:key="id">
+              {{item.name}}
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="card-footer">
+        <view class="arrow">→</view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{!filteredEmployees.length}}">
+      <text class="empty-icon">😕</text>
+      <text class="empty-text">没有找到匹配的员工</text>
+    </view>
+  </view>
+</view>

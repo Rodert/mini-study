@@ -1,0 +1,30 @@
+<view class="users-page">
+  <!-- 顶部返回栏 -->
+  <view class="top-bar">
+    <view class="back-button" bindtap="goBack">
+      <text>←</text>
+    </view>
+    <view class="top-title">用户管理</view>
+    <view class="top-placeholder"></view>
+  </view>
+
+  <!-- 用户列表 -->
+  <view class="users-container">
+    <view class="user-item" wx:for="{{users}}" wx:key="id">
+      <view class="user-header">
+        <view class="user-avatar">{{item.name.charAt(0)}}</view>
+        <view class="user-info">
+          <view class="user-name">{{item.name}}</view>
+          <view class="user-meta">
+            <text class="meta-badge {{item.role}}">{{item.role === 'employee' ? '员工' : item.role === 'manager' ? '店长' : '管理员'}}</text>
+            <text class="meta-text">{{item.mobile}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="user-actions">
+        <button class="btn-action" bindtap="goEditUser" data-user-id="{{item.id}}">编辑</button>
+      </view>
+    </view>
+  </view>
+</view>

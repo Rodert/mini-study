@@ -1,0 +1,16 @@
+<view class="page-wrap">
+  <view class="section-title">学习中心</view>
+  <view class="section-subtitle">为{{role === 'manager' ? '店长 / 管理者' : '员工'}}推荐的课程分类</view>
+  <view class="grid auto-fit">
+    <view
+      class="card category-card"
+      wx:for="{{categories}}"
+      wx:key="id"
+      bindtap="handleSelectCategory"
+      data-item="{{item}}"
+    >
+      <text class="category-name">{{item.name}}</text>
+    </view>
+  </view>
+</view>
+

@@ -1,0 +1,90 @@
+<view class="login-page">
+  <view class="login-container">
+    <!-- 头部装饰 -->
+    <view class="header-decoration">
+      <view class="decoration-circle circle-1"></view>
+      <view class="decoration-circle circle-2"></view>
+    </view>
+
+    <!-- 标题区域 -->
+    <view class="header-section">
+      <view class="logo-icon">🎓</view>
+      <view class="header-title">企业培训中心</view>
+      <view class="header-desc">稳定、专业的内部学习平台</view>
+    </view>
+
+    <!-- 表单卡片 -->
+    <view class="form-card">
+      <form bindsubmit="handleSubmit">
+        <view class="form-item">
+          <text class="label">手机号</text>
+          <view class="input-wrapper">
+            <text class="input-icon">📱</text>
+            <input
+              class="input"
+              type="number"
+              maxlength="11"
+              placeholder="请输入手机号"
+              data-field="mobile"
+              bindinput="handleInput"
+              value="{{mobile}}"
+            />
+          </view>
+        </view>
+
+        <view class="form-item">
+          <text class="label">密码</text>
+          <view class="input-wrapper">
+            <text class="input-icon">🔐</text>
+            <input
+              class="input"
+              password="true"
+              placeholder="请输入密码"
+              data-field="password"
+              bindinput="handleInput"
+              value="{{password}}"
+            />
+          </view>
+        </view>
+
+        <view class="error-text" wx:if="{{error}}">
+          <text class="error-icon">⚠️</text>
+          {{error}}
+        </view>
+
+        <button
+          class="btn-primary"
+          form-type="submit"
+          loading="{{loading}}"
+          disabled="{{!mobile || !password || loading}}"
+        >
+          立即登录
+        </button>
+
+        <view class="divider">
+          <view class="divider-line"></view>
+          <text class="divider-text">或</text>
+          <view class="divider-line"></view>
+        </view>
+
+        <button class="btn-secondary" type="default" bindtap="goRegister">
+          <text class="btn-icon">✏️</text> 注册新账号
+        </button>
+        <button class="btn-tertiary" type="default" bindtap="quickSwitch">
+          <text class="btn-icon">⚡</text> 快速切换示例账号
+        </button>
+
+        <view class="helper-text">
+          <text class="helper-icon">💡</text>
+          <text>体验账号：员工（13900000000 / 123456）、店长（13911110000 / 123456）、管理员（13900000001 / 123456）</text>
+        </view>
+      </form>
+    </view>
+
+    <!-- 底部装饰 -->
+    <view class="footer-decoration">
+      <view class="decoration-circle circle-3"></view>
+    </view>
+  </view>
+</view>
+

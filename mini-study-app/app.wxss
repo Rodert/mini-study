@@ -1,0 +1,9 @@
+@import "./styles/theme.wxss";
+@import "./styles/layout.wxss";
+
+page {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+}
+

@@ -1,0 +1,156 @@
+@import "../../../styles/theme.wxss";
+@import "../../../styles/layout.wxss";
+
+.users-page {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #f5f7fa 0%, #f0f4ff 100%);
+  min-height: 100vh;
+  padding: 0;
+}
+
+/* 顶部栏 */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%);
+  color: #ffffff;
+  box-shadow: 0 4rpx 12rpx rgba(37, 99, 235, 0.15);
+}
+
+.back-button {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  transition: all 0.3s ease;
+}
+
+.back-button:active {
+  transform: scale(0.9);
+  opacity: 0.8;
+}
+
+.top-title {
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.top-placeholder {
+  width: 48rpx;
+}
+
+/* 用户列表 */
+.users-container {
+  flex: 1;
+  padding: 16rpx 24rpx;
+  overflow-y: auto;
+}
+
+.user-item {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 16rpx;
+  margin-bottom: 12rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2rpx 8rpx rgba(15, 23, 42, 0.06);
+  border: 1rpx solid rgba(37, 99, 235, 0.05);
+  transition: all 0.3s ease;
+}
+
+.user-item:active {
+  transform: translateY(-2rpx);
+  box-shadow: 0 4rpx 12rpx rgba(15, 23, 42, 0.1);
+}
+
+.user-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex: 1;
+}
+
+.user-avatar {
+  width: 56rpx;
+  height: 56rpx;
+  background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4rpx;
+}
+
+.user-meta {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 22rpx;
+}
+
+.meta-badge {
+  padding: 2rpx 8rpx;
+  border-radius: 12rpx;
+  font-weight: 600;
+  font-size: 20rpx;
+}
+
+.meta-badge.employee {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.meta-badge.manager {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.meta-badge.admin {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.meta-text {
+  color: var(--muted);
+}
+
+.user-actions {
+  display: flex;
+  gap: 8rpx;
+}
+
+.btn-action {
+  padding: 8rpx 16rpx;
+  background: var(--brand);
+  color: #ffffff;
+  font-size: 22rpx;
+  font-weight: 600;
+  border-radius: 8rpx;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-action:active {
+  background: #1e3a8a;
+  transform: scale(0.95);
+}

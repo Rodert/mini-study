@@ -1,0 +1,26 @@
+app:
+  name: mini-study-backend
+  env: local
+  version: 0.1.0
+  log_level: info
+server:
+  host: 0.0.0.0
+  port: 8080
+  request_timeout: 30s
+  read_timeout: 15s
+  write_timeout: 15s
+  allowed_origins:
+    - "*"
+database:
+  driver: mysql
+  dsn: root:root123456@tcp(127.0.0.1:3306)/mini_study?charset=utf8mb4&parseTime=True&loc=Local
+jwt:
+  issuer: mini-study
+  secret: change-me-please
+  ttl: 24h
+  refresh_ttl: 168h
+upload:
+  max_size_mb: 10
+  dir: storage/uploads
+swagger:
+  enabled: true

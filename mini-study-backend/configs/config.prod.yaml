@@ -1,0 +1,13 @@
+app:
+  env: prod
+server:
+  port: 80
+  allowed_origins:
+    - https://mini-study.example.com
+database:
+  driver: mysql
+  dsn: prod:securepass@tcp(mysql:3306)/mini_study?charset=utf8mb4&parseTime=True&loc=Local
+jwt:
+  secret: prod-secret-change-me
+swagger:
+  enabled: false

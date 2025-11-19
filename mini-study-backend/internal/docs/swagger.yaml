@@ -1,0 +1,1084 @@
+definitions:
+  dto.AdminCreateBannerRequest:
+    properties:
+      end_at:
+        type: string
+      image_url:
+        type: string
+      link_url:
+        type: string
+      sort_order:
+        type: integer
+      start_at:
+        type: string
+      status:
+        type: boolean
+      title:
+        maxLength: 255
+        minLength: 1
+        type: string
+      visible_roles:
+        enum:
+        - employee
+        - manager
+        - both
+        type: string
+    required:
+    - image_url
+    - link_url
+    - title
+    type: object
+  dto.AdminCreateContentRequest:
+    properties:
+      category_id:
+        type: integer
+      cover_url:
+        type: string
+      duration_seconds:
+        type: integer
+      file_path:
+        type: string
+      status:
+        enum:
+        - draft
+        - published
+        type: string
+      summary:
+        type: string
+      title:
+        maxLength: 255
+        minLength: 1
+        type: string
+      type:
+        enum:
+        - doc
+        - video
+        type: string
+      visible_roles:
+        enum:
+        - employee
+        - manager
+        - both
+        type: string
+    required:
+    - category_id
+    - file_path
+    - title
+    - type
+    type: object
+  dto.AdminCreateManagerRequest:
+    properties:
+      name:
+        maxLength: 100
+        type: string
+      password:
+        minLength: 6
+        type: string
+      phone:
+        maxLength: 20
+        type: string
+      work_no:
+        maxLength: 50
+        minLength: 2
+        type: string
+    required:
+    - name
+    - password
+    - work_no
+    type: object
+  dto.AdminUpdateBannerRequest:
+    properties:
+      end_at:
+        type: string
+      image_url:
+        type: string
+      link_url:
+        type: string
+      sort_order:
+        type: integer
+      start_at:
+        type: string
+      status:
+        type: boolean
+      title:
+        maxLength: 255
+        minLength: 1
+        type: string
+      visible_roles:
+        enum:
+        - employee
+        - manager
+        - both
+        type: string
+    type: object
+  dto.AdminUpdateContentRequest:
+    properties:
+      category_id:
+        type: integer
+      cover_url:
+        type: string
+      duration_seconds:
+        type: integer
+      file_path:
+        type: string
+      status:
+        enum:
+        - draft
+        - published
+        - offline
+        type: string
+      summary:
+        type: string
+      title:
+        maxLength: 255
+        minLength: 1
+        type: string
+      type:
+        enum:
+        - doc
+        - video
+        type: string
+      visible_roles:
+        enum:
+        - employee
+        - manager
+        - both
+        type: string
+    type: object
+  dto.AdminUpdateEmployeeManagersRequest:
+    properties:
+      manager_ids:
+        items:
+          type: string
+        type: array
+    required:
+    - manager_ids
+    type: object
+  dto.BannerResponse:
+    properties:
+      end_at:
+        type: string
+      id:
+        type: integer
+      image_url:
+        type: string
+      link_url:
+        type: string
+      sort_order:
+        type: integer
+      start_at:
+        type: string
+      status:
+        type: boolean
+      title:
+        type: string
+      visible_roles:
+        type: string
+    type: object
+  dto.ContentCategoryResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      role_scope:
+        type: string
+      sort_order:
+        type: integer
+    type: object
+  dto.ContentResponse:
+    properties:
+      category_id:
+        type: integer
+      category_name:
+        type: string
+      cover_url:
+        type: string
+      duration_seconds:
+        type: integer
+      file_path:
+        type: string
+      id:
+        type: integer
+      publish_at:
+        type: string
+      status:
+        type: string
+      summary:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+      visible_roles:
+        type: string
+    type: object
+  dto.LearningProgressRequest:
+    properties:
+      content_id:
+        type: integer
+      video_position:
+        minimum: 0
+        type: integer
+    required:
+    - content_id
+    - video_position
+    type: object
+  dto.LearningProgressResponse:
+    properties:
+      content_id:
+        type: integer
+      duration_seconds:
+        type: integer
+      progress:
+        type: integer
+      status:
+        type: string
+      video_position:
+        type: integer
+    type: object
+  dto.LoginRequest:
+    properties:
+      password:
+        type: string
+      work_no:
+        type: string
+    required:
+    - password
+    - work_no
+    type: object
+  dto.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  dto.RegisterRequest:
+    properties:
+      manager_ids:
+        items:
+          type: string
+        type: array
+      name:
+        maxLength: 100
+        type: string
+      password:
+        minLength: 6
+        type: string
+      phone:
+        maxLength: 20
+        type: string
+      work_no:
+        maxLength: 50
+        minLength: 2
+        type: string
+    required:
+    - manager_ids
+    - password
+    - work_no
+    type: object
+  dto.UpdateProfileRequest:
+    properties:
+      name:
+        maxLength: 100
+        type: string
+      phone:
+        maxLength: 20
+        type: string
+    type: object
+  dto.UserResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+      role:
+        type: string
+      status:
+        type: boolean
+      work_no:
+        type: string
+    type: object
+  utils.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/admin/banners:
+    get:
+      description: 管理员可按状态筛选轮播图
+      parameters:
+      - description: 是否启用 true/false
+        in: query
+        name: status
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.BannerResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 管理员查询轮播图列表
+      tags:
+      - 管理后台-轮播
+    post:
+      consumes:
+      - application/json
+      description: 管理员上传图片并配置跳转链接、可见角色等信息
+      parameters:
+      - description: 轮播图信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AdminCreateBannerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.BannerResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 管理员创建轮播图
+      tags:
+      - 管理后台-轮播
+  /api/v1/admin/banners/{id}:
+    put:
+      consumes:
+      - application/json
+      description: 管理员可修改轮播图基础信息、状态及可见范围
+      parameters:
+      - description: 轮播图ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 轮播图信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AdminUpdateBannerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.BannerResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 管理员更新轮播图
+      tags:
+      - 管理后台-轮播
+  /api/v1/admin/contents:
+    get:
+      description: 管理员可按分类、类型与状态筛选内容
+      parameters:
+      - description: 分类ID
+        in: query
+        name: category_id
+        type: integer
+      - description: 内容类型(doc/video)
+        in: query
+        name: type
+        type: string
+      - description: 内容状态(draft/published/offline)
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.ContentResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 管理员查询内容列表
+      tags:
+      - 管理后台-内容
+    post:
+      consumes:
+      - application/json
+      description: 管理员上传文件并设置分类、可见角色后创建内容
+      parameters:
+      - description: 内容信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AdminCreateContentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ContentResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 管理员创建内容
+      tags:
+      - 管理后台-内容
+  /api/v1/admin/contents/{id}:
+    put:
+      consumes:
+      - application/json
+      description: 管理员可修改内容基础信息、状态与可见范围
+      parameters:
+      - description: 内容ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 内容信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AdminUpdateContentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ContentResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 管理员更新内容
+      tags:
+      - 管理后台-内容
+  /api/v1/admin/managers:
+    post:
+      consumes:
+      - application/json
+      description: 只有管理员可以创建新的店长账号
+      parameters:
+      - description: 店长信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AdminCreateManagerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.UserResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 管理员创建店长
+      tags:
+      - 管理后台-用户
+  /api/v1/admin/users/{id}/managers:
+    put:
+      consumes:
+      - application/json
+      description: 覆盖式更新某个员工绑定的店长工号列表
+      parameters:
+      - description: 员工ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 店长工号列表
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AdminUpdateEmployeeManagersRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.UserResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 管理员维护员工店长绑定
+      tags:
+      - 管理后台-用户
+  /api/v1/admin/users/{id}/promote-manager:
+    post:
+      description: 将指定员工升级为店长角色
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.UserResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 管理员升级店长
+      tags:
+      - 管理后台-用户
+  /api/v1/banners:
+    get:
+      description: 返回当前登录用户基于角色可见的轮播图列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.BannerResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 查询可见轮播图
+      tags:
+      - 轮播
+  /api/v1/contents:
+    get:
+      description: 根据分类与类型筛选当前用户可访问的已发布内容
+      parameters:
+      - description: 分类ID
+        in: query
+        name: category_id
+        type: integer
+      - description: 内容类型(doc/video)
+        in: query
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.ContentResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 查询已发布内容
+      tags:
+      - 内容
+  /api/v1/contents/{id}:
+    get:
+      description: 获取指定已发布内容的详细信息
+      parameters:
+      - description: 内容ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ContentResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 查询内容详情
+      tags:
+      - 内容
+  /api/v1/contents/categories:
+    get:
+      description: 返回当前登录用户基于角色可访问的内容分类列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.ContentCategoryResponse'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 查询可见内容分类
+      tags:
+      - 内容
+  /api/v1/files/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 登录用户上传文件后返回可用于内容配置的存储路径
+      parameters:
+      - description: 待上传文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 上传文件
+      tags:
+      - 文件
+  /api/v1/learning:
+    get:
+      description: 返回当前用户所有已记录的学习进度
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.LearningProgressResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 查询学习进度列表
+      tags:
+      - 学习
+    post:
+      consumes:
+      - application/json
+      description: 登录用户上报视频播放位置，系统会累计已学进度
+      parameters:
+      - description: 学习进度
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LearningProgressRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.LearningProgressResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 记录学习进度
+      tags:
+      - 学习
+  /api/v1/learning/{content_id}:
+    get:
+      description: 返回当前用户在某个内容上的进度详情
+      parameters:
+      - description: 内容ID
+        in: path
+        name: content_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.LearningProgressResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 查询指定内容的学习进度
+      tags:
+      - 学习
+  /api/v1/users/login:
+    post:
+      consumes:
+      - application/json
+      description: 使用工号+密码登录，返回访问令牌与刷新令牌
+      parameters:
+      - description: 登录信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 用户登录
+      tags:
+      - 用户
+  /api/v1/users/managers:
+    get:
+      description: 返回所有启用状态的店长供员工注册或绑定使用
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.UserResponse'
+                  type: array
+              type: object
+      summary: 查询店长列表
+      tags:
+      - 用户
+  /api/v1/users/me/profile:
+    patch:
+      consumes:
+      - application/json
+      description: 登录用户可更新姓名与手机号
+      parameters:
+      - description: 个人信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.UserResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 修改个人信息
+      tags:
+      - 用户
+  /api/v1/users/register:
+    post:
+      consumes:
+      - application/json
+      description: 员工填写工号、姓名、手机号与密码完成注册，可同时选择多个店长工号
+      parameters:
+      - description: 注册信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.UserResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 员工注册
+      tags:
+      - 用户
+  /api/v1/users/token/refresh:
+    post:
+      consumes:
+      - application/json
+      description: 使用 refresh_token 换取新的访问令牌
+      parameters:
+      - description: 刷新令牌请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 刷新令牌
+      tags:
+      - 用户
+  /healthz:
+    get:
+      description: 返回服务运行状态与当前时间
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 健康检查
+      tags:
+      - 系统
+  /version:
+    get:
+      description: 返回当前部署的应用名称与版本
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: 查询服务版本
+      tags:
+      - 系统
+swagger: "2.0"
