@@ -5,7 +5,25 @@
       <text>←</text>
     </view>
     <view class="top-title">员工管理</view>
-    <view class="top-placeholder"></view>
+    <view class="top-actions">
+      <view class="action-button" bindtap="showAddMenu">
+        <text>+</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 添加菜单 -->
+  <view class="add-menu {{showMenu ? 'show' : ''}}" wx:if="{{showMenu}}" catchtap="hideAddMenu">
+    <view class="menu-content" catchtap="stopPropagation">
+      <view class="menu-item" bindtap="goAddEmployee">
+        <text class="menu-icon">👤</text>
+        <text class="menu-text">新增员工</text>
+      </view>
+      <view class="menu-item" bindtap="goAddManager">
+        <text class="menu-icon">👔</text>
+        <text class="menu-text">新增店长</text>
+      </view>
+    </view>
   </view>
 
   <!-- 搜索和筛选 -->

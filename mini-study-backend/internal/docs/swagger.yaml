@@ -1,27 +1,44 @@
+basePath: /api/v1
 definitions:
   dto.AdminCreateBannerRequest:
     properties:
       end_at:
+        description: 结束时间
+        example: "2024-12-31T23:59:59Z"
         type: string
       image_url:
+        description: 图片URL
+        example: https://example.com/banner.jpg
         type: string
       link_url:
+        description: 跳转链接
+        example: https://example.com/promotion
         type: string
       sort_order:
+        description: 排序序号
+        example: 1
         type: integer
       start_at:
+        description: 开始时间
+        example: "2024-01-01T00:00:00Z"
         type: string
       status:
+        description: 是否启用
+        example: true
         type: boolean
       title:
+        description: 轮播图标题
+        example: 春季促销活动
         maxLength: 255
         minLength: 1
         type: string
       visible_roles:
+        description: 可见角色：employee(员工) manager(店长) both(全部)
         enum:
         - employee
         - manager
         - both
+        example: both
         type: string
     required:
     - image_url
@@ -31,34 +48,52 @@ definitions:
   dto.AdminCreateContentRequest:
     properties:
       category_id:
+        description: 分类ID
+        example: 1
         type: integer
       cover_url:
+        description: 封面图片URL
+        example: https://example.com/cover.jpg
         type: string
       duration_seconds:
+        description: 视频时长（秒）
+        example: 3600
         type: integer
       file_path:
+        description: 文件存储路径
+        example: /uploads/video.mp4
         type: string
       status:
+        description: 状态：draft(草稿) published(已发布)
         enum:
         - draft
         - published
+        example: published
         type: string
       summary:
+        description: 内容摘要
+        example: 本视频介绍产品核心功能
         type: string
       title:
+        description: 内容标题
+        example: 产品培训视频
         maxLength: 255
         minLength: 1
         type: string
       type:
+        description: 内容类型：doc(文档) 或 video(视频)
         enum:
         - doc
         - video
+        example: video
         type: string
       visible_roles:
+        description: 可见角色：employee(员工) manager(店长) both(全部)
         enum:
         - employee
         - manager
         - both
+        example: both
         type: string
     required:
     - category_id
@@ -66,18 +101,63 @@ definitions:
     - title
     - type
     type: object
-  dto.AdminCreateManagerRequest:
+  dto.AdminCreateEmployeeRequest:
     properties:
+      manager_ids:
+        description: 店长工号列表
+        example:
+        - M001
+        - M002
+        items:
+          type: string
+        type: array
       name:
+        description: 姓名
+        example: 张三
         maxLength: 100
         type: string
       password:
+        description: 密码（至少6位）
+        example: "123456"
         minLength: 6
         type: string
       phone:
+        description: 手机号
+        example: "13800138000"
         maxLength: 20
         type: string
       work_no:
+        description: 工号
+        example: E001
+        maxLength: 50
+        minLength: 2
+        type: string
+    required:
+    - manager_ids
+    - name
+    - password
+    - work_no
+    type: object
+  dto.AdminCreateManagerRequest:
+    properties:
+      name:
+        description: 姓名
+        example: 李店长
+        maxLength: 100
+        type: string
+      password:
+        description: 密码（至少6位）
+        example: "123456"
+        minLength: 6
+        type: string
+      phone:
+        description: 手机号
+        example: "13800138000"
+        maxLength: 20
+        type: string
+      work_no:
+        description: 工号
+        example: M001
         maxLength: 50
         minLength: 2
         type: string
@@ -89,65 +169,103 @@ definitions:
   dto.AdminUpdateBannerRequest:
     properties:
       end_at:
+        description: 结束时间
+        example: "2024-12-31T23:59:59Z"
         type: string
       image_url:
+        description: 图片URL
+        example: https://example.com/banner.jpg
         type: string
       link_url:
+        description: 跳转链接
+        example: https://example.com/promotion
         type: string
       sort_order:
+        description: 排序序号
+        example: 1
         type: integer
       start_at:
+        description: 开始时间
+        example: "2024-01-01T00:00:00Z"
         type: string
       status:
+        description: 是否启用
+        example: true
         type: boolean
       title:
+        description: 轮播图标题
+        example: 春季促销活动(更新)
         maxLength: 255
         minLength: 1
         type: string
       visible_roles:
+        description: 可见角色：employee(员工) manager(店长) both(全部)
         enum:
         - employee
         - manager
         - both
+        example: both
         type: string
     type: object
   dto.AdminUpdateContentRequest:
     properties:
       category_id:
+        description: 分类ID
+        example: 1
         type: integer
       cover_url:
+        description: 封面图片URL
+        example: https://example.com/cover.jpg
         type: string
       duration_seconds:
+        description: 视频时长（秒）
+        example: 3600
         type: integer
       file_path:
+        description: 文件存储路径
+        example: /uploads/video.mp4
         type: string
       status:
+        description: 状态：draft(草稿) published(已发布) offline(下线)
         enum:
         - draft
         - published
         - offline
+        example: published
         type: string
       summary:
+        description: 内容摘要
+        example: 本视频介绍产品核心功能
         type: string
       title:
+        description: 内容标题
+        example: 产品培训视频(更新)
         maxLength: 255
         minLength: 1
         type: string
       type:
+        description: 内容类型：doc(文档) 或 video(视频)
         enum:
         - doc
         - video
+        example: video
         type: string
       visible_roles:
+        description: 可见角色：employee(员工) manager(店长) both(全部)
         enum:
         - employee
         - manager
         - both
+        example: both
         type: string
     type: object
   dto.AdminUpdateEmployeeManagersRequest:
     properties:
       manager_ids:
+        description: 店长工号列表
+        example:
+        - M001
+        - M002
         items:
           type: string
         type: array
@@ -157,67 +275,121 @@ definitions:
   dto.BannerResponse:
     properties:
       end_at:
+        description: 结束时间
+        example: "2024-12-31T23:59:59Z"
         type: string
       id:
+        description: 轮播图ID
+        example: 1
         type: integer
       image_url:
+        description: 图片URL
+        example: https://example.com/banner.jpg
         type: string
       link_url:
+        description: 跳转链接
+        example: https://example.com/promotion
         type: string
       sort_order:
+        description: 排序序号
+        example: 1
         type: integer
       start_at:
+        description: 开始时间
+        example: "2024-01-01T00:00:00Z"
         type: string
       status:
+        description: 是否启用
+        example: true
         type: boolean
       title:
+        description: 轮播图标题
+        example: 春季促销活动
         type: string
       visible_roles:
+        description: 可见角色：employee(员工) manager(店长) both(全部)
+        example: both
         type: string
     type: object
   dto.ContentCategoryResponse:
     properties:
       id:
+        description: 分类ID
+        example: 1
         type: integer
       name:
+        description: 分类名称
+        example: 产品培训
         type: string
       role_scope:
+        description: 可见角色范围：employee(员工) manager(店长) both(全部)
+        example: both
         type: string
       sort_order:
+        description: 排序序号
+        example: 1
         type: integer
     type: object
   dto.ContentResponse:
     properties:
       category_id:
+        description: 分类ID
+        example: 1
         type: integer
       category_name:
+        description: 分类名称
+        example: 产品培训
         type: string
       cover_url:
+        description: 封面图片URL
+        example: https://example.com/cover.jpg
         type: string
       duration_seconds:
+        description: 视频时长（秒）
+        example: 3600
         type: integer
       file_path:
+        description: 文件存储路径
+        example: /uploads/video.mp4
         type: string
       id:
+        description: 内容ID
+        example: 1
         type: integer
       publish_at:
+        description: 发布时间
+        example: "2024-01-01T00:00:00Z"
         type: string
       status:
+        description: 状态：draft(草稿) published(已发布) offline(下线)
+        example: published
         type: string
       summary:
+        description: 内容摘要
+        example: 本视频介绍产品核心功能
         type: string
       title:
+        description: 内容标题
+        example: 产品培训视频
         type: string
       type:
+        description: 内容类型：doc(文档) 或 video(视频)
+        example: video
         type: string
       visible_roles:
+        description: 可见角色：employee(员工) manager(店长) both(全部)
+        example: both
         type: string
     type: object
   dto.LearningProgressRequest:
     properties:
       content_id:
+        description: 内容ID
+        example: 1
         type: integer
       video_position:
+        description: 视频播放位置（秒）
+        example: 120
         minimum: 0
         type: integer
     required:
@@ -227,21 +399,35 @@ definitions:
   dto.LearningProgressResponse:
     properties:
       content_id:
+        description: 内容ID
+        example: 1
         type: integer
       duration_seconds:
+        description: 视频总时长（秒）
+        example: 3600
         type: integer
       progress:
+        description: 学习进度百分比（0-100）
+        example: 3
         type: integer
       status:
+        description: 学习状态：not_started(未开始) in_progress(进行中) completed(已完成)
+        example: in_progress
         type: string
       video_position:
+        description: 视频播放位置（秒）
+        example: 120
         type: integer
     type: object
   dto.LoginRequest:
     properties:
       password:
+        description: 密码
+        example: "123456"
         type: string
       work_no:
+        description: 工号
+        example: E001
         type: string
     required:
     - password
@@ -250,6 +436,8 @@ definitions:
   dto.RefreshTokenRequest:
     properties:
       refresh_token:
+        description: 刷新令牌
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
         type: string
     required:
     - refresh_token
@@ -257,19 +445,31 @@ definitions:
   dto.RegisterRequest:
     properties:
       manager_ids:
+        description: 店长工号列表
+        example:
+        - M001
+        - M002
         items:
           type: string
         type: array
       name:
+        description: 姓名
+        example: 张三
         maxLength: 100
         type: string
       password:
+        description: 密码（至少6位）
+        example: "123456"
         minLength: 6
         type: string
       phone:
+        description: 手机号
+        example: "13800138000"
         maxLength: 20
         type: string
       work_no:
+        description: 工号
+        example: E001
         maxLength: 50
         minLength: 2
         type: string
@@ -281,25 +481,41 @@ definitions:
   dto.UpdateProfileRequest:
     properties:
       name:
+        description: 姓名
+        example: 张三
         maxLength: 100
         type: string
       phone:
+        description: 手机号
+        example: "13800138000"
         maxLength: 20
         type: string
     type: object
   dto.UserResponse:
     properties:
       id:
+        description: 用户ID
+        example: 1
         type: integer
       name:
+        description: 姓名
+        example: 张三
         type: string
       phone:
+        description: 手机号
+        example: "13800138000"
         type: string
       role:
+        description: 角色：employee(员工) manager(店长) admin(管理员)
+        example: employee
         type: string
       status:
+        description: 状态：true(启用) false(禁用)
+        example: true
         type: boolean
       work_no:
+        description: 工号
+        example: E001
         type: string
     type: object
   utils.Response:
@@ -310,8 +526,18 @@ definitions:
       message:
         type: string
     type: object
+host: localhost:8080
 info:
-  contact: {}
+  contact:
+    email: support@example.com
+    name: API Support
+  description: 企业学习平台后端 API 文档
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Mini Study API
+  version: 0.1.0
 paths:
   /api/v1/admin/banners:
     get:
@@ -547,6 +773,39 @@ paths:
       summary: 管理员更新内容
       tags:
       - 管理后台-内容
+  /api/v1/admin/employees:
+    post:
+      consumes:
+      - application/json
+      description: 只有管理员可以创建新的员工账号，可同时绑定多个店长
+      parameters:
+      - description: 员工信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AdminCreateEmployeeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.UserResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 管理员创建员工
+      tags:
+      - 管理后台-用户
   /api/v1/admin/managers:
     post:
       consumes:
@@ -965,6 +1224,30 @@ paths:
       summary: 查询店长列表
       tags:
       - 用户
+  /api/v1/users/me:
+    get:
+      description: 返回当前登录用户的详细信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.UserResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 获取当前用户信息
+      tags:
+      - 用户
   /api/v1/users/me/profile:
     patch:
       consumes:
@@ -1081,4 +1364,13 @@ paths:
       summary: 查询服务版本
       tags:
       - 系统
+schemes:
+- http
+- https
+securityDefinitions:
+  Bearer:
+    description: 使用 "Bearer {token}" 格式，token 通过登录接口获取
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

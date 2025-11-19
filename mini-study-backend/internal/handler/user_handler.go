@@ -144,6 +144,39 @@ func (h *UserHandler) RefreshToken(c *gin.Context) {
 	utils.NewSuccessResponse(tokens).JSON(c)
 }
 
+// GetCurrentUser godoc
+// @Summary 获取当前用户信息
+// @Description 返回当前登录用户的详细信息
+// @Tags 用户
+// @Security Bearer
+// @Produce json
+// @Success 200 {object} utils.Response{data=dto.UserResponse}
+// @Failure 401 {object} utils.Response
+// @Router /api/v1/users/me [get]
+func (h *UserHandler) GetCurrentUser(c *gin.Context) {
+	userID := middleware.GetUserID(c)
+	if userID == 0 {
+		utils.NewErrorResponse(http.StatusUnauthorized, "未登录").JSON(c)
+		return
+	}
+
+	user, err := h.users.GetCurrentUser(userID)
+	if err != nil {
+		utils.NewErrorResponse(http.StatusUnauthorized, "用户不存在").JSON(c)
+		return
+	}
+
+	resp := dto.UserResponse{
+		ID:     user.ID,
+		WorkNo: user.WorkNo,
+		Phone:  user.Phone,
+		Name:   user.Name,
+		Role:   user.Role,
+		Status: user.Status,
+	}
+	utils.NewSuccessResponse(resp).JSON(c)
+}
+
 // UpdateProfile godoc
 // @Summary 修改个人信息
 // @Description 登录用户可更新姓名与手机号
@@ -210,6 +243,47 @@ func (h *UserHandler) AdminCreateManager(c *gin.Context) {
 	}
 
 	user, err := h.users.CreateManager(adminID, req)
+	if err != nil {
+		utils.NewErrorResponse(http.StatusBadRequest, err.Error()).JSON(c)
+		return
+	}
+
+	resp := dto.UserResponse{
+		ID:     user.ID,
+		WorkNo: user.WorkNo,
+		Phone:  user.Phone,
+		Name:   user.Name,
+		Role:   user.Role,
+		Status: user.Status,
+	}
+	utils.NewSuccessResponse(resp).JSON(c)
+}
+
+// AdminCreateEmployee godoc
+// @Summary 管理员创建员工
+// @Description 只有管理员可以创建新的员工账号，可同时绑定多个店长
+// @Tags 管理后台-用户
+// @Security Bearer
+// @Accept json
+// @Produce json
+// @Param body body dto.AdminCreateEmployeeRequest true "员工信息"
+// @Success 200 {object} utils.Response{data=dto.UserResponse}
+// @Failure 400 {object} utils.Response
+// @Router /api/v1/admin/employees [post]
+func (h *UserHandler) AdminCreateEmployee(c *gin.Context) {
+	adminID := middleware.GetUserID(c)
+	if adminID == 0 {
+		utils.NewErrorResponse(http.StatusUnauthorized, "未登录").JSON(c)
+		return
+	}
+
+	var req dto.AdminCreateEmployeeRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.NewErrorResponse(http.StatusBadRequest, err.Error()).JSON(c)
+		return
+	}
+
+	user, err := h.users.CreateEmployee(adminID, req)
 	if err != nil {
 		utils.NewErrorResponse(http.StatusBadRequest, err.Error()).JSON(c)
 		return

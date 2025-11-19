@@ -5,6 +5,8 @@
     "pages/home/index",
     "pages/admin/employees/index",
     "pages/admin/employees/detail/index",
+    "pages/admin/employees/add/index",
+    "pages/admin/managers/add/index",
     "pages/profile/edit/index",
     "pages/learning/index/index",
     "pages/learning/list/index",

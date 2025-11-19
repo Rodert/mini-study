@@ -1,9 +1,9 @@
 package router
 
 import (
-    "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 
-    "github.com/javapub/mini-study/mini-study-backend/internal/handler"
+	"github.com/javapub/mini-study/mini-study-backend/internal/handler"
 )
 
 // RegisterRoutes wires API and system routes.
@@ -18,12 +18,12 @@ func RegisterRoutes(
 	uploadHandler *handler.UploadHandler,
 	systemHandler *handler.SystemHandler,
 ) {
-    api := engine.Group("/api/v1")
+	api := engine.Group("/api/v1")
 
-    user := api.Group("/users")
-    {
-        user.POST("/register", userHandler.Register)
-        user.POST("/login", userHandler.Login)
+	user := api.Group("/users")
+	{
+		user.POST("/register", userHandler.Register)
+		user.POST("/login", userHandler.Login)
 		user.POST("/token/refresh", userHandler.RefreshToken)
 		user.GET("/managers", userHandler.ListManagers)
 	}
@@ -32,6 +32,7 @@ func RegisterRoutes(
 	authUser := api.Group("/users")
 	authUser.Use(authMiddleware)
 	{
+		authUser.GET("/me", userHandler.GetCurrentUser)
 		authUser.PATCH("/me/profile", userHandler.UpdateProfile)
 	}
 
@@ -65,6 +66,7 @@ func RegisterRoutes(
 	admin.Use(authMiddleware)
 	{
 		admin.POST("/managers", userHandler.AdminCreateManager)
+		admin.POST("/employees", userHandler.AdminCreateEmployee)
 		admin.POST("/users/:id/promote-manager", userHandler.AdminPromoteToManager)
 		admin.PUT("/users/:id/managers", userHandler.AdminUpdateEmployeeManagers)
 
@@ -81,15 +83,15 @@ func RegisterRoutes(
 			adminBanners.POST("/", bannerHandler.AdminCreateBanner)
 			adminBanners.PUT("/:id", bannerHandler.AdminUpdateBanner)
 		}
-    }
+	}
 
-    files := api.Group("/files")
+	files := api.Group("/files")
 	files.Use(authMiddleware)
-    files.POST("/upload", uploadHandler.Upload)
+	files.POST("/upload", uploadHandler.Upload)
 
-    RegisterSystemRoutes(engine, systemHandler)
+	RegisterSystemRoutes(engine, systemHandler)
 
-    if swaggerEnabled {
-        RegisterSwagger(engine)
-    }
+	if swaggerEnabled {
+		RegisterSwagger(engine)
+	}
 }

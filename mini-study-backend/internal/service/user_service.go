@@ -117,6 +117,15 @@ func (s *UserService) ensureAdmin(userID uint) (*model.User, error) {
 	return user, nil
 }
 
+// GetCurrentUser returns the current user by ID.
+func (s *UserService) GetCurrentUser(userID uint) (*model.User, error) {
+	user, err := s.repo.FindByID(userID)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
 // UpdateProfile allows user to update own name and phone.
 func (s *UserService) UpdateProfile(userID uint, req dto.UpdateProfileRequest) (*model.User, error) {
 	user, err := s.repo.FindByID(userID)
@@ -167,6 +176,51 @@ func (s *UserService) CreateManager(adminID uint, req dto.AdminCreateManagerRequ
 		return nil, err
 	}
 
+	return user, nil
+}
+
+// CreateEmployee creates a new employee user; only admin can call this.
+func (s *UserService) CreateEmployee(adminID uint, req dto.AdminCreateEmployeeRequest) (*model.User, error) {
+	if _, err := s.ensureAdmin(adminID); err != nil {
+		return nil, err
+	}
+
+	if _, err := s.repo.FindByWorkNo(req.WorkNo); err == nil {
+		return nil, errors.New("工号已存在")
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+
+	hash, err := utils.HashPassword(req.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	user := &model.User{
+		WorkNo:       req.WorkNo,
+		Phone:        req.Phone,
+		Name:         req.Name,
+		Role:         model.RoleEmployee,
+		PasswordHash: hash,
+		Status:       true,
+	}
+
+	if err := s.repo.Create(user); err != nil {
+		return nil, err
+	}
+
+	// 将传入的店长工号转换为店长 ID，并建立店长-员工关系
+	managerIDs, err := s.resolveManagerWorkNos(req.ManagerWorkNos)
+	if err != nil {
+		return nil, err
+	}
+	if len(managerIDs) > 0 {
+		if err := s.relationRepo.CreateRelations(user.ID, managerIDs); err != nil {
+			return nil, err
+		}
+	}
+
+	_ = s.audit.Record(adminID, "create_employee", "users", utils.ToJSONString(req), http.StatusText(http.StatusCreated))
 	return user, nil
 }
 

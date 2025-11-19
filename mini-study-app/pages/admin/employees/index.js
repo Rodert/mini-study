@@ -6,7 +6,8 @@ Page({
     employees: [],
     filteredEmployees: [],
     managers: [],
-    searchText: ""
+    searchText: "",
+    showMenu: false
   },
 
   onLoad() {
@@ -19,6 +20,11 @@ Page({
       return;
     }
 
+    this.loadData();
+  },
+
+  onShow() {
+    // 从新增页面返回时刷新数据
     this.loadData();
   },
 
@@ -65,6 +71,32 @@ Page({
     const { userId } = e.currentTarget.dataset;
     wx.navigateTo({
       url: `/pages/admin/employees/detail/index?userId=${userId}`
+    });
+  },
+
+  showAddMenu() {
+    this.setData({ showMenu: true });
+  },
+
+  hideAddMenu() {
+    this.setData({ showMenu: false });
+  },
+
+  stopPropagation() {
+    // 阻止事件冒泡
+  },
+
+  goAddEmployee() {
+    this.setData({ showMenu: false });
+    wx.navigateTo({
+      url: "/pages/admin/employees/add/index"
+    });
+  },
+
+  goAddManager() {
+    this.setData({ showMenu: false });
+    wx.navigateTo({
+      url: "/pages/admin/managers/add/index"
     });
   },
 

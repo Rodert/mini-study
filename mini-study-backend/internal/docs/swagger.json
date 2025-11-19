@@ -1,8 +1,25 @@
 {
+    "schemes": [
+        "http",
+        "https"
+    ],
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "企业学习平台后端 API 文档",
+        "title": "Mini Study API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "email": "support@example.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "0.1.0"
     },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
     "paths": {
         "/api/v1/admin/banners": {
             "get": {
@@ -391,6 +408,63 @@
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/employees": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "只有管理员可以创建新的员工账号，可同时绑定多个店长",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理后台-用户"
+                ],
+                "summary": "管理员创建员工",
+                "parameters": [
+                    {
+                        "description": "员工信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AdminCreateEmployeeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.UserResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -1109,6 +1183,49 @@
                 }
             }
         },
+        "/api/v1/users/me": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "返回当前登录用户的详细信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户"
+                ],
+                "summary": "获取当前用户信息",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.UserResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/me/profile": {
             "patch": {
                 "security": [
@@ -1309,35 +1426,51 @@
             ],
             "properties": {
                 "end_at": {
-                    "type": "string"
+                    "description": "结束时间",
+                    "type": "string",
+                    "example": "2024-12-31T23:59:59Z"
                 },
                 "image_url": {
-                    "type": "string"
+                    "description": "图片URL",
+                    "type": "string",
+                    "example": "https://example.com/banner.jpg"
                 },
                 "link_url": {
-                    "type": "string"
+                    "description": "跳转链接",
+                    "type": "string",
+                    "example": "https://example.com/promotion"
                 },
                 "sort_order": {
-                    "type": "integer"
+                    "description": "排序序号",
+                    "type": "integer",
+                    "example": 1
                 },
                 "start_at": {
-                    "type": "string"
+                    "description": "开始时间",
+                    "type": "string",
+                    "example": "2024-01-01T00:00:00Z"
                 },
                 "status": {
-                    "type": "boolean"
+                    "description": "是否启用",
+                    "type": "boolean",
+                    "example": true
                 },
                 "title": {
+                    "description": "轮播图标题",
                     "type": "string",
                     "maxLength": 255,
-                    "minLength": 1
+                    "minLength": 1,
+                    "example": "春季促销活动"
                 },
                 "visible_roles": {
+                    "description": "可见角色：employee(员工) manager(店长) both(全部)",
                     "type": "string",
                     "enum": [
                         "employee",
                         "manager",
                         "both"
-                    ]
+                    ],
+                    "example": "both"
                 }
             }
         },
@@ -1351,46 +1484,111 @@
             ],
             "properties": {
                 "category_id": {
-                    "type": "integer"
+                    "description": "分类ID",
+                    "type": "integer",
+                    "example": 1
                 },
                 "cover_url": {
-                    "type": "string"
+                    "description": "封面图片URL",
+                    "type": "string",
+                    "example": "https://example.com/cover.jpg"
                 },
                 "duration_seconds": {
-                    "type": "integer"
+                    "description": "视频时长（秒）",
+                    "type": "integer",
+                    "example": 3600
                 },
                 "file_path": {
-                    "type": "string"
+                    "description": "文件存储路径",
+                    "type": "string",
+                    "example": "/uploads/video.mp4"
                 },
                 "status": {
+                    "description": "状态：draft(草稿) published(已发布)",
                     "type": "string",
                     "enum": [
                         "draft",
                         "published"
-                    ]
+                    ],
+                    "example": "published"
                 },
                 "summary": {
-                    "type": "string"
+                    "description": "内容摘要",
+                    "type": "string",
+                    "example": "本视频介绍产品核心功能"
                 },
                 "title": {
+                    "description": "内容标题",
                     "type": "string",
                     "maxLength": 255,
-                    "minLength": 1
+                    "minLength": 1,
+                    "example": "产品培训视频"
                 },
                 "type": {
+                    "description": "内容类型：doc(文档) 或 video(视频)",
                     "type": "string",
                     "enum": [
                         "doc",
                         "video"
-                    ]
+                    ],
+                    "example": "video"
                 },
                 "visible_roles": {
+                    "description": "可见角色：employee(员工) manager(店长) both(全部)",
                     "type": "string",
                     "enum": [
                         "employee",
                         "manager",
                         "both"
+                    ],
+                    "example": "both"
+                }
+            }
+        },
+        "dto.AdminCreateEmployeeRequest": {
+            "type": "object",
+            "required": [
+                "manager_ids",
+                "name",
+                "password",
+                "work_no"
+            ],
+            "properties": {
+                "manager_ids": {
+                    "description": "店长工号列表",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "M001",
+                        "M002"
                     ]
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string",
+                    "maxLength": 100,
+                    "example": "张三"
+                },
+                "password": {
+                    "description": "密码（至少6位）",
+                    "type": "string",
+                    "minLength": 6,
+                    "example": "123456"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string",
+                    "maxLength": 20,
+                    "example": "13800138000"
+                },
+                "work_no": {
+                    "description": "工号",
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2,
+                    "example": "E001"
                 }
             }
         },
@@ -1403,21 +1601,29 @@
             ],
             "properties": {
                 "name": {
+                    "description": "姓名",
                     "type": "string",
-                    "maxLength": 100
+                    "maxLength": 100,
+                    "example": "李店长"
                 },
                 "password": {
+                    "description": "密码（至少6位）",
                     "type": "string",
-                    "minLength": 6
+                    "minLength": 6,
+                    "example": "123456"
                 },
                 "phone": {
+                    "description": "手机号",
                     "type": "string",
-                    "maxLength": 20
+                    "maxLength": 20,
+                    "example": "13800138000"
                 },
                 "work_no": {
+                    "description": "工号",
                     "type": "string",
                     "maxLength": 50,
-                    "minLength": 2
+                    "minLength": 2,
+                    "example": "M001"
                 }
             }
         },
@@ -1425,35 +1631,51 @@
             "type": "object",
             "properties": {
                 "end_at": {
-                    "type": "string"
+                    "description": "结束时间",
+                    "type": "string",
+                    "example": "2024-12-31T23:59:59Z"
                 },
                 "image_url": {
-                    "type": "string"
+                    "description": "图片URL",
+                    "type": "string",
+                    "example": "https://example.com/banner.jpg"
                 },
                 "link_url": {
-                    "type": "string"
+                    "description": "跳转链接",
+                    "type": "string",
+                    "example": "https://example.com/promotion"
                 },
                 "sort_order": {
-                    "type": "integer"
+                    "description": "排序序号",
+                    "type": "integer",
+                    "example": 1
                 },
                 "start_at": {
-                    "type": "string"
+                    "description": "开始时间",
+                    "type": "string",
+                    "example": "2024-01-01T00:00:00Z"
                 },
                 "status": {
-                    "type": "boolean"
+                    "description": "是否启用",
+                    "type": "boolean",
+                    "example": true
                 },
                 "title": {
+                    "description": "轮播图标题",
                     "type": "string",
                     "maxLength": 255,
-                    "minLength": 1
+                    "minLength": 1,
+                    "example": "春季促销活动(更新)"
                 },
                 "visible_roles": {
+                    "description": "可见角色：employee(员工) manager(店长) both(全部)",
                     "type": "string",
                     "enum": [
                         "employee",
                         "manager",
                         "both"
-                    ]
+                    ],
+                    "example": "both"
                 }
             }
         },
@@ -1461,47 +1683,65 @@
             "type": "object",
             "properties": {
                 "category_id": {
-                    "type": "integer"
+                    "description": "分类ID",
+                    "type": "integer",
+                    "example": 1
                 },
                 "cover_url": {
-                    "type": "string"
+                    "description": "封面图片URL",
+                    "type": "string",
+                    "example": "https://example.com/cover.jpg"
                 },
                 "duration_seconds": {
-                    "type": "integer"
+                    "description": "视频时长（秒）",
+                    "type": "integer",
+                    "example": 3600
                 },
                 "file_path": {
-                    "type": "string"
+                    "description": "文件存储路径",
+                    "type": "string",
+                    "example": "/uploads/video.mp4"
                 },
                 "status": {
+                    "description": "状态：draft(草稿) published(已发布) offline(下线)",
                     "type": "string",
                     "enum": [
                         "draft",
                         "published",
                         "offline"
-                    ]
+                    ],
+                    "example": "published"
                 },
                 "summary": {
-                    "type": "string"
+                    "description": "内容摘要",
+                    "type": "string",
+                    "example": "本视频介绍产品核心功能"
                 },
                 "title": {
+                    "description": "内容标题",
                     "type": "string",
                     "maxLength": 255,
-                    "minLength": 1
+                    "minLength": 1,
+                    "example": "产品培训视频(更新)"
                 },
                 "type": {
+                    "description": "内容类型：doc(文档) 或 video(视频)",
                     "type": "string",
                     "enum": [
                         "doc",
                         "video"
-                    ]
+                    ],
+                    "example": "video"
                 },
                 "visible_roles": {
+                    "description": "可见角色：employee(员工) manager(店长) both(全部)",
                     "type": "string",
                     "enum": [
                         "employee",
                         "manager",
                         "both"
-                    ]
+                    ],
+                    "example": "both"
                 }
             }
         },
@@ -1512,10 +1752,15 @@
             ],
             "properties": {
                 "manager_ids": {
+                    "description": "店长工号列表",
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "example": [
+                        "M001",
+                        "M002"
+                    ]
                 }
             }
         },
@@ -1523,31 +1768,49 @@
             "type": "object",
             "properties": {
                 "end_at": {
-                    "type": "string"
+                    "description": "结束时间",
+                    "type": "string",
+                    "example": "2024-12-31T23:59:59Z"
                 },
                 "id": {
-                    "type": "integer"
+                    "description": "轮播图ID",
+                    "type": "integer",
+                    "example": 1
                 },
                 "image_url": {
-                    "type": "string"
+                    "description": "图片URL",
+                    "type": "string",
+                    "example": "https://example.com/banner.jpg"
                 },
                 "link_url": {
-                    "type": "string"
+                    "description": "跳转链接",
+                    "type": "string",
+                    "example": "https://example.com/promotion"
                 },
                 "sort_order": {
-                    "type": "integer"
+                    "description": "排序序号",
+                    "type": "integer",
+                    "example": 1
                 },
                 "start_at": {
-                    "type": "string"
+                    "description": "开始时间",
+                    "type": "string",
+                    "example": "2024-01-01T00:00:00Z"
                 },
                 "status": {
-                    "type": "boolean"
+                    "description": "是否启用",
+                    "type": "boolean",
+                    "example": true
                 },
                 "title": {
-                    "type": "string"
+                    "description": "轮播图标题",
+                    "type": "string",
+                    "example": "春季促销活动"
                 },
                 "visible_roles": {
-                    "type": "string"
+                    "description": "可见角色：employee(员工) manager(店长) both(全部)",
+                    "type": "string",
+                    "example": "both"
                 }
             }
         },
@@ -1555,16 +1818,24 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer"
+                    "description": "分类ID",
+                    "type": "integer",
+                    "example": 1
                 },
                 "name": {
-                    "type": "string"
+                    "description": "分类名称",
+                    "type": "string",
+                    "example": "产品培训"
                 },
                 "role_scope": {
-                    "type": "string"
+                    "description": "可见角色范围：employee(员工) manager(店长) both(全部)",
+                    "type": "string",
+                    "example": "both"
                 },
                 "sort_order": {
-                    "type": "integer"
+                    "description": "排序序号",
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -1572,40 +1843,64 @@
             "type": "object",
             "properties": {
                 "category_id": {
-                    "type": "integer"
+                    "description": "分类ID",
+                    "type": "integer",
+                    "example": 1
                 },
                 "category_name": {
-                    "type": "string"
+                    "description": "分类名称",
+                    "type": "string",
+                    "example": "产品培训"
                 },
                 "cover_url": {
-                    "type": "string"
+                    "description": "封面图片URL",
+                    "type": "string",
+                    "example": "https://example.com/cover.jpg"
                 },
                 "duration_seconds": {
-                    "type": "integer"
+                    "description": "视频时长（秒）",
+                    "type": "integer",
+                    "example": 3600
                 },
                 "file_path": {
-                    "type": "string"
+                    "description": "文件存储路径",
+                    "type": "string",
+                    "example": "/uploads/video.mp4"
                 },
                 "id": {
-                    "type": "integer"
+                    "description": "内容ID",
+                    "type": "integer",
+                    "example": 1
                 },
                 "publish_at": {
-                    "type": "string"
+                    "description": "发布时间",
+                    "type": "string",
+                    "example": "2024-01-01T00:00:00Z"
                 },
                 "status": {
-                    "type": "string"
+                    "description": "状态：draft(草稿) published(已发布) offline(下线)",
+                    "type": "string",
+                    "example": "published"
                 },
                 "summary": {
-                    "type": "string"
+                    "description": "内容摘要",
+                    "type": "string",
+                    "example": "本视频介绍产品核心功能"
                 },
                 "title": {
-                    "type": "string"
+                    "description": "内容标题",
+                    "type": "string",
+                    "example": "产品培训视频"
                 },
                 "type": {
-                    "type": "string"
+                    "description": "内容类型：doc(文档) 或 video(视频)",
+                    "type": "string",
+                    "example": "video"
                 },
                 "visible_roles": {
-                    "type": "string"
+                    "description": "可见角色：employee(员工) manager(店长) both(全部)",
+                    "type": "string",
+                    "example": "both"
                 }
             }
         },
@@ -1617,11 +1912,15 @@
             ],
             "properties": {
                 "content_id": {
-                    "type": "integer"
+                    "description": "内容ID",
+                    "type": "integer",
+                    "example": 1
                 },
                 "video_position": {
+                    "description": "视频播放位置（秒）",
                     "type": "integer",
-                    "minimum": 0
+                    "minimum": 0,
+                    "example": 120
                 }
             }
         },
@@ -1629,19 +1928,29 @@
             "type": "object",
             "properties": {
                 "content_id": {
-                    "type": "integer"
+                    "description": "内容ID",
+                    "type": "integer",
+                    "example": 1
                 },
                 "duration_seconds": {
-                    "type": "integer"
+                    "description": "视频总时长（秒）",
+                    "type": "integer",
+                    "example": 3600
                 },
                 "progress": {
-                    "type": "integer"
+                    "description": "学习进度百分比（0-100）",
+                    "type": "integer",
+                    "example": 3
                 },
                 "status": {
-                    "type": "string"
+                    "description": "学习状态：not_started(未开始) in_progress(进行中) completed(已完成)",
+                    "type": "string",
+                    "example": "in_progress"
                 },
                 "video_position": {
-                    "type": "integer"
+                    "description": "视频播放位置（秒）",
+                    "type": "integer",
+                    "example": 120
                 }
             }
         },
@@ -1653,10 +1962,14 @@
             ],
             "properties": {
                 "password": {
-                    "type": "string"
+                    "description": "密码",
+                    "type": "string",
+                    "example": "123456"
                 },
                 "work_no": {
-                    "type": "string"
+                    "description": "工号",
+                    "type": "string",
+                    "example": "E001"
                 }
             }
         },
@@ -1667,7 +1980,9 @@
             ],
             "properties": {
                 "refresh_token": {
-                    "type": "string"
+                    "description": "刷新令牌",
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
                 }
             }
         },
@@ -1680,27 +1995,40 @@
             ],
             "properties": {
                 "manager_ids": {
+                    "description": "店长工号列表",
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "example": [
+                        "M001",
+                        "M002"
+                    ]
                 },
                 "name": {
+                    "description": "姓名",
                     "type": "string",
-                    "maxLength": 100
+                    "maxLength": 100,
+                    "example": "张三"
                 },
                 "password": {
+                    "description": "密码（至少6位）",
                     "type": "string",
-                    "minLength": 6
+                    "minLength": 6,
+                    "example": "123456"
                 },
                 "phone": {
+                    "description": "手机号",
                     "type": "string",
-                    "maxLength": 20
+                    "maxLength": 20,
+                    "example": "13800138000"
                 },
                 "work_no": {
+                    "description": "工号",
                     "type": "string",
                     "maxLength": 50,
-                    "minLength": 2
+                    "minLength": 2,
+                    "example": "E001"
                 }
             }
         },
@@ -1708,12 +2036,16 @@
             "type": "object",
             "properties": {
                 "name": {
+                    "description": "姓名",
                     "type": "string",
-                    "maxLength": 100
+                    "maxLength": 100,
+                    "example": "张三"
                 },
                 "phone": {
+                    "description": "手机号",
                     "type": "string",
-                    "maxLength": 20
+                    "maxLength": 20,
+                    "example": "13800138000"
                 }
             }
         },
@@ -1721,22 +2053,34 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer"
+                    "description": "用户ID",
+                    "type": "integer",
+                    "example": 1
                 },
                 "name": {
-                    "type": "string"
+                    "description": "姓名",
+                    "type": "string",
+                    "example": "张三"
                 },
                 "phone": {
-                    "type": "string"
+                    "description": "手机号",
+                    "type": "string",
+                    "example": "13800138000"
                 },
                 "role": {
-                    "type": "string"
+                    "description": "角色：employee(员工) manager(店长) admin(管理员)",
+                    "type": "string",
+                    "example": "employee"
                 },
                 "status": {
-                    "type": "boolean"
+                    "description": "状态：true(启用) false(禁用)",
+                    "type": "boolean",
+                    "example": true
                 },
                 "work_no": {
-                    "type": "string"
+                    "description": "工号",
+                    "type": "string",
+                    "example": "E001"
                 }
             }
         },
@@ -1751,6 +2095,14 @@
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "description": "使用 \"Bearer {token}\" 格式，token 通过登录接口获取",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }
