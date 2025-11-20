@@ -37,12 +37,13 @@
       <swiper circular autoplay interval="5000" indicator-dots>
         <block wx:for="{{banners}}" wx:key="id">
           <swiper-item>
-            <view class="banner-item" bindtap="handleBannerTap" data-item="{{item}}">
+            <view class="banner-item {{item.url ? 'banner-clickable' : ''}}" bindtap="handleBannerTap" data-item="{{item}}">
               <image class="banner-img" src="{{item.cover}}" mode="aspectFill" />
               <view class="banner-mask">
                 <view class="banner-content">
                   <text class="banner-title">{{item.title}}</text>
                   <view class="banner-tag">{{item.type}}</view>
+                  <view class="banner-link-hint" wx:if="{{item.url}}">点击查看详情 →</view>
                 </view>
               </view>
             </view>

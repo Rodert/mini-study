@@ -26,7 +26,9 @@ Page({
 
   async loadBanners() {
     try {
+      console.log("[Banner] 开始加载轮播图数据");
       const res = await api.banner.listVisible();
+      console.log("[Banner] API响应:", res);
       if (res.code === 200) {
         const banners = (res.data || []).map((item) => ({
           id: item.id,
@@ -35,12 +37,16 @@ Page({
           url: item.link_url,
           type: item.visible_roles
         }));
+        console.log("[Banner] 处理后的轮播图数据:", banners);
+        console.log("[Banner] 每个轮播图的URL:", banners.map(b => ({ title: b.title, url: b.url })));
         this.setData({ banners });
+        console.log("[Banner] 轮播图数据已设置到页面，数量:", banners.length);
       } else {
+        console.error("[Banner] API返回错误:", res);
         wx.showToast({ title: res.message || "轮播加载失败", icon: "none" });
       }
     } catch (err) {
-      console.error("fetch banners error", err);
+      console.error("[Banner] 加载轮播图异常:", err);
       wx.showToast({ title: "轮播加载失败", icon: "none" });
     }
   },
@@ -70,18 +76,45 @@ Page({
   },
 
   handleBannerTap(e) {
+    console.log("[Banner] 点击事件触发");
+    console.log("[Banner] 事件对象:", e);
+    console.log("[Banner] currentTarget:", e.currentTarget);
+    console.log("[Banner] dataset:", e.currentTarget.dataset);
+    
     const { item } = e.currentTarget.dataset;
-    if (!item || !item.url) {
-      console.warn("banner url missing", item);
-      wx.showToast({ title: "链接异常，稍后重试", icon: "none" });
+    console.log("[Banner] 提取的item:", item);
+    console.log("[Banner] item的类型:", typeof item);
+    console.log("[Banner] item的URL:", item ? item.url : "item为空");
+    
+    if (!item) {
+      console.warn("[Banner] item为空，无法处理点击");
+      wx.showToast({ title: "数据异常，稍后重试", icon: "none" });
       return;
     }
+    
+    if (!item.url) {
+      console.warn("[Banner] 轮播图没有链接URL:", item);
+      wx.showToast({ title: "该轮播图暂无链接", icon: "none" });
+      return;
+    }
+    
+    console.log("[Banner] 准备跳转到webview，URL:", item.url);
+    const targetUrl = `/pages/webview/index?url=${encodeURIComponent(item.url)}`;
+    console.log("[Banner] 目标页面路径:", targetUrl);
+    
     try {
       wx.navigateTo({
-        url: `/pages/webview/index?url=${encodeURIComponent(item.url)}`
+        url: targetUrl,
+        success: (res) => {
+          console.log("[Banner] 跳转成功:", res);
+        },
+        fail: (err) => {
+          console.error("[Banner] 跳转失败:", err);
+          wx.showToast({ title: `打开失败: ${err.errMsg || "未知错误"}`, icon: "none", duration: 2000 });
+        }
       });
     } catch (err) {
-      console.error("navigateTo webview error", err);
+      console.error("[Banner] navigateTo异常:", err);
       wx.showToast({ title: "打开失败", icon: "none" });
     }
   },

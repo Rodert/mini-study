@@ -19,7 +19,8 @@
     "pages/exams/detail/index",
     "pages/exams/result/index",
     "pages/manager/progress/index",
-    "pages/profile/index"
+    "pages/profile/index",
+    "pages/webview/index"
   ],
   "window": {
     "navigationBarTitleText": "企业培训",

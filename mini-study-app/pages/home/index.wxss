@@ -188,6 +188,23 @@
   width: fit-content;
 }
 
+.banner-clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.banner-clickable:active {
+  transform: scale(0.98);
+}
+
+.banner-link-hint {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 4rpx;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
 /* 学习入口网格 */
 .entry-grid {
   display: grid;

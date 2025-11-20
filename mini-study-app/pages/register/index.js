@@ -17,11 +17,21 @@ Page({
     this.loadManagers();
   },
 
+  onShow() {
+    // 确保每次进入页面时都从未选择状态开始
+    this.setData({ selectedManagerWorkNos: [] });
+  },
+
   async loadManagers() {
     try {
       const res = await api.user.getManagers();
       if (res.code === 200) {
-        this.setData({ managers: res.data || [] });
+        const managers = res.data || [];
+        this.setData({
+          managers,
+          // 确保每次加载列表时都清空已选
+          selectedManagerWorkNos: []
+        });
       } else {
         this.setData({ error: res.message || "获取店长列表失败" });
       }
@@ -40,17 +50,28 @@ Page({
   },
 
   handleManagerSelect(e) {
-    const { workNo } = e.currentTarget.dataset;
-    const { selectedManagerWorkNos } = this.data;
+    console.log("handleManagerSelect tap event:", e);
+    const workNo = String(e.currentTarget.dataset.workNo || "");
+    console.log("handleManagerSelect workNo from dataset:", workNo, "current selected:", this.data.selectedManagerWorkNos);
+
+    // 简单可视化反馈，便于确认点击是否触发
+    wx.showToast({
+      title: workNo ? `选择店长: ${workNo}` : "点击了店长项",
+      icon: "none",
+      duration: 800
+    });
+    const selectedManagerWorkNos = [...this.data.selectedManagerWorkNos];
     const index = selectedManagerWorkNos.indexOf(workNo);
-    
+
     if (index > -1) {
       selectedManagerWorkNos.splice(index, 1);
     } else {
       selectedManagerWorkNos.push(workNo);
     }
-    
-    this.setData({ selectedManagerWorkNos, error: "" });
+
+    this.setData({ selectedManagerWorkNos, error: "" }, () => {
+      console.log("handleManagerSelect updated selectedManagerWorkNos:", this.data.selectedManagerWorkNos);
+    });
   },
 
   async handleSubmit() {

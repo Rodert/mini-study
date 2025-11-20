@@ -88,7 +88,7 @@
           <text class="label-desc">可多选，选择你属于哪个店长的员工</text>
           <view class="manager-list">
             <view 
-              class="manager-item {{selectedManagerWorkNos.indexOf(manager.work_no) > -1 ? 'selected' : ''}}"
+              class="manager-item {{selectedManagerWorkNos.indexOf('' + manager.work_no) !== -1 ? 'selected' : ''}}"
               wx:for="{{managers}}"
               wx:for-item="manager"
               wx:key="work_no"
@@ -96,7 +96,7 @@
               bindtap="handleManagerSelect"
             >
               <view class="manager-checkbox">
-                <text wx:if="{{selectedManagerWorkNos.indexOf(manager.work_no) > -1}}">✓</text>
+                <text wx:if="{{selectedManagerWorkNos.indexOf('' + manager.work_no) !== -1}}">✓</text>
               </view>
               <view class="manager-info">
                 <view class="manager-name">{{manager.name || manager.work_no}}（{{manager.work_no}}）</view>
