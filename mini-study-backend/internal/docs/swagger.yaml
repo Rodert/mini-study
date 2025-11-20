@@ -166,6 +166,79 @@ definitions:
     - password
     - work_no
     type: object
+  dto.AdminExamQuestionOption:
+    properties:
+      content:
+        type: string
+      is_correct:
+        type: boolean
+      label:
+        type: string
+      sort_order:
+        type: integer
+    required:
+    - content
+    - label
+    type: object
+  dto.AdminExamQuestionUpsert:
+    properties:
+      analysis:
+        type: string
+      options:
+        items:
+          $ref: '#/definitions/dto.AdminExamQuestionOption'
+        minItems: 2
+        type: array
+      score:
+        minimum: 1
+        type: integer
+      stem:
+        type: string
+      type:
+        enum:
+        - single
+        - multiple
+        type: string
+    required:
+    - options
+    - score
+    - stem
+    - type
+    type: object
+  dto.AdminExamUpsertRequest:
+    properties:
+      description:
+        type: string
+      pass_score:
+        minimum: 0
+        type: integer
+      questions:
+        items:
+          $ref: '#/definitions/dto.AdminExamQuestionUpsert'
+        minItems: 1
+        type: array
+      status:
+        enum:
+        - draft
+        - published
+        - archived
+        type: string
+      target_role:
+        enum:
+        - employee
+        - manager
+        - all
+        type: string
+      time_limit_minutes:
+        minimum: 0
+        type: integer
+      title:
+        type: string
+    required:
+    - pass_score
+    - questions
+    - title
+    type: object
   dto.AdminUpdateBannerRequest:
     properties:
       end_at:
@@ -272,6 +345,56 @@ definitions:
     required:
     - manager_ids
     type: object
+  dto.AdminUpdateUserRoleRequest:
+    properties:
+      role:
+        description: 目标角色
+        enum:
+        - employee
+        - manager
+        - admin
+        example: manager
+        type: string
+    required:
+    - role
+    type: object
+  dto.AdminUserResponse:
+    properties:
+      id:
+        description: 用户ID
+        example: 1
+        type: integer
+      manager_ids:
+        description: 绑定的店长ID列表
+        items:
+          type: integer
+        type: array
+      managers:
+        description: 店长详情
+        items:
+          $ref: '#/definitions/dto.ManagerBrief'
+        type: array
+      name:
+        description: 姓名
+        example: 张三
+        type: string
+      phone:
+        description: 手机号
+        example: "13800138000"
+        type: string
+      role:
+        description: 角色：employee(员工) manager(店长) admin(管理员)
+        example: employee
+        type: string
+      status:
+        description: 状态：true(启用) false(禁用)
+        example: true
+        type: boolean
+      work_no:
+        description: 工号
+        example: E001
+        type: string
+    type: object
   dto.BannerResponse:
     properties:
       end_at:
@@ -313,6 +436,10 @@ definitions:
     type: object
   dto.ContentCategoryResponse:
     properties:
+      count:
+        description: 该分类下已发布且对当前用户可见的课程数量
+        example: 5
+        type: integer
       id:
         description: 分类ID
         example: 1
@@ -328,6 +455,29 @@ definitions:
       sort_order:
         description: 排序序号
         example: 1
+        type: integer
+    type: object
+  dto.ContentCompletionStatsResponse:
+    properties:
+      completed_count:
+        description: 已完成学习的用户数量
+        example: 15
+        type: integer
+      completion_rate:
+        description: 完成率（百分比）
+        example: 50
+        type: number
+      content_id:
+        description: 内容ID
+        example: 1
+        type: integer
+      content_title:
+        description: 内容标题
+        example: 产品培训视频
+        type: string
+      total_count:
+        description: 已开始学习的用户总数
+        example: 30
         type: integer
     type: object
   dto.ContentResponse:
@@ -381,6 +531,198 @@ definitions:
         example: both
         type: string
     type: object
+  dto.EmployeeLatestExamResult:
+    properties:
+      exam_id:
+        type: integer
+      exam_title:
+        type: string
+      pass:
+        type: boolean
+      score:
+        type: integer
+      submitted_at:
+        type: string
+    type: object
+  dto.EmployeeLearningProgress:
+    properties:
+      completed:
+        type: integer
+      pending:
+        type: integer
+      percent:
+        type: integer
+      total:
+        type: integer
+    type: object
+  dto.ExamAnswerReview:
+    properties:
+      correct_option_ids:
+        items:
+          type: integer
+        type: array
+      is_correct:
+        type: boolean
+      obtained_score:
+        type: integer
+      question_id:
+        type: integer
+      score:
+        type: integer
+      selected_option_ids:
+        items:
+          type: integer
+        type: array
+      stem:
+        type: string
+      type:
+        type: string
+    type: object
+  dto.ExamDetailQuestion:
+    properties:
+      analysis:
+        description: Only for admin
+        type: string
+      id:
+        type: integer
+      options:
+        items:
+          $ref: '#/definitions/dto.ExamDetailQuestionOption'
+        type: array
+      score:
+        type: integer
+      stem:
+        type: string
+      type:
+        type: string
+    type: object
+  dto.ExamDetailQuestionOption:
+    properties:
+      content:
+        type: string
+      id:
+        type: integer
+      is_correct:
+        description: Only for admin
+        type: boolean
+      label:
+        type: string
+    type: object
+  dto.ExamDetailResponse:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      pass_score:
+        type: integer
+      question_count:
+        type: integer
+      questions:
+        items:
+          $ref: '#/definitions/dto.ExamDetailQuestion'
+        type: array
+      time_limit_minutes:
+        type: integer
+      title:
+        type: string
+      total_score:
+        type: integer
+    type: object
+  dto.ExamListItem:
+    properties:
+      attempt_status:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      last_passed:
+        type: boolean
+      last_score:
+        type: integer
+      last_submitted_at:
+        type: string
+      pass_score:
+        type: integer
+      question_count:
+        type: integer
+      status:
+        type: string
+      time_limit_minutes:
+        type: integer
+      title:
+        type: string
+      total_score:
+        type: integer
+    type: object
+  dto.ExamResultSummary:
+    properties:
+      attempt_id:
+        type: integer
+      exam_id:
+        type: integer
+      exam_title:
+        type: string
+      pass:
+        type: boolean
+      pass_score:
+        type: integer
+      score:
+        type: integer
+      submitted_at:
+        type: string
+      total_score:
+        type: integer
+    type: object
+  dto.ExamSubmitAnswer:
+    properties:
+      option_ids:
+        items:
+          type: integer
+        minItems: 1
+        type: array
+      question_id:
+        type: integer
+    required:
+    - option_ids
+    - question_id
+    type: object
+  dto.ExamSubmitRequest:
+    properties:
+      answers:
+        items:
+          $ref: '#/definitions/dto.ExamSubmitAnswer'
+        minItems: 1
+        type: array
+      duration_seconds:
+        type: integer
+    required:
+    - answers
+    type: object
+  dto.ExamSubmitResponse:
+    properties:
+      answers:
+        items:
+          $ref: '#/definitions/dto.ExamAnswerReview'
+        type: array
+      attempt_id:
+        type: integer
+      correct_count:
+        type: integer
+      duration_seconds:
+        type: integer
+      exam_id:
+        type: integer
+      pass:
+        type: boolean
+      score:
+        type: integer
+      total_count:
+        type: integer
+      total_score:
+        type: integer
+    type: object
   dto.LearningProgressRequest:
     properties:
       content_id:
@@ -388,13 +730,12 @@ definitions:
         example: 1
         type: integer
       video_position:
-        description: 视频播放位置（秒）
+        description: 视频播放位置（秒），0表示文档类型或初始状态
         example: 120
         minimum: 0
         type: integer
     required:
     - content_id
-    - video_position
     type: object
   dto.LearningProgressResponse:
     properties:
@@ -432,6 +773,62 @@ definitions:
     required:
     - password
     - work_no
+    type: object
+  dto.ManagerBrief:
+    properties:
+      id:
+        description: 店长ID
+        example: 2
+        type: integer
+      name:
+        description: 店长姓名
+        example: 李店长
+        type: string
+      phone:
+        description: 店长手机号
+        example: "13800138000"
+        type: string
+      work_no:
+        description: 店长工号
+        example: M001
+        type: string
+    type: object
+  dto.ManagerEmployeeExamRecord:
+    properties:
+      employee_id:
+        type: integer
+      latest_exam:
+        $ref: '#/definitions/dto.EmployeeLatestExamResult'
+      learning_progress:
+        $ref: '#/definitions/dto.EmployeeLearningProgress'
+      name:
+        type: string
+      work_no:
+        type: string
+    type: object
+  dto.ManagerExamOverviewResponse:
+    properties:
+      employees:
+        items:
+          $ref: '#/definitions/dto.ManagerEmployeeExamRecord'
+        type: array
+      exam_progress:
+        items:
+          $ref: '#/definitions/dto.ManagerExamProgressItem'
+        type: array
+    type: object
+  dto.ManagerExamProgressItem:
+    properties:
+      attempt_count:
+        type: integer
+      avg_score:
+        type: number
+      exam_id:
+        type: integer
+      pass_rate:
+        type: number
+      title:
+        type: string
     type: object
   dto.RefreshTokenRequest:
     properties:
@@ -490,6 +887,29 @@ definitions:
         example: "13800138000"
         maxLength: 20
         type: string
+    type: object
+  dto.UserLearningStatsResponse:
+    properties:
+      completed_count:
+        description: 已完成的学习内容数量
+        example: 5
+        type: integer
+      completion_rate:
+        description: 完成率（百分比）
+        example: 25
+        type: number
+      total_contents:
+        description: 该角色可见的已发布内容总数
+        example: 20
+        type: integer
+      total_count:
+        description: 已开始学习的内容总数
+        example: 10
+        type: integer
+      user_id:
+        description: 用户ID
+        example: 1
+        type: integer
     type: object
   dto.UserResponse:
     properties:
@@ -806,6 +1226,111 @@ paths:
       summary: 管理员创建员工
       tags:
       - 管理后台-用户
+  /api/v1/admin/exams:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.ExamDetailResponse'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: 管理员获取考试列表
+      tags:
+      - 管理端/考试
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 考试
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AdminExamUpsertRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ExamDetailResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: 管理员创建考试
+      tags:
+      - 管理端/考试
+  /api/v1/admin/exams/{id}:
+    get:
+      parameters:
+      - description: 考试ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ExamDetailResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: 管理员获取考试详情
+      tags:
+      - 管理端/考试
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 考试ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 考试
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AdminExamUpsertRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ExamDetailResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: 管理员更新考试
+      tags:
+      - 管理端/考试
   /api/v1/admin/managers:
     post:
       consumes:
@@ -837,6 +1362,71 @@ paths:
       security:
       - Bearer: []
       summary: 管理员创建店长
+      tags:
+      - 管理后台-用户
+  /api/v1/admin/users:
+    get:
+      description: 管理员可根据角色、关键词筛选用户，并查看其店长绑定
+      parameters:
+      - description: 角色 employee/manager/admin
+        in: query
+        name: role
+        type: string
+      - description: 关键词（工号/姓名/手机号）
+        in: query
+        name: keyword
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.AdminUserResponse'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 管理员查询用户列表
+      tags:
+      - 管理后台-用户
+  /api/v1/admin/users/{id}:
+    get:
+      description: 返回指定用户的信息及店长绑定
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.AdminUserResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 管理员查询单个用户
       tags:
       - 管理后台-用户
   /api/v1/admin/users/{id}/managers:
@@ -905,6 +1495,44 @@ paths:
       security:
       - Bearer: []
       summary: 管理员升级店长
+      tags:
+      - 管理后台-用户
+  /api/v1/admin/users/{id}/role:
+    put:
+      consumes:
+      - application/json
+      description: 将指定用户的角色设置为员工/店长/管理员
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 角色信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AdminUpdateUserRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.UserResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 管理员修改用户角色
       tags:
       - 管理后台-用户
   /api/v1/banners:
@@ -1036,6 +1664,106 @@ paths:
       summary: 查询可见内容分类
       tags:
       - 内容
+  /api/v1/exams:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.ExamListItem'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: 获取考试列表
+      tags:
+      - 考试
+  /api/v1/exams/{id}:
+    get:
+      parameters:
+      - description: 考试ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ExamDetailResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: 获取考试详情
+      tags:
+      - 考试
+  /api/v1/exams/{id}/submit:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 考试ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 提交答案
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ExamSubmitRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ExamSubmitResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: 提交考试作答
+      tags:
+      - 考试
+  /api/v1/exams/my/results:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.ExamResultSummary'
+                  type: array
+              type: object
+      security:
+      - Bearer: []
+      summary: 查询个人考试成绩
+      tags:
+      - 考试
   /api/v1/files/upload:
     post:
       consumes:
@@ -1178,6 +1906,87 @@ paths:
       summary: 查询指定内容的学习进度
       tags:
       - 学习
+  /api/v1/learning/content/{content_id}/stats:
+    get:
+      description: 返回指定内容的学习完成统计信息（管理员可用）
+      parameters:
+      - description: 内容ID
+        in: path
+        name: content_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ContentCompletionStatsResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 查询内容完成统计
+      tags:
+      - 学习
+  /api/v1/learning/stats:
+    get:
+      description: 返回当前用户的学习完成统计信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.UserLearningStatsResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+      security:
+      - Bearer: []
+      summary: 查询用户学习统计
+      tags:
+      - 学习
+  /api/v1/manager/exams/overview:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/utils.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ManagerExamOverviewResponse'
+              type: object
+      security:
+      - Bearer: []
+      summary: 店长查看员工考试与学习进度
+      tags:
+      - 店长
   /api/v1/users/login:
     post:
       consumes:
@@ -1226,7 +2035,7 @@ paths:
       - 用户
   /api/v1/users/me:
     get:
-      description: 返回当前登录用户的详细信息
+      description: 返回当前登录用户的详细信息，包括店长绑定信息（如果是员工）
       produces:
       - application/json
       responses:
@@ -1237,7 +2046,7 @@ paths:
             - $ref: '#/definitions/utils.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.UserResponse'
+                  $ref: '#/definitions/dto.AdminUserResponse'
               type: object
         "401":
           description: Unauthorized

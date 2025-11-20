@@ -474,6 +474,193 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/admin/exams": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端/考试"
+                ],
+                "summary": "管理员获取考试列表",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.ExamDetailResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端/考试"
+                ],
+                "summary": "管理员创建考试",
+                "parameters": [
+                    {
+                        "description": "考试",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AdminExamUpsertRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ExamDetailResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/exams/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端/考试"
+                ],
+                "summary": "管理员获取考试详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "考试ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ExamDetailResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理端/考试"
+                ],
+                "summary": "管理员更新考试",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "考试ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "考试",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AdminExamUpsertRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ExamDetailResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/admin/managers": {
             "post": {
                 "security": [
@@ -516,6 +703,118 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/dto.UserResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/users": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "管理员可根据角色、关键词筛选用户，并查看其店长绑定",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理后台-用户"
+                ],
+                "summary": "管理员查询用户列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "角色 employee/manager/admin",
+                        "name": "role",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键词（工号/姓名/手机号）",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.AdminUserResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/users/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "返回指定用户的信息及店长绑定",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理后台-用户"
+                ],
+                "summary": "管理员查询单个用户",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "用户ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.AdminUserResponse"
                                         }
                                     }
                                 }
@@ -617,6 +916,70 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.UserResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/users/{id}/role": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "将指定用户的角色设置为员工/店长/管理员",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理后台-用户"
+                ],
+                "summary": "管理员修改用户角色",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "用户ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "角色信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AdminUpdateUserRoleRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -869,6 +1232,186 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/exams": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "考试"
+                ],
+                "summary": "获取考试列表",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.ExamListItem"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/exams/my/results": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "考试"
+                ],
+                "summary": "查询个人考试成绩",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/dto.ExamResultSummary"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/exams/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "考试"
+                ],
+                "summary": "获取考试详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "考试ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ExamDetailResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/exams/{id}/submit": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "考试"
+                ],
+                "summary": "提交考试作答",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "考试ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "提交答案",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ExamSubmitRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ExamSubmitResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/files/upload": {
             "post": {
                 "security": [
@@ -1052,6 +1595,113 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/learning/content/{content_id}/stats": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "返回指定内容的学习完成统计信息（管理员可用）",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "学习"
+                ],
+                "summary": "查询内容完成统计",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "内容ID",
+                        "name": "content_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ContentCompletionStatsResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/learning/stats": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "返回当前用户的学习完成统计信息",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "学习"
+                ],
+                "summary": "查询用户学习统计",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.UserLearningStatsResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/learning/{content_id}": {
             "get": {
                 "security": [
@@ -1105,6 +1755,42 @@ const docTemplate = `{
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/manager/exams/overview": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "店长"
+                ],
+                "summary": "店长查看员工考试与学习进度",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.ManagerExamOverviewResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -1192,7 +1878,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "返回当前登录用户的详细信息",
+                "description": "返回当前登录用户的详细信息，包括店长绑定信息（如果是员工）",
                 "produces": [
                     "application/json"
                 ],
@@ -1212,7 +1898,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.UserResponse"
+                                            "$ref": "#/definitions/dto.AdminUserResponse"
                                         }
                                     }
                                 }
@@ -1629,6 +2315,109 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.AdminExamQuestionOption": {
+            "type": "object",
+            "required": [
+                "content",
+                "label"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "is_correct": {
+                    "type": "boolean"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "sort_order": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.AdminExamQuestionUpsert": {
+            "type": "object",
+            "required": [
+                "options",
+                "score",
+                "stem",
+                "type"
+            ],
+            "properties": {
+                "analysis": {
+                    "type": "string"
+                },
+                "options": {
+                    "type": "array",
+                    "minItems": 2,
+                    "items": {
+                        "$ref": "#/definitions/dto.AdminExamQuestionOption"
+                    }
+                },
+                "score": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "stem": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "single",
+                        "multiple"
+                    ]
+                }
+            }
+        },
+        "dto.AdminExamUpsertRequest": {
+            "type": "object",
+            "required": [
+                "pass_score",
+                "questions",
+                "title"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "pass_score": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "questions": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/dto.AdminExamQuestionUpsert"
+                    }
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "draft",
+                        "published",
+                        "archived"
+                    ]
+                },
+                "target_role": {
+                    "type": "string",
+                    "enum": [
+                        "employee",
+                        "manager",
+                        "all"
+                    ]
+                },
+                "time_limit_minutes": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.AdminUpdateBannerRequest": {
             "type": "object",
             "properties": {
@@ -1766,6 +2555,73 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.AdminUpdateUserRoleRequest": {
+            "type": "object",
+            "required": [
+                "role"
+            ],
+            "properties": {
+                "role": {
+                    "description": "目标角色",
+                    "type": "string",
+                    "enum": [
+                        "employee",
+                        "manager",
+                        "admin"
+                    ],
+                    "example": "manager"
+                }
+            }
+        },
+        "dto.AdminUserResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "用户ID",
+                    "type": "integer",
+                    "example": 1
+                },
+                "manager_ids": {
+                    "description": "绑定的店长ID列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "managers": {
+                    "description": "店长详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.ManagerBrief"
+                    }
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string",
+                    "example": "张三"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string",
+                    "example": "13800138000"
+                },
+                "role": {
+                    "description": "角色：employee(员工) manager(店长) admin(管理员)",
+                    "type": "string",
+                    "example": "employee"
+                },
+                "status": {
+                    "description": "状态：true(启用) false(禁用)",
+                    "type": "boolean",
+                    "example": true
+                },
+                "work_no": {
+                    "description": "工号",
+                    "type": "string",
+                    "example": "E001"
+                }
+            }
+        },
         "dto.BannerResponse": {
             "type": "object",
             "properties": {
@@ -1819,6 +2675,11 @@ const docTemplate = `{
         "dto.ContentCategoryResponse": {
             "type": "object",
             "properties": {
+                "count": {
+                    "description": "该分类下已发布且对当前用户可见的课程数量",
+                    "type": "integer",
+                    "example": 5
+                },
                 "id": {
                     "description": "分类ID",
                     "type": "integer",
@@ -1838,6 +2699,36 @@ const docTemplate = `{
                     "description": "排序序号",
                     "type": "integer",
                     "example": 1
+                }
+            }
+        },
+        "dto.ContentCompletionStatsResponse": {
+            "type": "object",
+            "properties": {
+                "completed_count": {
+                    "description": "已完成学习的用户数量",
+                    "type": "integer",
+                    "example": 15
+                },
+                "completion_rate": {
+                    "description": "完成率（百分比）",
+                    "type": "number",
+                    "example": 50
+                },
+                "content_id": {
+                    "description": "内容ID",
+                    "type": "integer",
+                    "example": 1
+                },
+                "content_title": {
+                    "description": "内容标题",
+                    "type": "string",
+                    "example": "产品培训视频"
+                },
+                "total_count": {
+                    "description": "已开始学习的用户总数",
+                    "type": "integer",
+                    "example": 30
                 }
             }
         },
@@ -1906,11 +2797,301 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.EmployeeLatestExamResult": {
+            "type": "object",
+            "properties": {
+                "exam_id": {
+                    "type": "integer"
+                },
+                "exam_title": {
+                    "type": "string"
+                },
+                "pass": {
+                    "type": "boolean"
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "submitted_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.EmployeeLearningProgress": {
+            "type": "object",
+            "properties": {
+                "completed": {
+                    "type": "integer"
+                },
+                "pending": {
+                    "type": "integer"
+                },
+                "percent": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ExamAnswerReview": {
+            "type": "object",
+            "properties": {
+                "correct_option_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "is_correct": {
+                    "type": "boolean"
+                },
+                "obtained_score": {
+                    "type": "integer"
+                },
+                "question_id": {
+                    "type": "integer"
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "selected_option_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "stem": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ExamDetailQuestion": {
+            "type": "object",
+            "properties": {
+                "analysis": {
+                    "description": "Only for admin",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.ExamDetailQuestionOption"
+                    }
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "stem": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ExamDetailQuestionOption": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_correct": {
+                    "description": "Only for admin",
+                    "type": "boolean"
+                },
+                "label": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ExamDetailResponse": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "pass_score": {
+                    "type": "integer"
+                },
+                "question_count": {
+                    "type": "integer"
+                },
+                "questions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.ExamDetailQuestion"
+                    }
+                },
+                "time_limit_minutes": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "total_score": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ExamListItem": {
+            "type": "object",
+            "properties": {
+                "attempt_status": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "last_passed": {
+                    "type": "boolean"
+                },
+                "last_score": {
+                    "type": "integer"
+                },
+                "last_submitted_at": {
+                    "type": "string"
+                },
+                "pass_score": {
+                    "type": "integer"
+                },
+                "question_count": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "time_limit_minutes": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "total_score": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ExamResultSummary": {
+            "type": "object",
+            "properties": {
+                "attempt_id": {
+                    "type": "integer"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "exam_title": {
+                    "type": "string"
+                },
+                "pass": {
+                    "type": "boolean"
+                },
+                "pass_score": {
+                    "type": "integer"
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "submitted_at": {
+                    "type": "string"
+                },
+                "total_score": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ExamSubmitAnswer": {
+            "type": "object",
+            "required": [
+                "option_ids",
+                "question_id"
+            ],
+            "properties": {
+                "option_ids": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "question_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ExamSubmitRequest": {
+            "type": "object",
+            "required": [
+                "answers"
+            ],
+            "properties": {
+                "answers": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/dto.ExamSubmitAnswer"
+                    }
+                },
+                "duration_seconds": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ExamSubmitResponse": {
+            "type": "object",
+            "properties": {
+                "answers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.ExamAnswerReview"
+                    }
+                },
+                "attempt_id": {
+                    "type": "integer"
+                },
+                "correct_count": {
+                    "type": "integer"
+                },
+                "duration_seconds": {
+                    "type": "integer"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "pass": {
+                    "type": "boolean"
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "total_count": {
+                    "type": "integer"
+                },
+                "total_score": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.LearningProgressRequest": {
             "type": "object",
             "required": [
-                "content_id",
-                "video_position"
+                "content_id"
             ],
             "properties": {
                 "content_id": {
@@ -1919,7 +3100,7 @@ const docTemplate = `{
                     "example": 1
                 },
                 "video_position": {
-                    "description": "视频播放位置（秒）",
+                    "description": "视频播放位置（秒），0表示文档类型或初始状态",
                     "type": "integer",
                     "minimum": 0,
                     "example": 120
@@ -1972,6 +3153,88 @@ const docTemplate = `{
                     "description": "工号",
                     "type": "string",
                     "example": "E001"
+                }
+            }
+        },
+        "dto.ManagerBrief": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "店长ID",
+                    "type": "integer",
+                    "example": 2
+                },
+                "name": {
+                    "description": "店长姓名",
+                    "type": "string",
+                    "example": "李店长"
+                },
+                "phone": {
+                    "description": "店长手机号",
+                    "type": "string",
+                    "example": "13800138000"
+                },
+                "work_no": {
+                    "description": "店长工号",
+                    "type": "string",
+                    "example": "M001"
+                }
+            }
+        },
+        "dto.ManagerEmployeeExamRecord": {
+            "type": "object",
+            "properties": {
+                "employee_id": {
+                    "type": "integer"
+                },
+                "latest_exam": {
+                    "$ref": "#/definitions/dto.EmployeeLatestExamResult"
+                },
+                "learning_progress": {
+                    "$ref": "#/definitions/dto.EmployeeLearningProgress"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "work_no": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ManagerExamOverviewResponse": {
+            "type": "object",
+            "properties": {
+                "employees": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.ManagerEmployeeExamRecord"
+                    }
+                },
+                "exam_progress": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.ManagerExamProgressItem"
+                    }
+                }
+            }
+        },
+        "dto.ManagerExamProgressItem": {
+            "type": "object",
+            "properties": {
+                "attempt_count": {
+                    "type": "integer"
+                },
+                "avg_score": {
+                    "type": "number"
+                },
+                "exam_id": {
+                    "type": "integer"
+                },
+                "pass_rate": {
+                    "type": "number"
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         },
@@ -2048,6 +3311,36 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 20,
                     "example": "13800138000"
+                }
+            }
+        },
+        "dto.UserLearningStatsResponse": {
+            "type": "object",
+            "properties": {
+                "completed_count": {
+                    "description": "已完成的学习内容数量",
+                    "type": "integer",
+                    "example": 5
+                },
+                "completion_rate": {
+                    "description": "完成率（百分比）",
+                    "type": "number",
+                    "example": 25
+                },
+                "total_contents": {
+                    "description": "该角色可见的已发布内容总数",
+                    "type": "integer",
+                    "example": 20
+                },
+                "total_count": {
+                    "description": "已开始学习的内容总数",
+                    "type": "integer",
+                    "example": 10
+                },
+                "user_id": {
+                    "description": "用户ID",
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
