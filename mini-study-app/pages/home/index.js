@@ -1,4 +1,4 @@
-const mockService = require("../../services/mockService");
+const api = require("../../services/api");
 const app = getApp();
 
 Page({
@@ -26,19 +26,42 @@ Page({
 
   async loadBanners() {
     try {
-      const res = await mockService.fetchBanners();
-      this.setData({ banners: res.data || [] });
+      const res = await api.banner.listVisible();
+      if (res.code === 200) {
+        const banners = (res.data || []).map((item) => ({
+          id: item.id,
+          title: item.title,
+          cover: item.image_url,
+          url: item.link_url,
+          type: item.visible_roles
+        }));
+        this.setData({ banners });
+      } else {
+        wx.showToast({ title: res.message || "轮播加载失败", icon: "none" });
+      }
     } catch (err) {
       console.error("fetch banners error", err);
+      wx.showToast({ title: "轮播加载失败", icon: "none" });
     }
   },
 
   async loadCategories() {
     try {
-      const res = await mockService.fetchCourseCategories(this.data.user.role);
-      this.setData({ categories: res.data || [] });
+      const res = await api.content.listCategories();
+      if (res.code === 200) {
+        const categories = (res.data || []).map((item) => ({
+          id: item.id,
+          name: item.name,
+          icon: "📖",
+          count: item.count || 0
+        }));
+        this.setData({ categories });
+      } else {
+        wx.showToast({ title: res.message || "分类加载失败", icon: "none" });
+      }
     } catch (err) {
       console.error("fetch categories error", err);
+      wx.showToast({ title: "分类加载失败", icon: "none" });
     }
   },
 
@@ -85,6 +108,22 @@ Page({
 
   goEmployeesList() {
     wx.navigateTo({ url: "/pages/admin/employees/index" });
+  },
+
+  goBannerManagement() {
+    wx.navigateTo({ url: "/pages/admin/banners/index" });
+  },
+
+  goContentCreate() {
+    wx.navigateTo({ url: "/pages/admin/contents/add/index" });
+  },
+
+  goExamManagement() {
+    wx.navigateTo({ url: "/pages/admin/exams/index" });
+  },
+
+  goExamList() {
+    wx.navigateTo({ url: "/pages/exams/list/index" });
   }
 });
 

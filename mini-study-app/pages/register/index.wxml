@@ -24,9 +24,9 @@
               class="input" 
               type="number" 
               maxlength="11" 
-              data-field="mobile" 
+              data-field="phone" 
               bindinput="handleInput" 
-              value="{{mobile}}" 
+              value="{{phone}}" 
               placeholder="请输入手机号" 
             />
           </view>
@@ -38,9 +38,9 @@
             <text class="input-icon">👤</text>
             <input 
               class="input" 
-              data-field="employeeId" 
+              data-field="workNo" 
               bindinput="handleInput" 
-              value="{{employeeId}}" 
+              value="{{workNo}}" 
               placeholder="请输入工号 / 员工号" 
             />
           </view>
@@ -56,20 +56,6 @@
               bindinput="handleInput" 
               value="{{name}}" 
               placeholder="请输入姓名" 
-            />
-          </view>
-        </view>
-
-        <view class="form-item">
-          <text class="label">门店 / 部门</text>
-          <view class="input-wrapper">
-            <text class="input-icon">🏢</text>
-            <input 
-              class="input" 
-              data-field="store" 
-              bindinput="handleInput" 
-              value="{{store}}" 
-              placeholder="示例：上海一店" 
             />
           </view>
         </view>
@@ -102,18 +88,19 @@
           <text class="label-desc">可多选，选择你属于哪个店长的员工</text>
           <view class="manager-list">
             <view 
-              class="manager-item {{selectedManagerIds.indexOf(manager.id) > -1 ? 'selected' : ''}}"
+              class="manager-item {{selectedManagerWorkNos.indexOf(manager.work_no) > -1 ? 'selected' : ''}}"
               wx:for="{{managers}}"
-              wx:key="id"
-              data-manager-id="{{manager.id}}"
+              wx:for-item="manager"
+              wx:key="work_no"
+              data-work-no="{{manager.work_no}}"
               bindtap="handleManagerSelect"
             >
               <view class="manager-checkbox">
-                <text wx:if="{{selectedManagerIds.indexOf(manager.id) > -1}}">✓</text>
+                <text wx:if="{{selectedManagerWorkNos.indexOf(manager.work_no) > -1}}">✓</text>
               </view>
               <view class="manager-info">
-                <view class="manager-name">{{manager.name}}</view>
-                <view class="manager-store">{{manager.store}}</view>
+                <view class="manager-name">{{manager.name || manager.work_no}}（{{manager.work_no}}）</view>
+                <view class="manager-store">{{manager.phone || '无手机号信息'}}</view>
               </view>
             </view>
           </view>
@@ -128,7 +115,7 @@
           class="btn-primary" 
           form-type="submit" 
           loading="{{loading}}" 
-          disabled="{{loading || !mobile || !employeeId || !name || !password}}"
+          disabled="{{loading || !phone || !workNo || !name || !password}}"
         >
           创建账号并登录
         </button>

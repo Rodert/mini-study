@@ -85,3 +85,34 @@ func (r *ContentRepository) ListPublishedByRole(role string, categoryID uint, co
 	}
 	return contents, nil
 }
+
+// CountPublishedForRole counts how many contents are visible to a given role.
+func (r *ContentRepository) CountPublishedForRole(role string) (int64, error) {
+	query := r.db.Model(&model.Content{}).Where("status = ?", "published")
+	if role != "" && role != "both" {
+		query = query.Where("visible_roles = ? OR visible_roles = ?", role, "both")
+	}
+
+	var count int64
+	if err := query.Count(&count).Error; err != nil {
+		return 0, errors.Wrap(err, "count contents for role")
+	}
+	return count, nil
+}
+
+// CountPublishedByCategoryAndRole counts how many published contents are in a category and visible to a given role.
+func (r *ContentRepository) CountPublishedByCategoryAndRole(categoryID uint, role string) (int64, error) {
+	query := r.db.Model(&model.Content{}).
+		Where("status = ?", "published").
+		Where("category_id = ?", categoryID)
+	
+	if role != "" && role != "both" {
+		query = query.Where("visible_roles = ? OR visible_roles = ?", role, "both")
+	}
+
+	var count int64
+	if err := query.Count(&count).Error; err != nil {
+		return 0, errors.Wrap(err, "count contents by category and role")
+	}
+	return count, nil
+}

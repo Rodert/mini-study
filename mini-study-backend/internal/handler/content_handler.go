@@ -39,19 +39,24 @@ func (h *ContentHandler) ListCategories(c *gin.Context) {
 		return
 	}
 
-	categories, err := h.service.ListCategories(userID)
+	categories, counts, err := h.service.ListCategoriesWithCount(userID)
 	if err != nil {
 		utils.NewErrorResponse(http.StatusBadRequest, err.Error()).JSON(c)
 		return
 	}
 
 	resp := make([]dto.ContentCategoryResponse, 0, len(categories))
-	for _, item := range categories {
+	for i, item := range categories {
+		count := int64(0)
+		if i < len(counts) {
+			count = counts[i]
+		}
 		resp = append(resp, dto.ContentCategoryResponse{
 			ID:        item.ID,
 			Name:      item.Name,
 			RoleScope: item.RoleScope,
 			SortOrder: item.SortOrder,
+			Count:     count,
 		})
 	}
 	utils.NewSuccessResponse(resp).JSON(c)

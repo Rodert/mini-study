@@ -8,6 +8,7 @@ import (
 
 	"github.com/javapub/mini-study/mini-study-backend/internal/dto"
 	"github.com/javapub/mini-study/mini-study-backend/internal/middleware"
+	"github.com/javapub/mini-study/mini-study-backend/internal/model"
 	"github.com/javapub/mini-study/mini-study-backend/internal/service"
 	"github.com/javapub/mini-study/mini-study-backend/internal/utils"
 )
@@ -146,11 +147,11 @@ func (h *UserHandler) RefreshToken(c *gin.Context) {
 
 // GetCurrentUser godoc
 // @Summary 获取当前用户信息
-// @Description 返回当前登录用户的详细信息
+// @Description 返回当前登录用户的详细信息，包括店长绑定信息（如果是员工）
 // @Tags 用户
 // @Security Bearer
 // @Produce json
-// @Success 200 {object} utils.Response{data=dto.UserResponse}
+// @Success 200 {object} utils.Response{data=dto.AdminUserResponse}
 // @Failure 401 {object} utils.Response
 // @Router /api/v1/users/me [get]
 func (h *UserHandler) GetCurrentUser(c *gin.Context) {
@@ -166,15 +167,7 @@ func (h *UserHandler) GetCurrentUser(c *gin.Context) {
 		return
 	}
 
-	resp := dto.UserResponse{
-		ID:     user.ID,
-		WorkNo: user.WorkNo,
-		Phone:  user.Phone,
-		Name:   user.Name,
-		Role:   user.Role,
-		Status: user.Status,
-	}
-	utils.NewSuccessResponse(resp).JSON(c)
+	utils.NewSuccessResponse(user).JSON(c)
 }
 
 // UpdateProfile godoc
@@ -202,6 +195,121 @@ func (h *UserHandler) UpdateProfile(c *gin.Context) {
 	}
 
 	user, err := h.users.UpdateProfile(userID, req)
+	if err != nil {
+		utils.NewErrorResponse(http.StatusBadRequest, err.Error()).JSON(c)
+		return
+	}
+
+	resp := dto.UserResponse{
+		ID:     user.ID,
+		WorkNo: user.WorkNo,
+		Phone:  user.Phone,
+		Name:   user.Name,
+		Role:   user.Role,
+		Status: user.Status,
+	}
+	utils.NewSuccessResponse(resp).JSON(c)
+}
+
+// AdminListUsers godoc
+// @Summary 管理员查询用户列表
+// @Description 管理员可根据角色、关键词筛选用户，并查看其店长绑定
+// @Tags 管理后台-用户
+// @Security Bearer
+// @Produce json
+// @Param role query string false "角色 employee/manager/admin"
+// @Param keyword query string false "关键词（工号/姓名/手机号）"
+// @Success 200 {object} utils.Response{data=[]dto.AdminUserResponse}
+// @Failure 400 {object} utils.Response
+// @Router /api/v1/admin/users [get]
+func (h *UserHandler) AdminListUsers(c *gin.Context) {
+	adminID := middleware.GetUserID(c)
+	if adminID == 0 {
+		utils.NewErrorResponse(http.StatusUnauthorized, "未登录").JSON(c)
+		return
+	}
+
+	var query dto.AdminListUsersQuery
+	if err := c.ShouldBindQuery(&query); err != nil {
+		utils.NewErrorResponse(http.StatusBadRequest, err.Error()).JSON(c)
+		return
+	}
+
+	users, err := h.users.AdminListUsers(adminID, query)
+	if err != nil {
+		utils.NewErrorResponse(http.StatusBadRequest, err.Error()).JSON(c)
+		return
+	}
+
+	utils.NewSuccessResponse(users).JSON(c)
+}
+
+// AdminGetUser godoc
+// @Summary 管理员查询单个用户
+// @Description 返回指定用户的信息及店长绑定
+// @Tags 管理后台-用户
+// @Security Bearer
+// @Produce json
+// @Param id path int true "用户ID"
+// @Success 200 {object} utils.Response{data=dto.AdminUserResponse}
+// @Failure 400 {object} utils.Response
+// @Router /api/v1/admin/users/{id} [get]
+func (h *UserHandler) AdminGetUser(c *gin.Context) {
+	adminID := middleware.GetUserID(c)
+	if adminID == 0 {
+		utils.NewErrorResponse(http.StatusUnauthorized, "未登录").JSON(c)
+		return
+	}
+
+	idStr := c.Param("id")
+	targetID, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil || targetID == 0 {
+		utils.NewErrorResponse(http.StatusBadRequest, "无效的用户ID").JSON(c)
+		return
+	}
+
+	user, err := h.users.AdminGetUser(adminID, uint(targetID))
+	if err != nil {
+		utils.NewErrorResponse(http.StatusBadRequest, err.Error()).JSON(c)
+		return
+	}
+
+	utils.NewSuccessResponse(user).JSON(c)
+}
+
+// AdminUpdateUserRole godoc
+// @Summary 管理员修改用户角色
+// @Description 将指定用户的角色设置为员工/店长/管理员
+// @Tags 管理后台-用户
+// @Security Bearer
+// @Accept json
+// @Produce json
+// @Param id path int true "用户ID"
+// @Param body body dto.AdminUpdateUserRoleRequest true "角色信息"
+// @Success 200 {object} utils.Response{data=dto.UserResponse}
+// @Failure 400 {object} utils.Response
+// @Router /api/v1/admin/users/{id}/role [put]
+func (h *UserHandler) AdminUpdateUserRole(c *gin.Context) {
+	adminID := middleware.GetUserID(c)
+	if adminID == 0 {
+		utils.NewErrorResponse(http.StatusUnauthorized, "未登录").JSON(c)
+		return
+	}
+
+	idStr := c.Param("id")
+	targetID, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil || targetID == 0 {
+		utils.NewErrorResponse(http.StatusBadRequest, "无效的用户ID").JSON(c)
+		return
+	}
+
+	var req dto.AdminUpdateUserRoleRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.NewErrorResponse(http.StatusBadRequest, err.Error()).JSON(c)
+		return
+	}
+
+	user, err := h.users.AdminUpdateUserRole(adminID, uint(targetID), model.Role(req.Role))
 	if err != nil {
 		utils.NewErrorResponse(http.StatusBadRequest, err.Error()).JSON(c)
 		return

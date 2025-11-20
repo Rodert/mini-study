@@ -40,6 +40,29 @@ func (s *ContentService) ListCategories(userID uint) ([]model.ContentCategory, e
 	return s.categories.ListByRole(roleFilter)
 }
 
+// ListCategoriesWithCount returns categories visible to current user role with content count.
+func (s *ContentService) ListCategoriesWithCount(userID uint) ([]model.ContentCategory, []int64, error) {
+	roleFilter, _, err := s.resolveUserRole(userID)
+	if err != nil {
+		return nil, nil, err
+	}
+	categories, err := s.categories.ListByRole(roleFilter)
+	if err != nil {
+		return nil, nil, err
+	}
+	
+	counts := make([]int64, len(categories))
+	for i, category := range categories {
+		count, err := s.contents.CountPublishedByCategoryAndRole(category.ID, roleFilter)
+		if err != nil {
+			return nil, nil, err
+		}
+		counts[i] = count
+	}
+	
+	return categories, counts, nil
+}
+
 // AdminCreateContent creates a new content entry.
 func (s *ContentService) AdminCreateContent(adminID uint, req dto.AdminCreateContentRequest) (*model.Content, error) {
 	if err := s.ensureAdmin(adminID); err != nil {

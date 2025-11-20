@@ -97,7 +97,7 @@
           data-manager-id="{{item.id}}"
         >
           <view class="manager-info">
-            <view class="manager-name">{{item.name}}</view>
+            <view class="manager-name">{{item.name || item.work_no}}</view>
             <view class="manager-workno">工号：{{item.work_no}}</view>
           </view>
           <view class="check-icon" wx:if="{{item.selected}}">✓</view>

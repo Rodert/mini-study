@@ -1,0 +1,48 @@
+<view class="result-page page-wrap" wx:if="{{result}}">
+  <view class="back-btn-container">
+    <view class="back-btn" bindtap="handleBack">
+      <text class="back-icon">‹</text>
+      <text class="back-text">返回考试中心</text>
+    </view>
+  </view>
+  <view class="card summary-card">
+    <view class="summary-header">
+      <view>
+        <view class="summary-title">{{exam ? exam.title : '考试结果'}}</view>
+        <view class="summary-subtitle">共 {{result.total_count}} 题，正确 {{result.correct_count}} 题</view>
+      </view>
+      <view class="summary-score">
+        <text class="score-number">{{result.score}}</text>
+        <text class="score-total">/ {{result.total_score}}</text>
+      </view>
+    </view>
+    <view class="summary-status" wx:class="{{result.pass ? 'pass' : 'fail'}}">
+      {{result.pass ? '恭喜通过考核' : '未达标，请继续努力'}}
+    </view>
+  </view>
+
+  <view class="card answer-card" wx:for="{{result.answers}}" wx:key="question_id">
+    <view class="answer-header">
+      <view class="answer-title">第 {{index + 1}} 题 · {{item.type === 'single' ? '单选' : '多选'}}</view>
+      <view class="answer-score" wx:class="{{item.is_correct ? 'pass' : 'fail'}}">
+        {{item.obtained_score}} / {{item.score}} 分
+      </view>
+    </view>
+    <view class="answer-stem">{{item.stem}}</view>
+    <view class="answer-meta">
+      <text class="meta-label">你的答案：</text>
+      <text>{{item.selectedLabels || '未作答'}}</text>
+    </view>
+    <view class="answer-meta">
+      <text class="meta-label">参考答案：</text>
+      <text>{{item.correctLabels || '-'}}</text>
+    </view>
+  </view>
+
+  <button class="btn-primary" bindtap="handleBack">返回考试中心</button>
+</view>
+
+<view class="empty-block" wx:else>
+  <text>暂无成绩数据</text>
+</view>
+

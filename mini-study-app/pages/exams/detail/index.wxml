@@ -1,0 +1,87 @@
+<view class="exam-detail page-wrap" wx:if="{{exam}}">
+  <view class="back-btn-container">
+    <view class="back-btn" bindtap="handleBack">
+      <text class="back-icon">‹</text>
+      <text class="back-text">返回考试中心</text>
+    </view>
+  </view>
+  <view class="card exam-summary">
+    <view class="summary-title">{{exam.title}}</view>
+    <view class="summary-desc">{{exam.description || '请认真作答，系统自动判分'}}</view>
+    <view class="summary-stats">
+      <text>{{exam.question_count}} 题</text>
+      <text>满分 {{exam.total_score}} 分</text>
+      <text>及格 {{exam.pass_score}} 分</text>
+      <text wx:if="{{exam.time_limit_minutes > 0}}">时长 {{exam.time_limit_minutes}} 分钟</text>
+    </view>
+  </view>
+
+  <view class="card question-card" wx:for="{{exam.questions}}" wx:for-item="question" wx:for-index="qIndex" wx:key="id">
+    <view class="question-header">
+      <view class="question-index">第 {{qIndex + 1}} 题</view>
+      <view class="question-tag">
+        {{question.type === 'single' ? '单选' : '多选'}} · {{question.score}} 分
+      </view>
+    </view>
+    <view class="question-stem">{{question.stem}}</view>
+
+    <radio-group
+      wx:if="{{question.type === 'single'}}"
+      data-qid="{{question.id}}"
+      bindchange="handleSingleChange"
+    >
+      <label
+        class="option-row"
+        wx:for="{{question.options}}"
+        wx:for-item="option"
+        wx:key="id"
+      >
+        <radio
+          class="option-indicator"
+          value="{{option.id}}"
+          checked="{{optionChecked[question.id + '_' + option.id]}}"
+        />
+        <view class="option-text">
+          <text class="option-label">{{option.label}}</text>
+          <text class="option-content">{{option.content}}</text>
+        </view>
+      </label>
+    </radio-group>
+
+    <checkbox-group
+      wx:else
+      data-qid="{{question.id}}"
+      bindchange="handleMultiChange"
+    >
+      <label
+        class="option-row"
+        wx:for="{{question.options}}"
+        wx:for-item="option"
+        wx:key="id"
+      >
+        <checkbox
+          class="option-indicator"
+          value="{{option.id}}"
+          checked="{{optionChecked[question.id + '_' + option.id]}}"
+        />
+        <view class="option-text">
+          <text class="option-label">{{option.label}}</text>
+          <text class="option-content">{{option.content}}</text>
+        </view>
+      </label>
+    </checkbox-group>
+  </view>
+
+  <button
+    class="btn-primary submit-btn"
+    bindtap="handleSubmit"
+    disabled="{{!readyToSubmit || submitting}}"
+  >
+    {{submitting ? '提交中...' : '提交答案'}}
+  </button>
+</view>
+
+<view class="empty-block" wx:else>
+  <text>考试数据加载中...</text>
+</view>
+

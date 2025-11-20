@@ -1,4 +1,4 @@
-const mockService = require("../../../services/mockService");
+const api = require("../../../services/api");
 const app = getApp();
 
 Page({
@@ -30,24 +30,34 @@ Page({
 
   async loadData() {
     try {
-      const [usersRes, managersRes] = await Promise.all([
-        mockService.fetchAllUsers(),
-        mockService.fetchManagers()
-      ]);
+      const res = await api.admin.listUsers();
+      if (res.code !== 200) {
+        wx.showToast({ title: res.message || "加载数据失败", icon: "none" });
+        return;
+      }
 
-      const managers = managersRes.data || [];
-      const employees = (usersRes.data || []).map(user => {
-        const userManagers = managers.filter(m => user.managerIds && user.managerIds.includes(m.id));
+      const employees = (res.data || []).map((user) => {
+        const managers = (user.managers || []).map((manager) => ({
+          id: manager.id,
+          name: manager.name || manager.work_no,
+          workNo: manager.work_no,
+          phone: manager.phone
+        }));
         return {
-          ...user,
-          managers: userManagers
+          id: user.id,
+          name: user.name,
+          username: user.work_no,
+          mobile: user.phone,
+          store: user.store || "—",
+          role: user.role,
+          managerIds: user.manager_ids || [],
+          managers
         };
       });
 
       this.setData({
         employees,
-        filteredEmployees: employees,
-        managers
+        filteredEmployees: employees
       });
     } catch (err) {
       console.error("load data error", err);
@@ -59,10 +69,16 @@ Page({
     const searchText = e.detail.value.toLowerCase();
     this.setData({ searchText });
 
-    const filtered = this.data.employees.filter(emp => 
-      emp.name.toLowerCase().includes(searchText) ||
-      emp.mobile.includes(searchText)
-    );
+    const filtered = this.data.employees.filter(emp => {
+      const name = (emp.name || "").toLowerCase();
+      const mobile = emp.mobile || "";
+      const workNo = (emp.username || "").toLowerCase();
+      return (
+        name.includes(searchText) ||
+        mobile.includes(searchText) ||
+        workNo.includes(searchText)
+      );
+    });
 
     this.setData({ filteredEmployees: filtered });
   },

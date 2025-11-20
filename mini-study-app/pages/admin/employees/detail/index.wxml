@@ -34,7 +34,15 @@
         </view>
         <view class="info-row">
           <view class="info-label">门店</view>
-          <view class="info-value">{{employee.store}}</view>
+          <view class="info-value">{{employee.store || '—'}}</view>
+        </view>
+        <view class="info-row" wx:if="{{employee.managers && employee.managers.length}}">
+          <view class="info-label">所属店长</view>
+          <view class="info-value manager-tags">
+            <view class="tag" wx:for="{{employee.managers}}" wx:key="id">
+              {{item.name || item.work_no}} ({{item.work_no}})
+            </view>
+          </view>
         </view>
       </view>
     </view>
@@ -108,6 +116,7 @@
         <view 
           class="manager-item {{selectedManagerIds.indexOf(manager.id) > -1 ? 'selected' : ''}}"
           wx:for="{{managers}}"
+          wx:for-item="manager"
           wx:key="id"
           data-manager-id="{{manager.id}}"
           bindtap="handleManagerSelect"
@@ -116,8 +125,8 @@
             <text wx:if="{{selectedManagerIds.indexOf(manager.id) > -1}}">✓</text>
           </view>
           <view class="manager-info">
-            <view class="manager-name">{{manager.name}}</view>
-            <view class="manager-store">{{manager.store}}</view>
+            <view class="manager-name">{{manager.name || manager.workNo}}</view>
+            <view class="manager-store">{{manager.store || manager.workNo}}</view>
           </view>
         </view>
       </view>

@@ -63,6 +63,8 @@ func main() {
 	contentCategoryRepo := repository.NewContentCategoryRepository(db)
 	contentRepo := repository.NewContentRepository(db)
 	learningRecordRepo := repository.NewLearningRecordRepository(db)
+	examRepo := repository.NewExamRepository(db)
+	examAttemptRepo := repository.NewExamAttemptRepository(db)
 	bannerRepo := repository.NewBannerRepository(db)
 
 	auditService := service.NewAuditService(auditRepo)
@@ -70,18 +72,20 @@ func main() {
 	userService := service.NewUserService(userRepo, relationRepo, auditService)
 	contentService := service.NewContentService(contentCategoryRepo, contentRepo, userRepo)
 	learningService := service.NewLearningService(learningRecordRepo, contentRepo, userRepo)
+	examService := service.NewExamService(examRepo, examAttemptRepo, userRepo, relationRepo, learningRecordRepo, contentRepo)
 	bannerService := service.NewBannerService(bannerRepo, userRepo, auditService)
 
 	userHandler := handler.NewUserHandler(userService, tokenService)
 	contentHandler := handler.NewContentHandler(contentService)
 	learningHandler := handler.NewLearningHandler(learningService)
 	bannerHandler := handler.NewBannerHandler(bannerService)
+	examHandler := handler.NewExamHandler(examService)
 	uploadHandler := handler.NewUploadHandler(cfg.Upload.Dir, cfg.Upload.MaxSizeMB, auditService)
 	systemHandler := handler.NewSystemHandler(cfg.App.Name, cfg.App.Version)
 
 	engine := gin.New()
 	bootstrap.RegisterMiddlewares(engine, cfg, logger, validate)
-	bootstrap.RegisterRoutes(engine, cfg, userHandler, contentHandler, learningHandler, bannerHandler, uploadHandler, systemHandler)
+	bootstrap.RegisterRoutes(engine, cfg, userHandler, contentHandler, learningHandler, bannerHandler, examHandler, uploadHandler, systemHandler)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port),

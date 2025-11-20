@@ -4,21 +4,36 @@
     <video
       wx:if="{{course.type === 'video'}}"
       class="course-video"
-      src="{{course.url}}"
+      src="{{course.mediaUrl}}"
       controls
       poster="{{course.cover}}"
+      id="courseVideo"
+      bindseek="handleVideoSeek"
+      bindtimeupdate="handleTimeUpdate"
+      bindplay="handleVideoPlay"
+      bindended="handleVideoEnded"
     ></video>
 
-    <view wx:elif="{{course.type === 'article'}}" class="article-content">
-      <rich-text nodes="{{course.content}}"></rich-text>
+    <view wx:elif="{{course.type === 'doc'}}" class="doc-viewer">
+      <view class="doc-tip">该课程为文档类型，请点击下方按钮查看原文件</view>
+      <view class="doc-filename">{{course.fileName || '课程文档'}}</view>
+      <button
+        class="btn-doc"
+        loading="{{docLoading}}"
+        disabled="{{docLoading}}"
+        bindtap="handleOpenDocument"
+      >
+        {{docLoading ? '正在打开...' : '打开文档'}}
+      </button>
+      <view class="doc-path" wx:if="{{course.mediaUrl}}">{{course.mediaUrl}}</view>
     </view>
 
     <view class="course-meta">
-      <text>类型：{{course.type === 'video' ? '视频课程' : '图文课程'}}</text>
+      <text>类型：{{course.type === 'video' ? '视频课程' : '文档课程'}}</text>
       <text>时长 / 阅读：{{course.duration || '--'}}</text>
     </view>
-    <view class="course-summary">{{course.summary}}</view>
-    <view class="status-pill">{{finished ? '已完成' : '学习中（Mock）'}}</view>
+    <view class="course-summary">{{course.summary || '暂无简介'}}</view>
+    <view class="status-pill">{{statusText}}</view>
   </view>
 </view>
 

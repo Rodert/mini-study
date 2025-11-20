@@ -83,6 +83,153 @@ func (s *UserService) ListManagers() ([]model.User, error) {
 	return s.repo.ListManagers()
 }
 
+// AdminListUsers returns users for admin panel.
+func (s *UserService) AdminListUsers(adminID uint, filter dto.AdminListUsersQuery) ([]dto.AdminUserResponse, error) {
+	if _, err := s.ensureAdmin(adminID); err != nil {
+		return nil, err
+	}
+
+	users, err := s.repo.ListUsers(filter.Role, filter.Keyword)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.buildAdminUserResponses(users)
+}
+
+// AdminGetUser returns a single user for admin panel.
+func (s *UserService) AdminGetUser(adminID, targetID uint) (*dto.AdminUserResponse, error) {
+	if _, err := s.ensureAdmin(adminID); err != nil {
+		return nil, err
+	}
+
+	user, err := s.repo.FindByID(targetID)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := s.buildAdminUserResponses([]model.User{*user})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(resp) == 0 {
+		return nil, errors.New("用户不存在")
+	}
+
+	return &resp[0], nil
+}
+
+// AdminUpdateUserRole updates role for a specific user.
+func (s *UserService) AdminUpdateUserRole(adminID, targetID uint, role model.Role) (*model.User, error) {
+	if _, err := s.ensureAdmin(adminID); err != nil {
+		return nil, err
+	}
+
+	if role != model.RoleEmployee && role != model.RoleManager && role != model.RoleAdmin {
+		return nil, errors.New("无效的角色")
+	}
+
+	user, err := s.repo.FindByID(targetID)
+	if err != nil {
+		return nil, err
+	}
+
+	user.Role = role
+	if err := s.repo.Update(user); err != nil {
+		return nil, err
+	}
+
+	if role != model.RoleEmployee {
+		if err := s.relationRepo.ReplaceRelations(user.ID, nil); err != nil {
+			return nil, err
+		}
+	}
+
+	return user, nil
+}
+
+func (s *UserService) buildAdminUserResponses(users []model.User) ([]dto.AdminUserResponse, error) {
+	if len(users) == 0 {
+		return []dto.AdminUserResponse{}, nil
+	}
+
+	resp := make([]dto.AdminUserResponse, 0, len(users))
+	employeeIDs := make([]uint, 0)
+	for _, user := range users {
+		if user.Role == model.RoleEmployee {
+			employeeIDs = append(employeeIDs, user.ID)
+		}
+	}
+
+	relations, err := s.relationRepo.ListByEmployeeIDs(employeeIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	bindingMap := make(map[uint][]uint)
+	managerIDSet := make(map[uint]struct{})
+	for _, rel := range relations {
+		bindingMap[rel.EmployeeID] = append(bindingMap[rel.EmployeeID], rel.ManagerID)
+		managerIDSet[rel.ManagerID] = struct{}{}
+	}
+
+	managerIDs := make([]uint, 0, len(managerIDSet))
+	for id := range managerIDSet {
+		managerIDs = append(managerIDs, id)
+	}
+
+	managerUsers, err := s.repo.FindByIDs(managerIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	managerMap := make(map[uint]dto.ManagerBrief, len(managerUsers))
+	for _, manager := range managerUsers {
+		managerMap[manager.ID] = dto.ManagerBrief{
+			ID:     manager.ID,
+			WorkNo: manager.WorkNo,
+			Name:   manager.Name,
+			Phone:  manager.Phone,
+		}
+	}
+
+	for _, user := range users {
+		boundManagerIDs := bindingMap[user.ID]
+		var copiedIDs []uint
+		var managerBriefs []dto.ManagerBrief
+
+		if len(boundManagerIDs) > 0 {
+			copiedIDs = make([]uint, 0, len(boundManagerIDs))
+			managerBriefs = make([]dto.ManagerBrief, 0, len(boundManagerIDs))
+			for _, mid := range boundManagerIDs {
+				copiedIDs = append(copiedIDs, mid)
+				if brief, ok := managerMap[mid]; ok {
+					managerBriefs = append(managerBriefs, brief)
+				}
+			}
+		} else {
+			copiedIDs = []uint{}
+			managerBriefs = []dto.ManagerBrief{}
+		}
+
+		resp = append(resp, dto.AdminUserResponse{
+			UserResponse: dto.UserResponse{
+				ID:     user.ID,
+				WorkNo: user.WorkNo,
+				Phone:  user.Phone,
+				Name:   user.Name,
+				Role:   user.Role,
+				Status: user.Status,
+			},
+			ManagerIDs: copiedIDs,
+			Managers:   managerBriefs,
+		})
+	}
+
+	return resp, nil
+}
+
 func (s *UserService) resolveManagerWorkNos(workNos []string) ([]uint, error) {
 	if len(workNos) == 0 {
 		return nil, nil
@@ -117,13 +264,23 @@ func (s *UserService) ensureAdmin(userID uint) (*model.User, error) {
 	return user, nil
 }
 
-// GetCurrentUser returns the current user by ID.
-func (s *UserService) GetCurrentUser(userID uint) (*model.User, error) {
+// GetCurrentUser returns the current user by ID with manager information if the user is an employee.
+func (s *UserService) GetCurrentUser(userID uint) (*dto.AdminUserResponse, error) {
 	user, err := s.repo.FindByID(userID)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+
+	resp, err := s.buildAdminUserResponses([]model.User{*user})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(resp) == 0 {
+		return nil, errors.New("用户不存在")
+	}
+
+	return &resp[0], nil
 }
 
 // UpdateProfile allows user to update own name and phone.

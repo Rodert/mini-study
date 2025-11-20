@@ -15,6 +15,7 @@ func RegisterRoutes(
 	contentHandler *handler.ContentHandler,
 	learningHandler *handler.LearningHandler,
 	bannerHandler *handler.BannerHandler,
+	examHandler *handler.ExamHandler,
 	uploadHandler *handler.UploadHandler,
 	systemHandler *handler.SystemHandler,
 ) {
@@ -50,8 +51,26 @@ func RegisterRoutes(
 	learning.Use(authMiddleware)
 	{
 		learning.GET("/", learningHandler.ListProgress)
+		learning.GET("/stats", learningHandler.GetUserStats)
 		learning.GET("/:content_id", learningHandler.GetProgress)
+		learning.GET("/content/:content_id/stats", learningHandler.GetContentStats)
 		learning.POST("/", learningHandler.UpdateProgress)
+	}
+
+	// Exam routes
+	exams := api.Group("/exams")
+	exams.Use(authMiddleware)
+	{
+		exams.GET("/my/results", examHandler.ListMyResults)
+		exams.GET("/", examHandler.ListAvailable)
+		exams.GET("/:id", examHandler.GetExamDetail)
+		exams.POST("/:id/submit", examHandler.SubmitExam)
+	}
+
+	manager := api.Group("/manager")
+	manager.Use(authMiddleware)
+	{
+		manager.GET("/exams/overview", examHandler.ManagerOverview)
 	}
 
 	// Banner routes
@@ -65,6 +84,9 @@ func RegisterRoutes(
 	admin := api.Group("/admin")
 	admin.Use(authMiddleware)
 	{
+		admin.GET("/users", userHandler.AdminListUsers)
+		admin.GET("/users/:id", userHandler.AdminGetUser)
+		admin.PUT("/users/:id/role", userHandler.AdminUpdateUserRole)
 		admin.POST("/managers", userHandler.AdminCreateManager)
 		admin.POST("/employees", userHandler.AdminCreateEmployee)
 		admin.POST("/users/:id/promote-manager", userHandler.AdminPromoteToManager)
@@ -82,6 +104,14 @@ func RegisterRoutes(
 			adminBanners.GET("/", bannerHandler.AdminListBanners)
 			adminBanners.POST("/", bannerHandler.AdminCreateBanner)
 			adminBanners.PUT("/:id", bannerHandler.AdminUpdateBanner)
+		}
+
+		adminExams := admin.Group("/exams")
+		{
+			adminExams.GET("/", examHandler.AdminListExams)
+			adminExams.GET("/:id", examHandler.AdminGetExam)
+			adminExams.POST("/", examHandler.AdminCreateExam)
+			adminExams.PUT("/:id", examHandler.AdminUpdateExam)
 		}
 	}
 

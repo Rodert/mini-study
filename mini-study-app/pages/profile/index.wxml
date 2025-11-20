@@ -17,7 +17,7 @@
         <view class="user-meta">
           <text class="meta-item">
             <text class="meta-icon">🆔</text>
-            <text>{{user.username}}</text>
+            <text>{{user.work_no || user.username}}</text>
           </text>
           <text class="meta-item">
             <text class="meta-icon">{{user.role === 'manager' ? '👔' : '👨‍💼'}}</text>
@@ -39,7 +39,7 @@
         <text class="info-icon">📱</text>
         <view class="info-content">
           <view class="info-label">手机号</view>
-          <view class="info-value">{{user.mobile}}</view>
+          <view class="info-value">{{user.phone || user.mobile}}</view>
         </view>
       </view>
       <view class="info-item">
@@ -47,9 +47,12 @@
         <view class="info-content">
           <view class="info-label">所属店长</view>
           <view class="manager-tags">
-            <view class="tag" wx:for="{{userManagers}}" wx:key="id">
-              {{item.name}}
-            </view>
+            <block wx:if="{{userManagers && userManagers.length > 0}}">
+              <view class="tag" wx:for="{{userManagers}}" wx:key="id">
+                {{item.name || item.work_no || item.workNo}}
+              </view>
+            </block>
+            <text wx:else class="empty-text">暂无店长</text>
           </view>
         </view>
       </view>
@@ -64,8 +67,8 @@
     <button class="btn-primary" bindtap="goLogin">前往登录</button>
   </view>
 
-  <!-- 学习统计 -->
-  <view class="section" wx:if="{{user.id}}">
+  <!-- 学习统计（管理员不显示） -->
+  <view class="section" wx:if="{{user.id && user.role !== 'admin'}}">
     <view class="section-title-group">
       <text class="section-icon">📊</text>
       <view>
@@ -76,22 +79,22 @@
 
     <view class="stats-grid" wx:if="{{stats}}">
       <view class="stat-card">
-        <view class="stat-icon">⏱️</view>
-        <view class="stat-value">{{stats.totalHours}}</view>
-        <view class="stat-unit">小时</view>
-        <view class="stat-label">本月学习时长</view>
-      </view>
-      <view class="stat-card">
         <view class="stat-icon">✅</view>
         <view class="stat-value">{{stats.completedCourses}}</view>
         <view class="stat-unit">/ {{stats.totalCourses}}</view>
-        <view class="stat-label">课程完成度</view>
+        <view class="stat-label">已完成课程</view>
       </view>
       <view class="stat-card">
-        <view class="stat-icon">🔥</view>
-        <view class="stat-value">{{stats.streakDays}}</view>
-        <view class="stat-unit">天</view>
-        <view class="stat-label">连续学习</view>
+        <view class="stat-icon">📚</view>
+        <view class="stat-value">{{stats.totalCount || 0}}</view>
+        <view class="stat-unit">/ {{stats.totalCourses}}</view>
+        <view class="stat-label">已开始学习</view>
+      </view>
+      <view class="stat-card">
+        <view class="stat-icon">📊</view>
+        <view class="stat-value">{{stats.completionRate}}</view>
+        <view class="stat-unit">%</view>
+        <view class="stat-label">完成率</view>
       </view>
     </view>
 
@@ -124,4 +127,5 @@
   <!-- 底部空间 -->
   <view class="bottom-space"></view>
 </view>
+
 

@@ -1,0 +1,33 @@
+<view class="page-wrap">
+  <view class="section-header">
+    <view>
+      <view class="section-title">考试管理</view>
+      <view class="section-subtitle">创建和管理考试题目</view>
+    </view>
+    <button class="btn-primary small" bindtap="handleCreate">+ 新建考试</button>
+  </view>
+
+  <view wx:if="{{exams.length}}">
+    <view class="card exam-item" wx:for="{{exams}}" wx:key="id">
+      <view class="exam-item__header">
+        <view>
+          <view class="exam-item__title">{{item.title}}</view>
+          <view class="exam-item__meta">
+            {{item.questionCount}} 题 · 满分 {{item.totalScore}} 分 · 及格 {{item.passScore}} 分
+            <text wx:if="{{item.timeLimit > 0}}"> · {{item.timeLimit}} 分钟</text>
+          </view>
+        </view>
+        <view class="status-badge {{item.status}}">{{item.statusText}}</view>
+      </view>
+      <view class="exam-item__desc">{{item.description || '暂无描述'}}</view>
+      <view class="exam-item__footer">
+        <text class="role-tag">{{item.targetRoleText}}</text>
+        <button class="btn-secondary small" data-id="{{item.id}}" bindtap="handleEdit">编辑</button>
+      </view>
+    </view>
+  </view>
+  <view class="empty-block" wx:else>
+    <text>暂无考试，点击"新建考试"开始创建</text>
+  </view>
+</view>
+

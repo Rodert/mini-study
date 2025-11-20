@@ -1,0 +1,90 @@
+<view class="admin-page">
+  <view class="top-bar">
+    <view class="back-button" bindtap="goBack">
+      <text>←</text>
+    </view>
+    <view class="top-title">轮播管理</view>
+    <view class="top-placeholder"></view>
+  </view>
+
+  <view class="content">
+    <button class="btn-primary" bindtap="openCreateForm">新增轮播</button>
+
+    <view class="banner-list" wx:if="{{banners.length}}">
+      <view class="banner-item" wx:for="{{banners}}" wx:key="id">
+        <image class="banner-cover" src="{{item.image_url}}" mode="aspectFill" />
+        <view class="banner-info">
+          <view class="banner-title">
+            {{item.title}}
+            <text class="status-tag {{item.status ? 'active' : 'inactive'}}">
+              {{item.status ? '启用' : '停用'}}
+            </text>
+          </view>
+          <view class="banner-meta">
+            <text>可见：{{roleTextMap[item.visible_roles] || '全部'}}</text>
+            <text>排序：{{item.sort_order}}</text>
+          </view>
+          <view class="banner-link">链接：{{item.link_url}}</view>
+        </view>
+        <view class="banner-actions">
+          <button class="btn-secondary" data-index="{{index}}" bindtap="openEditForm">编辑</button>
+          <button class="btn-danger" data-index="{{index}}" bindtap="toggleBannerStatus">
+            {{item.status ? '停用' : '启用'}}
+          </button>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{!banners.length && !loading}}">
+      <text>暂无轮播数据</text>
+    </view>
+  </view>
+
+  <view class="form-modal" wx:if="{{showForm}}">
+    <view class="modal-mask" bindtap="closeForm"></view>
+    <view class="modal-body">
+      <view class="modal-title">{{editingId ? '编辑轮播' : '新增轮播'}}</view>
+
+      <view class="form-item">
+        <view class="form-label">标题</view>
+        <input class="form-input" placeholder="请输入轮播标题" value="{{form.title}}" data-field="title" bindinput="handleInput" />
+      </view>
+
+      <view class="form-item">
+        <view class="form-label">图片链接</view>
+        <input class="form-input" placeholder="请输入图片 URL" value="{{form.image_url}}" data-field="image_url" bindinput="handleInput" />
+      </view>
+
+      <view class="form-item">
+        <view class="form-label">跳转链接</view>
+        <input class="form-input" placeholder="请输入跳转链接" value="{{form.link_url}}" data-field="link_url" bindinput="handleInput" />
+      </view>
+
+      <view class="form-item">
+        <view class="form-label">可见范围</view>
+        <picker class="picker" mode="selector" range="{{visibleRoleOptions}}" range-key="label" value="{{visibleRoleIndex}}" bindchange="handleRolePicker">
+          <view class="picker-value">
+            {{visibleRoleOptions[visibleRoleIndex].label}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <view class="form-label">排序</view>
+        <input class="form-input" type="number" placeholder="数字越大越靠前" value="{{form.sort_order}}" data-field="sort_order" bindinput="handleInput" />
+      </view>
+
+      <view class="form-item switch-item">
+        <view class="form-label">启用状态</view>
+        <switch checked="{{form.status}}" bindchange="handleSwitchChange" />
+      </view>
+
+      <view class="form-actions">
+        <button class="btn-cancel" bindtap="closeForm">取消</button>
+        <button class="btn-submit" bindtap="handleSubmit">{{editingId ? '保存' : '创建'}}</button>
+      </view>
+    </view>
+  </view>
+</view>
+
+

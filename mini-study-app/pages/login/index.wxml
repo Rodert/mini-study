@@ -17,17 +17,17 @@
     <view class="form-card">
       <form bindsubmit="handleSubmit">
         <view class="form-item">
-          <text class="label">手机号</text>
+          <text class="label">工号</text>
           <view class="input-wrapper">
-            <text class="input-icon">📱</text>
+            <text class="input-icon">🆔</text>
             <input
               class="input"
-              type="number"
-              maxlength="11"
-              placeholder="请输入手机号"
-              data-field="mobile"
+              type="text"
+              maxlength="30"
+              placeholder="请输入工号"
+              data-field="workNo"
               bindinput="handleInput"
-              value="{{mobile}}"
+              value="{{workNo}}"
             />
           </view>
         </view>
@@ -56,7 +56,7 @@
           class="btn-primary"
           form-type="submit"
           loading="{{loading}}"
-          disabled="{{!mobile || !password || loading}}"
+          disabled="{{!workNo || !password || loading}}"
         >
           立即登录
         </button>
@@ -76,7 +76,7 @@
 
         <view class="helper-text">
           <text class="helper-icon">💡</text>
-          <text>体验账号：员工（13900000000 / 123456）、店长（13911110000 / 123456）、管理员（13900000001 / 123456）</text>
+          <text>体验账号：员工（employee001 / 123456）、店长（manager001 / 123456）、管理员（admin / admin123456）</text>
         </view>
       </form>
     </view>

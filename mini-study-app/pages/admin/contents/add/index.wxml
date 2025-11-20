@@ -1,0 +1,96 @@
+<view class="content-page">
+  <view class="top-bar">
+    <view class="back-button" bindtap="goBack">
+      <text>←</text>
+    </view>
+    <view class="top-title">新增学习内容</view>
+    <view class="top-placeholder"></view>
+  </view>
+
+  <view class="form-wrapper">
+    <view class="form-item">
+      <view class="form-label">标题</view>
+      <input class="form-input" placeholder="请输入内容标题" value="{{form.title}}" data-field="title" bindinput="handleInput" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">所属分类</view>
+      <picker class="picker" mode="selector" range="{{categoryNames}}" value="{{categoryIndex}}" bindchange="handleCategoryChange">
+        <view class="picker-value">
+          {{categoryIndex >= 0 ? categoryNames[categoryIndex] : '请选择分类'}}
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">内容类型</view>
+      <picker class="picker" mode="selector" range="{{typeOptions}}" range-key="label" value="{{typeIndex}}" bindchange="handleTypeChange">
+        <view class="picker-value">
+          {{typeOptions[typeIndex].label}}
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item" wx:if="{{form.type === 'video'}}">
+      <view class="form-label">视频时长 (秒)</view>
+      <input class="form-input" type="number" placeholder="例如：3600" value="{{form.duration_seconds}}" data-field="duration_seconds" bindinput="handleInput" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">文件上传</view>
+      <view class="file-upload">
+        <input
+          class="form-input readonly"
+          placeholder="请通过上传获取文件路径"
+          value="{{form.file_path}}"
+          disabled
+        />
+        <button
+          class="btn-upload"
+          loading="{{uploadingFile}}"
+          disabled="{{uploadingFile}}"
+          bindtap="handleUploadFile"
+        >
+          {{uploadingFile ? '上传中...' : (form.type === 'video' ? '上传视频' : '上传文档')}}
+        </button>
+      </view>
+      <view class="upload-tip">
+        {{form.type === 'video' ? '支持 mp4/mov，返回的服务器路径将自动填写' : '支持 pdf/doc/ppt/xls 等常见文档，上传后自动填写路径'}}
+      </view>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">封面图片</view>
+      <input class="form-input" placeholder="请输入封面图片 URL" value="{{form.cover_url}}" data-field="cover_url" bindinput="handleInput" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">简介</view>
+      <textarea class="form-textarea" placeholder="请输入内容简介" value="{{form.summary}}" data-field="summary" bindinput="handleInput" maxlength="200" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">可见范围</view>
+      <picker class="picker" mode="selector" range="{{visibleRoleOptions}}" range-key="label" value="{{visibleRoleIndex}}" bindchange="handleRoleChange">
+        <view class="picker-value">
+          {{visibleRoleOptions[visibleRoleIndex].label}}
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">发布状态</view>
+      <picker class="picker" mode="selector" range="{{statusOptions}}" range-key="label" value="{{statusIndex}}" bindchange="handleStatusChange">
+        <view class="picker-value">
+          {{statusOptions[statusIndex].label}}
+        </view>
+      </picker>
+    </view>
+
+    <view class="submit-actions">
+      <button class="btn-submit" bindtap="handleSubmit">提交内容</button>
+    </view>
+  </view>
+</view>
+
+

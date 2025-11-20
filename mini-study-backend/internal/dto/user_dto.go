@@ -65,3 +65,29 @@ type AdminCreateEmployeeRequest struct {
 type AdminUpdateEmployeeManagersRequest struct {
 	ManagerWorkNos []string `json:"manager_ids" binding:"omitempty,dive,required" example:"M001,M002"` // 店长工号列表
 }
+
+// AdminListUsersQuery filters admin user list.
+type AdminListUsersQuery struct {
+	Role    string `form:"role" binding:"omitempty,oneof=employee manager admin" example:"employee"` // 角色过滤
+	Keyword string `form:"keyword" binding:"omitempty,max=100" example:"张三"`                          // 关键词（工号/姓名/手机号）
+}
+
+// ManagerBrief 提供店长的简要信息。
+type ManagerBrief struct {
+	ID     uint   `json:"id" example:"2"`              // 店长ID
+	WorkNo string `json:"work_no" example:"M001"`      // 店长工号
+	Name   string `json:"name" example:"李店长"`          // 店长姓名
+	Phone  string `json:"phone" example:"13800138000"` // 店长手机号
+}
+
+// AdminUserResponse 返回给管理后台的用户信息。
+type AdminUserResponse struct {
+	UserResponse
+	ManagerIDs []uint         `json:"manager_ids"` // 绑定的店长ID列表
+	Managers   []ManagerBrief `json:"managers"`    // 店长详情
+}
+
+// AdminUpdateUserRoleRequest updates user role.
+type AdminUpdateUserRoleRequest struct {
+	Role string `json:"role" binding:"required,oneof=employee manager admin" example:"manager"` // 目标角色
+}

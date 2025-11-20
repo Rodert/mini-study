@@ -102,6 +102,7 @@
         <view 
           class="manager-item {{selectedManagerIds.indexOf(manager.id) > -1 ? 'selected' : ''}}"
           wx:for="{{managers}}"
+          wx:for-item="manager"
           wx:key="id"
           data-manager-id="{{manager.id}}"
           bindtap="handleManagerSelect"
@@ -110,7 +111,7 @@
             <text wx:if="{{selectedManagerIds.indexOf(manager.id) > -1}}">✓</text>
           </view>
           <view class="manager-info">
-            <view class="manager-name">{{manager.name}}</view>
+            <view class="manager-name">{{manager.name || manager.workNo || manager.work_no}}</view>
             <view class="manager-store">{{manager.store}}</view>
           </view>
         </view>

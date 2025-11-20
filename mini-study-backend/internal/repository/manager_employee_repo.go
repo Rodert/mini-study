@@ -44,3 +44,29 @@ func (r *ManagerEmployeeRepository) ReplaceRelations(employeeID uint, managerIDs
 	}
 	return r.CreateRelations(employeeID, managerIDs)
 }
+
+// ListByEmployeeIDs 批量查询员工与店长的关联关系。
+func (r *ManagerEmployeeRepository) ListByEmployeeIDs(employeeIDs []uint) ([]model.ManagerEmployee, error) {
+	if len(employeeIDs) == 0 {
+		return nil, nil
+	}
+
+	var relations []model.ManagerEmployee
+	if err := r.db.Where("employee_id IN ?", employeeIDs).Find(&relations).Error; err != nil {
+		return nil, errors.Wrap(err, "list manager employee relations")
+	}
+	return relations, nil
+}
+
+// ListEmployeeIDsByManager returns employee IDs managed by a manager.
+func (r *ManagerEmployeeRepository) ListEmployeeIDsByManager(managerID uint) ([]uint, error) {
+	var ids []uint
+	if err := r.db.
+		Model(&model.ManagerEmployee{}).
+		Select("employee_id").
+		Where("manager_id = ?", managerID).
+		Pluck("employee_id", &ids).Error; err != nil {
+		return nil, errors.Wrap(err, "list employees by manager")
+	}
+	return ids, nil
+}

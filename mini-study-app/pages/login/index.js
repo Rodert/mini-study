@@ -1,24 +1,24 @@
-const mockService = require("../../services/mockService");
+const api = require("../../services/api");
 const app = getApp();
 
 const PRESETS = {
   employee: {
-    mobile: "13900000000",
+    workNo: "employee001",
     password: "123456"
   },
   manager: {
-    mobile: "13911110000",
+    workNo: "manager001",
     password: "123456"
   },
   admin: {
-    mobile: "13900000001",
-    password: "123456"
+    workNo: "admin",
+    password: "admin123456"
   }
 };
 
 Page({
   data: {
-    mobile: "",
+    workNo: "",
     password: "",
     loading: false,
     error: "",
@@ -37,7 +37,7 @@ Page({
   handleInput(e) {
     const { field } = e.currentTarget.dataset;
     this.setData({
-      [field]: e.detail.value,
+      [field]: e.detail.value.trim(),
       error: ""
     });
   },
@@ -49,17 +49,23 @@ Page({
     this.setData({ loading: true, error: "" });
 
     try {
-      const response = await mockService.login({
-        mobile: this.data.mobile,
+      const response = await api.user.login({
+        work_no: this.data.workNo,
         password: this.data.password
       });
 
-      if (!response.success) {
+      if (response.code !== 200) {
         this.setData({ error: response.message || "登录失败" });
         return;
       }
 
-      const user = response.data;
+      const profileRes = await api.user.getCurrentUser();
+      if (profileRes.code !== 200) {
+        this.setData({ error: profileRes.message || "获取用户信息失败" });
+        return;
+      }
+
+      const user = profileRes.data;
       app.globalData.user = user;
       wx.setStorageSync("user", user);
       wx.showToast({ title: "登录成功", icon: "success" });
@@ -75,8 +81,8 @@ Page({
   },
 
   validate() {
-    if (!this.data.mobile || this.data.mobile.length !== 11) {
-      this.setData({ error: "请输入 11 位手机号" });
+    if (!this.data.workNo) {
+      this.setData({ error: "请输入工号" });
       return false;
     }
     if (!this.data.password) {

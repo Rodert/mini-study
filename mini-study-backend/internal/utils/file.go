@@ -34,5 +34,5 @@ func SaveUploadedFile(file *multipart.FileHeader, targetDir string) (string, err
 		return "", fmt.Errorf("copy upload: %w", err)
 	}
 
-	return dst, nil
+	return fmt.Sprintf("/uploads/%s", filename), nil
 }

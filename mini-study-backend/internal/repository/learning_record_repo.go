@@ -61,3 +61,105 @@ func (r *LearningRecordRepository) ListByUser(userID uint) ([]model.LearningReco
 	}
 	return records, nil
 }
+
+// LearningProgressAggregate holds aggregated learning stats per user.
+type LearningProgressAggregate struct {
+	UserID    uint
+	Completed int64
+	Total     int64
+}
+
+// AggregateByUsers aggregates learning statuses for the given users.
+func (r *LearningRecordRepository) AggregateByUsers(userIDs []uint) (map[uint]LearningProgressAggregate, error) {
+	if len(userIDs) == 0 {
+		return map[uint]LearningProgressAggregate{}, nil
+	}
+
+	var rows []LearningProgressAggregate
+	if err := r.db.Table("learning_records").
+		Select("user_id, SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completed, COUNT(*) AS total").
+		Where("user_id IN ?", userIDs).
+		Group("user_id").
+		Scan(&rows).Error; err != nil {
+		return nil, errors.Wrap(err, "aggregate learning records")
+	}
+
+	result := make(map[uint]LearningProgressAggregate, len(rows))
+	for _, row := range rows {
+		result[row.UserID] = row
+	}
+	return result, nil
+}
+
+// ContentCompletionAggregate holds aggregated completion stats per content.
+type ContentCompletionAggregate struct {
+	ContentID uint
+	Completed int64
+	Total     int64
+}
+
+// AggregateByContents aggregates learning completion statuses for the given contents.
+func (r *LearningRecordRepository) AggregateByContents(contentIDs []uint) (map[uint]ContentCompletionAggregate, error) {
+	if len(contentIDs) == 0 {
+		return map[uint]ContentCompletionAggregate{}, nil
+	}
+
+	var rows []ContentCompletionAggregate
+	if err := r.db.Table("learning_records").
+		Select("content_id, SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completed, COUNT(*) AS total").
+		Where("content_id IN ?", contentIDs).
+		Group("content_id").
+		Scan(&rows).Error; err != nil {
+		return nil, errors.Wrap(err, "aggregate learning records by content")
+	}
+
+	result := make(map[uint]ContentCompletionAggregate, len(rows))
+	for _, row := range rows {
+		result[row.ContentID] = row
+	}
+	return result, nil
+}
+
+// CountCompletedByUser counts completed learning records for a user.
+func (r *LearningRecordRepository) CountCompletedByUser(userID uint) (int64, error) {
+	var count int64
+	if err := r.db.Model(&model.LearningRecord{}).
+		Where("user_id = ? AND status = ?", userID, "completed").
+		Count(&count).Error; err != nil {
+		return 0, errors.Wrap(err, "count completed records by user")
+	}
+	return count, nil
+}
+
+// CountTotalByUser counts total learning records for a user.
+func (r *LearningRecordRepository) CountTotalByUser(userID uint) (int64, error) {
+	var count int64
+	if err := r.db.Model(&model.LearningRecord{}).
+		Where("user_id = ?", userID).
+		Count(&count).Error; err != nil {
+		return 0, errors.Wrap(err, "count total records by user")
+	}
+	return count, nil
+}
+
+// CountCompletedByContent counts completed learning records for a content.
+func (r *LearningRecordRepository) CountCompletedByContent(contentID uint) (int64, error) {
+	var count int64
+	if err := r.db.Model(&model.LearningRecord{}).
+		Where("content_id = ? AND status = ?", contentID, "completed").
+		Count(&count).Error; err != nil {
+		return 0, errors.Wrap(err, "count completed records by content")
+	}
+	return count, nil
+}
+
+// CountTotalByContent counts total learning records for a content.
+func (r *LearningRecordRepository) CountTotalByContent(contentID uint) (int64, error) {
+	var count int64
+	if err := r.db.Model(&model.LearningRecord{}).
+		Where("content_id = ?", contentID).
+		Count(&count).Error; err != nil {
+		return 0, errors.Wrap(err, "count total records by content")
+	}
+	return count, nil
+}

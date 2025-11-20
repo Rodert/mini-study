@@ -45,7 +45,7 @@
       <view class="info-display">
         <view class="info-row">
           <view class="info-label">工号</view>
-          <view class="info-value">{{user.username}}</view>
+          <view class="info-value">{{user.work_no || user.username}}</view>
         </view>
         <view class="info-row">
           <view class="info-label">姓名</view>
@@ -58,9 +58,12 @@
         <view class="info-row">
           <view class="info-label">所属店长</view>
           <view class="manager-tags">
-            <view class="tag" wx:for="{{userManagers}}" wx:key="id">
-              {{item.name}}
-            </view>
+            <block wx:if="{{userManagers && userManagers.length > 0}}">
+              <view class="tag" wx:for="{{userManagers}}" wx:key="id">
+                {{item.name || item.work_no || item.workNo}}
+              </view>
+            </block>
+            <text wx:else class="empty-text">暂无店长</text>
           </view>
         </view>
       </view>

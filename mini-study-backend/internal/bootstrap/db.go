@@ -43,6 +43,10 @@ func InitDatabase(cfg *Config, logger *zap.Logger) (*gorm.DB, error) {
 		&model.Content{},
 		&model.LearningRecord{},
 		&model.Banner{},
+		&model.ExamPaper{},
+		&model.ExamQuestion{},
+		&model.ExamOption{},
+		&model.ExamAttempt{},
 	); err != nil {
 		return nil, fmt.Errorf("auto migrate: %w", err)
 	}

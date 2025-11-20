@@ -1,0 +1,37 @@
+# 忽略 storage/uploads 目录下的视频文件
+mini-study-backend/storage/uploads/**/*.mp4
+mini-study-backend/storage/uploads/**/*.avi
+mini-study-backend/storage/uploads/**/*.mov
+mini-study-backend/storage/uploads/**/*.wmv
+mini-study-backend/storage/uploads/**/*.flv
+mini-study-backend/storage/uploads/**/*.webm
+mini-study-backend/storage/uploads/**/*.mkv
+mini-study-backend/storage/uploads/**/*.m4v
+mini-study-backend/storage/uploads/**/*.3gp
+mini-study-backend/storage/uploads/**/*.ogv
+
+# 忽略 storage/uploads 目录下的图片文件
+mini-study-backend/storage/uploads/**/*.jpg
+mini-study-backend/storage/uploads/**/*.jpeg
+mini-study-backend/storage/uploads/**/*.png
+mini-study-backend/storage/uploads/**/*.gif
+mini-study-backend/storage/uploads/**/*.bmp
+mini-study-backend/storage/uploads/**/*.webp
+mini-study-backend/storage/uploads/**/*.svg
+mini-study-backend/storage/uploads/**/*.ico
+mini-study-backend/storage/uploads/**/*.tiff
+mini-study-backend/storage/uploads/**/*.tif
+
+# 忽略 storage/uploads 目录下的文档文件
+mini-study-backend/storage/uploads/**/*.doc
+mini-study-backend/storage/uploads/**/*.docx
+mini-study-backend/storage/uploads/**/*.pdf
+mini-study-backend/storage/uploads/**/*.txt
+mini-study-backend/storage/uploads/**/*.xls
+mini-study-backend/storage/uploads/**/*.xlsx
+mini-study-backend/storage/uploads/**/*.ppt
+mini-study-backend/storage/uploads/**/*.pptx
+mini-study-backend/storage/uploads/**/*.rtf
+mini-study-backend/storage/uploads/**/*.odt
+mini-study-backend/storage/uploads/**/*.ods
+mini-study-backend/storage/uploads/**/*.odp

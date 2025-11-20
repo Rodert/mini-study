@@ -9,7 +9,8 @@ import (
 )
 
 // RegisterRoutes binds all HTTP handlers to the gin engine.
-func RegisterRoutes(engine *gin.Engine, cfg *Config, userHandler *handler.UserHandler, contentHandler *handler.ContentHandler, learningHandler *handler.LearningHandler, bannerHandler *handler.BannerHandler, uploadHandler *handler.UploadHandler, systemHandler *handler.SystemHandler) {
+func RegisterRoutes(engine *gin.Engine, cfg *Config, userHandler *handler.UserHandler, contentHandler *handler.ContentHandler, learningHandler *handler.LearningHandler, bannerHandler *handler.BannerHandler, examHandler *handler.ExamHandler, uploadHandler *handler.UploadHandler, systemHandler *handler.SystemHandler) {
+	engine.Static("/uploads", cfg.Upload.Dir)
 	auth := middleware.JWT(cfg.JWT.Secret)
-	router.RegisterRoutes(engine, cfg.Swagger.Enabled, auth, userHandler, contentHandler, learningHandler, bannerHandler, uploadHandler, systemHandler)
+	router.RegisterRoutes(engine, cfg.Swagger.Enabled, auth, userHandler, contentHandler, learningHandler, bannerHandler, examHandler, uploadHandler, systemHandler)
 }

@@ -64,7 +64,7 @@
           <text class="info-label">所属店长</text>
           <view class="manager-tags">
             <view class="tag" wx:for="{{item.managers}}" wx:key="id">
-              {{item.name}}
+              {{item.name || item.workNo}}
             </view>
           </view>
         </view>

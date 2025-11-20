@@ -264,6 +264,68 @@
   border: 2rpx solid var(--brand);
 }
 
+.admin-actions {
+  padding-top: 20rpx;
+  padding-bottom: 40rpx;
+}
+
+.admin-action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+}
+
+.admin-action-card {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  box-shadow: 0 6rpx 16rpx rgba(15, 23, 42, 0.08);
+  border: 1rpx solid rgba(37, 99, 235, 0.08);
+  position: relative;
+  overflow: hidden;
+  min-height: 180rpx;
+}
+
+.action-icon {
+  font-size: 44rpx;
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 16rpx;
+  background: rgba(37, 99, 235, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.action-desc {
+  font-size: 24rpx;
+  color: var(--muted);
+}
+
+.action-arrow {
+  position: absolute;
+  right: 24rpx;
+  bottom: 24rpx;
+  font-size: 28rpx;
+  color: var(--brand);
+  opacity: 0.6;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.admin-action-card:active .action-arrow {
+  transform: translateX(8rpx);
+  opacity: 1;
+}
+
 /* 查看完整列表按钮 */
 .btn-view-all {
   width: 100%;

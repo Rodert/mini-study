@@ -1,0 +1,115 @@
+<view class="exam-form-page page-wrap">
+  <view class="form-section">
+    <view class="section-title">基本信息</view>
+    
+    <view class="form-item">
+      <view class="form-label">考试标题 <text class="required">*</text></view>
+      <input class="form-input" placeholder="请输入考试标题" value="{{form.title}}" data-field="title" bindinput="handleInput" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">考试描述</view>
+      <textarea class="form-textarea" placeholder="请输入考试描述" value="{{form.description}}" data-field="description" bindinput="handleInput" maxlength="500" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">目标角色</view>
+      <picker mode="selector" range="{{roleOptions}}" range-key="label" value="{{roleIndex}}" bindchange="handleRoleChange">
+        <view class="picker-value">{{roleOptions[roleIndex].label}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">时间限制（分钟）</view>
+      <input class="form-input" type="number" placeholder="0表示无限制" value="{{form.time_limit_minutes}}" data-field="time_limit_minutes" bindinput="handleNumberInput" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">及格分数 <text class="required">*</text></view>
+      <input class="form-input" type="number" placeholder="请输入及格分数" value="{{form.pass_score}}" data-field="pass_score" bindinput="handleNumberInput" />
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">发布状态</view>
+      <picker mode="selector" range="{{statusOptions}}" range-key="label" value="{{statusIndex}}" bindchange="handleStatusChange">
+        <view class="picker-value">{{statusOptions[statusIndex].label}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <view class="form-section">
+    <view class="section-header">
+      <view class="section-title">题目列表 <text class="required">*</text></view>
+      <button class="btn-primary small" bindtap="addQuestion">+ 添加题目</button>
+    </view>
+
+    <view wx:if="{{form.questions.length}}">
+      <view class="question-card card" wx:for="{{form.questions}}" wx:key="id" wx:for-item="item" wx:for-index="qIndex">
+        <view class="question-header">
+          <view class="question-number">第 {{qIndex + 1}} 题</view>
+          <button class="btn-danger small" data-index="{{qIndex}}" bindtap="removeQuestion">删除</button>
+        </view>
+
+        <view class="form-item">
+          <view class="form-label">题目类型</view>
+          <radio-group data-index="{{qIndex}}" bindchange="handleQuestionTypeChange">
+            <label class="radio-label">
+              <radio value="single" checked="{{item.type === 'single'}}" /> 单选题
+            </label>
+            <label class="radio-label">
+              <radio value="multiple" checked="{{item.type === 'multiple'}}" /> 多选题
+            </label>
+          </radio-group>
+        </view>
+
+        <view class="form-item">
+          <view class="form-label">题目内容 <text class="required">*</text></view>
+          <textarea class="form-textarea" placeholder="请输入题目内容" value="{{item.stem}}" data-index="{{qIndex}}" data-field="stem" bindinput="handleQuestionInput" maxlength="500" />
+        </view>
+
+        <view class="form-item">
+          <view class="form-label">题目分数 <text class="required">*</text></view>
+          <input class="form-input" type="number" placeholder="请输入分数" value="{{item.score}}" data-index="{{qIndex}}" data-field="score" bindinput="handleQuestionNumberInput" />
+        </view>
+
+        <view class="form-item">
+          <view class="form-label">解析说明</view>
+          <textarea class="form-textarea" placeholder="可选：题目解析说明" value="{{item.analysis}}" data-index="{{qIndex}}" data-field="analysis" bindinput="handleQuestionInput" maxlength="500" />
+        </view>
+
+        <view class="options-section">
+          <view class="options-header">
+            <view class="form-label">选项 <text class="required">*</text>（至少2个）</view>
+            <button class="btn-secondary small" data-index="{{qIndex}}" bindtap="addOption">+ 添加选项</button>
+          </view>
+
+          <view class="option-item" wx:for="{{item.options}}" wx:key="id" wx:for-item="opt" wx:for-index="oIndex">
+            <view class="option-header">
+              <view class="option-label-badge {{opt.is_correct ? 'correct-badge' : ''}}">{{opt.label}}</view>
+              <view class="option-actions">
+                <view class="correct-toggle {{opt.is_correct ? 'correct-active' : ''}}" data-q-index="{{qIndex}}" data-o-index="{{oIndex}}" bindtap="toggleCorrect">
+                  <text class="{{opt.is_correct ? 'correct-mark' : 'correct-placeholder'}}">
+                    {{opt.is_correct ? '✓ 正确答案' : '设为正确答案'}}
+                  </text>
+                </view>
+                <button class="btn-danger tiny" data-q-index="{{qIndex}}" data-o-index="{{oIndex}}" bindtap="removeOption" wx:if="{{item.options.length > 2}}">删除</button>
+              </view>
+            </view>
+            <input class="form-input {{opt.is_correct ? 'correct-input' : ''}}" placeholder="请输入选项内容" value="{{opt.content}}" data-q-index="{{qIndex}}" data-o-index="{{oIndex}}" data-field="content" bindinput="handleOptionInput" />
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-tip" wx:else>
+      <text>暂无题目，点击"添加题目"开始出题</text>
+    </view>
+  </view>
+
+  <view class="submit-section">
+    <button class="btn-primary" bindtap="handleSubmit" disabled="{{submitting}}">
+      {{submitting ? '提交中...' : (isEdit ? '保存修改' : '创建考试')}}
+    </button>
+  </view>
+</view>
+

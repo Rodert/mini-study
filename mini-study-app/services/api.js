@@ -1,5 +1,35 @@
 // API 服务配置
 const API_BASE_URL = 'http://localhost:8080/api/v1'; // 根据实际环境修改
+const API_ORIGIN = API_BASE_URL.replace(/\/api\/v1$/, '');
+
+function buildFileUrl(path = '') {
+  if (!path) return '';
+  if (/^https?:\/\//i.test(path)) return path;
+
+  let normalized = path.trim().replace(/\\/g, '/');
+  if (!normalized) return '';
+
+  const lower = normalized.toLowerCase();
+  const uploadsIndex = lower.indexOf('/uploads/');
+  if (uploadsIndex !== -1) {
+    normalized = normalized.slice(uploadsIndex);
+  } else {
+    const storageIndex = lower.indexOf('storage/uploads');
+    if (storageIndex !== -1) {
+      normalized = normalized.slice(storageIndex + 'storage'.length);
+    } else if (!normalized.startsWith('/')) {
+      normalized = `/${normalized}`;
+    }
+  }
+
+  if (!normalized.startsWith('/')) {
+    normalized = `/${normalized}`;
+  }
+
+  return `${API_ORIGIN}${normalized}`;
+}
+// const API_BASE_URL = 'http://192.168.65.1:8080/api/v1';
+
 
 // 获取 token
 function getToken() {
@@ -64,6 +94,56 @@ function handleUnauthorized() {
 }
 
 module.exports = {
+  $request: request,
+  buildFileUrl,
+  file: {
+    upload(filePath) {
+      const token = getToken();
+      return new Promise((resolve, reject) => {
+        wx.uploadFile({
+          url: `${API_BASE_URL}/files/upload`,
+          filePath,
+          name: "file",
+          header: token
+            ? {
+                Authorization: `Bearer ${token}`
+              }
+            : {},
+          success: (res) => {
+            let data;
+            try {
+              data = typeof res.data === "string" ? JSON.parse(res.data) : res.data;
+            } catch (err) {
+              reject({
+                code: -1,
+                message: "上传返回结果解析失败",
+                raw: res.data,
+                err
+              });
+              return;
+            }
+
+            if (res.statusCode >= 200 && res.statusCode < 300 && data.code === 200) {
+              resolve(data);
+            } else {
+              reject({
+                code: data.code || res.statusCode,
+                message: data.message || "上传失败",
+                data
+              });
+            }
+          },
+          fail: (err) => {
+            reject({
+              code: -1,
+              message: err.errMsg || "上传失败",
+              err
+            });
+          }
+        });
+      });
+    }
+  },
   // 用户相关
   user: {
     // 登录
@@ -72,7 +152,7 @@ module.exports = {
         url: '/users/login',
         method: 'POST',
         data: {
-          work_no: data.work_no || data.mobile, // 兼容 mobile 字段
+          work_no: data.work_no,
           password: data.password
         }
       });
@@ -102,11 +182,165 @@ module.exports = {
         url: '/users/managers',
         method: 'GET'
       });
+    },
+    // 员工注册
+    register(data) {
+      return request({
+        url: '/users/register',
+        method: 'POST',
+        data
+      });
+    },
+    // 更新个人资料
+    updateProfile(data) {
+      return request({
+        url: '/users/me/profile',
+        method: 'PATCH',
+        data
+      });
+    }
+  },
+  
+  // 内容相关
+  content: {
+    listCategories() {
+      return request({
+        url: '/contents/categories',
+        method: 'GET'
+      });
+    },
+    listPublished(params = {}) {
+      return request({
+        url: '/contents',
+        method: 'GET',
+        data: params
+      });
+    },
+    getDetail(id) {
+      return request({
+        url: `/contents/${id}`,
+        method: 'GET'
+      });
+    }
+  },
+
+  // 学习相关
+  learning: {
+    listProgress() {
+      return request({
+        url: '/learning',
+        method: 'GET'
+      });
+    },
+    getProgress(contentId) {
+      return request({
+        url: `/learning/${contentId}`,
+        method: 'GET'
+      });
+    },
+    updateProgress(data) {
+      return request({
+        url: '/learning',
+        method: 'POST',
+        data
+      });
+    },
+    // 获取用户学习统计
+    getUserStats() {
+      return request({
+        url: '/learning/stats',
+        method: 'GET'
+      });
+    },
+    // 获取内容完成统计（管理员用）
+    getContentStats(contentId) {
+      return request({
+        url: `/learning/content/${contentId}/stats`,
+        method: 'GET'
+      });
+    }
+  },
+
+  // 考试相关
+  exam: {
+    listAvailable() {
+      return request({
+        url: '/exams',
+        method: 'GET'
+      });
+    },
+    getDetail(id) {
+      return request({
+        url: `/exams/${id}`,
+        method: 'GET'
+      });
+    },
+    submit(id, data) {
+      return request({
+        url: `/exams/${id}/submit`,
+        method: 'POST',
+        data
+      });
+    },
+    listMyResults() {
+      return request({
+        url: '/exams/my/results',
+        method: 'GET'
+      });
+    },
+    managerOverview() {
+      return request({
+        url: '/manager/exams/overview',
+        method: 'GET'
+      });
+    }
+  },
+
+  // 轮播图
+  banner: {
+    listVisible() {
+      return request({
+        url: '/banners',
+        method: 'GET'
+      });
     }
   },
   
   // 管理员相关
   admin: {
+    // 查询用户列表
+    listUsers(params = {}) {
+      return request({
+        url: '/admin/users',
+        method: 'GET',
+        data: params
+      });
+    },
+    // 查询单个用户
+    getUser(id) {
+      return request({
+        url: `/admin/users/${id}`,
+        method: 'GET'
+      });
+    },
+    // 更新用户角色
+    updateUserRole(id, role) {
+      return request({
+        url: `/admin/users/${id}/role`,
+        method: 'PUT',
+        data: { role }
+      });
+    },
+    // 更新员工的店长绑定
+    updateEmployeeManagers(id, managerWorkNos) {
+      return request({
+        url: `/admin/users/${id}/managers`,
+        method: 'PUT',
+        data: {
+          manager_ids: managerWorkNos
+        }
+      });
+    },
     // 创建员工
     createEmployee(data) {
       return request({
@@ -120,6 +354,85 @@ module.exports = {
       return request({
         url: '/admin/managers',
         method: 'POST',
+        data
+      });
+    },
+    // 轮播管理
+    listBanners(params = {}) {
+      return request({
+        url: '/admin/banners',
+        method: 'GET',
+        data: params
+      });
+    },
+    createBanner(data) {
+      return request({
+        url: '/admin/banners',
+        method: 'POST',
+        data
+      });
+    },
+    updateBanner(id, data) {
+      return request({
+        url: `/admin/banners/${id}`,
+        method: 'PUT',
+        data
+      });
+    },
+    // 学习内容管理
+    listContents(params = {}) {
+      return request({
+        url: '/admin/contents',
+        method: 'GET',
+        data: params
+      });
+    },
+    createContent(data) {
+      return request({
+        url: '/admin/contents',
+        method: 'POST',
+        data
+      });
+    },
+    updateContent(id, data) {
+      return request({
+        url: `/admin/contents/${id}`,
+        method: 'PUT',
+        data
+      });
+    },
+    // 考试管理
+    listExams(params = {}) {
+      return request({
+        url: '/admin/exams',
+        method: 'GET',
+        data: params
+      });
+    },
+    createExam(data) {
+      return request({
+        url: '/admin/exams',
+        method: 'POST',
+        data
+      });
+    },
+    updateExam(id, data) {
+      return request({
+        url: `/admin/exams/${id}`,
+        method: 'PUT',
+        data
+      });
+    },
+    getExamDetail(id) {
+      return request({
+        url: `/admin/exams/${id}`,
+        method: 'GET'
+      });
+    },
+    updateExam(id, data) {
+      return request({
+        url: `/admin/exams/${id}`,
+        method: 'PUT',
         data
       });
     }

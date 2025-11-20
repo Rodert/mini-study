@@ -1,21 +1,27 @@
 <view class="page-wrap">
-  <view class="section-title">课堂考核进度</view>
-  <view class="grid auto-fit">
-    <view class="card progress-card" wx:for="{{progress}}" wx:key="courseId">
-      <text class="course-title">{{item.courseName}}</text>
+  <view class="section-title">考试进度</view>
+  <view class="grid auto-fit" wx:if="{{progress.length}}">
+    <view class="card progress-card" wx:for="{{progress}}" wx:key="id">
+      <text class="course-title">{{item.title}}</text>
       <view class="progress-bar">
-        <view class="progress-fill" style="width: {{item.completionPercent}}%;"></view>
+        <view class="progress-fill" style="width: {{item.passRate}}%;"></view>
       </view>
-      <text class="course-type">完成度：{{item.completionPercent}}%</text>
+      <view class="progress-meta">
+        <text>通过率 {{item.passRate}}%</text>
+        <text>平均 {{item.avgScore}} 分</text>
+        <text>{{item.attemptCount}} 人次</text>
+      </view>
     </view>
   </view>
+  <view class="empty-block" wx:else>暂无考试数据</view>
 
   <view class="section-title">学员完成情况</view>
+  <view wx:if="{{employees.length}}">
   <view class="card employee-card" wx:for="{{employees}}" wx:key="id">
     <view class="employee-header">
       <view>
         <text class="employee-name">{{item.name}}</text>
-        <text class="employee-store">{{item.store}}</text>
+          <text class="employee-store">工号：{{item.workNo}}</text>
       </view>
       <text class="employee-percent">{{item.percent}}%</text>
     </view>
@@ -24,7 +30,16 @@
     </view>
     <view class="employee-meta">
       已完成：{{item.completed}} / {{item.total}} · 待补：{{item.pending}}
+      </view>
+      <view class="exam-meta" wx:if="{{item.latestExam}}">
+        最新成绩：{{item.latestExam.examTitle}} · {{item.latestExam.score}} 分 ·
+        <text class="{{item.latestExam.pass ? 'text-pass' : 'text-fail'}}">
+          {{item.latestExam.pass ? '及格' : '未及格'}}
+        </text>
+      </view>
+      <view class="exam-meta muted" wx:else>尚未参加考试</view>
     </view>
   </view>
+  <view class="empty-block" wx:else>暂无员工统计</view>
 </view>
 

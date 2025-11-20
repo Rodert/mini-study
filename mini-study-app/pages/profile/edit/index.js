@@ -1,45 +1,71 @@
-const mockService = require("../../../services/mockService");
+const api = require("../../../services/api");
 const app = getApp();
 
 Page({
   data: {
     mobile: "",
     originalMobile: "",
-    managers: [],
     userManagers: [],
     user: {}
   },
 
   onLoad() {
-    const user = app.globalData.user || wx.getStorageSync("user");
-    if (!user || !user.id) {
-      wx.showToast({ title: "请先登录", icon: "none" });
-      setTimeout(() => {
-        wx.navigateBack();
-      }, 1000);
-      return;
-    }
-
-    this.setData({
-      user,
-      mobile: user.mobile,
-      originalMobile: user.mobile
-    });
-
-    this.loadManagers(user);
+    this.loadUserInfo();
   },
 
-  async loadManagers(user) {
+  async loadUserInfo() {
     try {
-      const res = await mockService.fetchManagers();
-      const managers = res.data || [];
-      const userManagers = managers.filter(m => user.managerIds && user.managerIds.includes(m.id));
-      this.setData({ 
-        managers,
-        userManagers
-      });
+      // 从 API 获取最新的用户信息（包含店长信息）
+      const res = await api.user.getCurrentUser();
+      if (res.code === 200 && res.data) {
+        const user = res.data;
+        // 更新全局用户信息
+        app.globalData.user = user;
+        wx.setStorageSync("user", user);
+        
+        this.setData({
+          user: user,
+          mobile: user.phone || user.mobile || "",
+          originalMobile: user.phone || user.mobile || "",
+          // 直接使用 API 返回的 managers 字段
+          userManagers: user.managers || []
+        });
+      } else {
+        // 如果 API 失败，使用缓存的用户信息
+        const cachedUser = app.globalData.user || wx.getStorageSync("user");
+        if (!cachedUser || !cachedUser.id) {
+          wx.showToast({ title: "请先登录", icon: "none" });
+          setTimeout(() => {
+            wx.navigateBack();
+          }, 1000);
+          return;
+        }
+        
+        this.setData({
+          user: cachedUser,
+          mobile: cachedUser.phone || cachedUser.mobile || "",
+          originalMobile: cachedUser.phone || cachedUser.mobile || "",
+          userManagers: cachedUser.managers || []
+        });
+      }
     } catch (err) {
-      console.error("fetch managers error", err);
+      console.error("load user info error", err);
+      // 如果 API 失败，使用缓存的用户信息
+      const cachedUser = app.globalData.user || wx.getStorageSync("user");
+      if (!cachedUser || !cachedUser.id) {
+        wx.showToast({ title: "请先登录", icon: "none" });
+        setTimeout(() => {
+          wx.navigateBack();
+        }, 1000);
+        return;
+      }
+      
+      this.setData({
+        user: cachedUser,
+        mobile: cachedUser.phone || cachedUser.mobile || "",
+        originalMobile: cachedUser.phone || cachedUser.mobile || "",
+        userManagers: cachedUser.managers || []
+      });
     }
   },
 
@@ -63,14 +89,18 @@ Page({
     wx.showLoading({ title: "保存中..." });
 
     try {
-      const response = await mockService.updateUserProfile(this.data.user.id, {
-        mobile: this.data.mobile
+      const response = await api.user.updateProfile({
+        phone: this.data.mobile
       });
 
-      if (response.success) {
-        const user = response.data;
-        app.globalData.user = user;
-        wx.setStorageSync("user", user);
+      if (response.code === 200) {
+        // 重新获取用户信息以获取最新数据（包括店长信息）
+        const userRes = await api.user.getCurrentUser();
+        if (userRes.code === 200 && userRes.data) {
+          const user = userRes.data;
+          app.globalData.user = user;
+          wx.setStorageSync("user", user);
+        }
         wx.hideLoading();
         wx.showToast({ title: "手机号已更新", icon: "success" });
         setTimeout(() => {

@@ -112,3 +112,61 @@ func (h *LearningHandler) ListProgress(c *gin.Context) {
 	}
 	utils.NewSuccessResponse(resp).JSON(c)
 }
+
+// GetUserStats godoc
+// @Summary 查询用户学习统计
+// @Description 返回当前用户的学习完成统计信息
+// @Tags 学习
+// @Security Bearer
+// @Produce json
+// @Success 200 {object} utils.Response{data=dto.UserLearningStatsResponse}
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Router /api/v1/learning/stats [get]
+func (h *LearningHandler) GetUserStats(c *gin.Context) {
+	userID := middleware.GetUserID(c)
+	if userID == 0 {
+		utils.NewErrorResponse(http.StatusUnauthorized, "未登录").JSON(c)
+		return
+	}
+
+	resp, err := h.service.GetUserLearningStats(userID)
+	if err != nil {
+		utils.NewErrorResponse(http.StatusBadRequest, err.Error()).JSON(c)
+		return
+	}
+	utils.NewSuccessResponse(resp).JSON(c)
+}
+
+// GetContentStats godoc
+// @Summary 查询内容完成统计
+// @Description 返回指定内容的学习完成统计信息（管理员可用）
+// @Tags 学习
+// @Security Bearer
+// @Produce json
+// @Param content_id path int true "内容ID"
+// @Success 200 {object} utils.Response{data=dto.ContentCompletionStatsResponse}
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Router /api/v1/learning/content/{content_id}/stats [get]
+func (h *LearningHandler) GetContentStats(c *gin.Context) {
+	userID := middleware.GetUserID(c)
+	if userID == 0 {
+		utils.NewErrorResponse(http.StatusUnauthorized, "未登录").JSON(c)
+		return
+	}
+
+	contentIDParam := c.Param("content_id")
+	contentID, err := strconv.ParseUint(contentIDParam, 10, 64)
+	if err != nil {
+		utils.NewErrorResponse(http.StatusBadRequest, "非法的内容ID").JSON(c)
+		return
+	}
+
+	resp, err := h.service.GetContentCompletionStats(uint(contentID))
+	if err != nil {
+		utils.NewErrorResponse(http.StatusBadRequest, err.Error()).JSON(c)
+		return
+	}
+	utils.NewSuccessResponse(resp).JSON(c)
+}

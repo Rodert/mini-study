@@ -1,0 +1,72 @@
+<view class="exam-page page-wrap">
+  <view class="section-header">
+    <view>
+      <view class="section-title">考试任务</view>
+      <view class="section-subtitle">完成考核以解锁下一阶段</view>
+    </view>
+    <button class="refresh-btn" bindtap="refreshData">刷新</button>
+  </view>
+
+  <view wx:if="{{exams.length}}">
+    <view class="exam-card card" wx:for="{{exams}}" wx:key="id">
+      <view class="exam-card__header">
+        <view>
+          <view class="exam-title">{{item.title}}</view>
+          <view class="exam-meta">
+            {{item.questionCount}} 题 · 满分 {{item.totalScore}} 分 · 及格 {{item.passScore}} 分
+            <text wx:if="{{item.timeLimit > 0}}"> · {{item.timeLimit}} 分钟</text>
+          </view>
+        </view>
+        <view class="status-pill" wx:if="{{item.attemptStatus === 'not_started'}}">待作答</view>
+        <view class="status-pill attempt" wx:if="{{item.attemptStatus === 'attempted'}}">可再练</view>
+        <view class="status-pill success" wx:if="{{item.attemptStatus === 'passed'}}">已通过</view>
+      </view>
+      <view class="exam-desc">{{item.description || '暂无介绍'}}</view>
+
+      <view class="exam-footer">
+        <view class="last-result" wx:if="{{item.lastScore}}">
+          上次成绩：{{item.lastScore}} 分
+          <text wx:if="{{item.lastSubmittedText}}"> · {{item.lastSubmittedText}}</text>
+        </view>
+        <view class="last-result muted" wx:else>尚未参加本次考试</view>
+        <button
+          class="btn-primary small"
+          data-id="{{item.id}}"
+          bindtap="handleExamTap"
+        >
+          {{item.attemptStatus === 'passed' ? '再次练习' : '开始答题'}}
+        </button>
+      </view>
+    </view>
+  </view>
+  <view class="empty-block" wx:else>
+    <text>暂无考试任务</text>
+  </view>
+
+  <view class="section-header">
+    <view>
+      <view class="section-title">最新成绩</view>
+      <view class="section-subtitle">跟踪最近一次提交</view>
+    </view>
+  </view>
+
+  <view wx:if="{{results.length}}">
+    <view class="result-card card" wx:for="{{results}}" wx:key="id">
+      <view class="result-header">
+        <view class="result-title">{{item.title}}</view>
+        <view class="result-score" wx:class="{{item.pass ? 'pass' : 'fail'}}">{{item.scoreText}}</view>
+      </view>
+      <view class="result-meta">
+        提交时间：{{item.submittedAt || '未知'}} ·
+        <text class="{{item.pass ? 'text-pass' : 'text-fail'}}">
+          {{item.pass ? '及格' : '未及格'}}
+        </text>
+      </view>
+    </view>
+  </view>
+  <view class="empty-block" wx:else>
+    <text>暂无考试成绩</text>
+  </view>
+</view>
+
+

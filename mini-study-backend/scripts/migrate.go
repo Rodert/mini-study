@@ -30,6 +30,8 @@ func main() {
 	}
 
 	ensureDefaultAdmin(db, logger)
+	ensureDefaultManager(db, logger)
+	ensureDefaultEmployee(db, logger)
 	ensureDefaultCategories(db, logger)
 	ensureDefaultBanners(db, logger)
 
@@ -72,6 +74,86 @@ func ensureDefaultAdmin(db *gorm.DB, logger *zap.Logger) {
 	}
 
 	logger.Info("default admin user created",
+		zap.String("work_no", defaultWorkNo),
+	)
+}
+
+// ensureDefaultManager creates a default manager user if none exists.
+func ensureDefaultManager(db *gorm.DB, logger *zap.Logger) {
+	const defaultWorkNo = "manager001"
+	const defaultPassword = "123456"
+
+	var count int64
+	if err := db.Model(&model.User{}).Where("work_no = ?", defaultWorkNo).Count(&count).Error; err != nil {
+		logger.Error("count manager user failed", zap.Error(err))
+		return
+	}
+	if count > 0 {
+		logger.Info("manager user already exists, skip seeding", zap.String("work_no", defaultWorkNo))
+		return
+	}
+
+	hash, err := utils.HashPassword(defaultPassword)
+	if err != nil {
+		logger.Error("hash default manager password failed", zap.Error(err))
+		return
+	}
+
+	manager := &model.User{
+		WorkNo:       defaultWorkNo,
+		Name:         "示例店长",
+		Phone:        "",
+		PasswordHash: hash,
+		Role:         model.RoleManager,
+		Status:       true,
+	}
+
+	if err := db.Create(manager).Error; err != nil {
+		logger.Error("create default manager user failed", zap.Error(err))
+		return
+	}
+
+	logger.Info("default manager user created",
+		zap.String("work_no", defaultWorkNo),
+	)
+}
+
+// ensureDefaultEmployee creates a default employee user if none exists.
+func ensureDefaultEmployee(db *gorm.DB, logger *zap.Logger) {
+	const defaultWorkNo = "employee001"
+	const defaultPassword = "123456"
+
+	var count int64
+	if err := db.Model(&model.User{}).Where("work_no = ?", defaultWorkNo).Count(&count).Error; err != nil {
+		logger.Error("count employee user failed", zap.Error(err))
+		return
+	}
+	if count > 0 {
+		logger.Info("employee user already exists, skip seeding", zap.String("work_no", defaultWorkNo))
+		return
+	}
+
+	hash, err := utils.HashPassword(defaultPassword)
+	if err != nil {
+		logger.Error("hash default employee password failed", zap.Error(err))
+		return
+	}
+
+	employee := &model.User{
+		WorkNo:       defaultWorkNo,
+		Name:         "示例员工",
+		Phone:        "",
+		PasswordHash: hash,
+		Role:         model.RoleEmployee,
+		Status:       true,
+	}
+
+	if err := db.Create(employee).Error; err != nil {
+		logger.Error("create default employee user failed", zap.Error(err))
+		return
+	}
+
+	logger.Info("default employee user created",
 		zap.String("work_no", defaultWorkNo),
 	)
 }

@@ -1,4 +1,4 @@
-const mockService = require("../../../../services/mockService");
+const api = require("../../../../services/api");
 const app = getApp();
 
 Page({
@@ -8,7 +8,8 @@ Page({
     managers: [],
     selectedManagerIds: [],
     originalRole: "",
-    originalManagerIds: []
+    originalManagerIds: [],
+    loading: false
   },
 
   onLoad(options) {
@@ -34,22 +35,44 @@ Page({
 
   async loadData() {
     try {
-      const [usersRes, managersRes] = await Promise.all([
-        mockService.fetchAllUsers(),
-        mockService.fetchManagers()
+      this.setData({ loading: true });
+      const [userRes, managersRes] = await Promise.all([
+        api.admin.getUser(this.data.userId),
+        api.user.getManagers()
       ]);
 
-      const employee = usersRes.data.find(u => u.id === this.data.userId);
-      if (!employee) {
-        wx.showToast({ title: "员工不存在", icon: "none" });
+      if (userRes.code !== 200) {
+        wx.showToast({ title: userRes.message || "获取用户失败", icon: "none" });
         wx.navigateBack();
         return;
       }
 
-      const selectedManagerIds = employee.managerIds || [];
+      const employeeData = userRes.data || {};
+      const employee = {
+        id: employeeData.id,
+        name: employeeData.name,
+        username: employeeData.work_no,
+        mobile: employeeData.phone || "--",
+        role: employeeData.role,
+        store: employeeData.store || "—",
+        managers: employeeData.managers || []
+      };
+
+      const managerOptions = (managersRes?.data || [])
+        .filter(manager => manager.id !== employeeData.id)
+        .map(manager => ({
+          id: manager.id,
+          name: manager.name || manager.work_no,
+          workNo: manager.work_no,
+          phone: manager.phone || "",
+          store: manager.phone ? `电话：${manager.phone}` : ""
+        }));
+
+      const selectedManagerIds = (employeeData.manager_ids || []).map(id => Number(id));
+
       this.setData({
         employee,
-        managers: managersRes.data || [],
+        managers: managerOptions,
         selectedManagerIds,
         originalRole: employee.role,
         originalManagerIds: [...selectedManagerIds]
@@ -57,6 +80,8 @@ Page({
     } catch (err) {
       console.error("load data error", err);
       wx.showToast({ title: "加载数据失败", icon: "none" });
+    } finally {
+      this.setData({ loading: false });
     }
   },
 
@@ -76,8 +101,8 @@ Page({
   },
 
   handleManagerSelect(e) {
-    const { managerId } = e.currentTarget.dataset;
-    const { selectedManagerIds } = this.data;
+    const managerId = Number(e.currentTarget.dataset.managerId);
+    const selectedManagerIds = [...this.data.selectedManagerIds];
     const index = selectedManagerIds.indexOf(managerId);
 
     if (index > -1) {
@@ -94,7 +119,7 @@ Page({
 
     // 检查是否有修改
     const roleChanged = employee.role !== originalRole;
-    const managerChanged = JSON.stringify(selectedManagerIds) !== JSON.stringify(originalManagerIds);
+    const managerChanged = !this.arraysEqual(selectedManagerIds, originalManagerIds);
 
     if (!roleChanged && !managerChanged) {
       wx.showToast({ title: "没有修改任何信息", icon: "none" });
@@ -110,35 +135,51 @@ Page({
     wx.showLoading({ title: "保存中..." });
 
     try {
-      let response;
-
-      if (roleChanged && managerChanged) {
-        // 同时修改角色和店长绑定
-        await mockService.updateUserRole(this.data.userId, employee.role);
-        response = await mockService.updateUserManagers(this.data.userId, selectedManagerIds);
-      } else if (roleChanged) {
-        // 只修改角色
-        response = await mockService.updateUserRole(this.data.userId, employee.role);
-      } else {
-        // 只修改店长绑定
-        response = await mockService.updateUserManagers(this.data.userId, selectedManagerIds);
+      if (roleChanged) {
+        const res = await api.admin.updateUserRole(this.data.userId, employee.role);
+        if (res.code !== 200) {
+          throw new Error(res.message || "角色更新失败");
+        }
       }
 
-      if (response.success) {
-        wx.hideLoading();
-        wx.showToast({ title: "员工已更新", icon: "success" });
-        setTimeout(() => {
-          wx.navigateBack();
-        }, 500);
-      } else {
-        wx.hideLoading();
-        wx.showToast({ title: response.message || "更新失败", icon: "none" });
+      if (employee.role === "employee" && managerChanged) {
+        const managerWorkNos = this.getSelectedManagerWorkNos();
+        const res = await api.admin.updateEmployeeManagers(this.data.userId, managerWorkNos);
+        if (res.code !== 200) {
+          throw new Error(res.message || "店长绑定失败");
+        }
       }
+
+      wx.hideLoading();
+      wx.showToast({ title: "员工已更新", icon: "success" });
+      setTimeout(() => {
+        wx.navigateBack();
+      }, 600);
     } catch (err) {
       wx.hideLoading();
-      wx.showToast({ title: "更新异常", icon: "none" });
+      wx.showToast({ title: err.message || "更新异常", icon: "none" });
       console.error(err);
     }
+  },
+
+  arraysEqual(a = [], b = []) {
+    if (a.length !== b.length) {
+      return false;
+    }
+    const sortedA = [...a].sort((x, y) => x - y);
+    const sortedB = [...b].sort((x, y) => x - y);
+    return sortedA.every((val, idx) => val === sortedB[idx]);
+  },
+
+  getSelectedManagerWorkNos() {
+    const { managers, selectedManagerIds } = this.data;
+    const idToWorkNo = new Map();
+    managers.forEach(manager => {
+      idToWorkNo.set(manager.id, manager.workNo);
+    });
+    return selectedManagerIds
+      .map(id => idToWorkNo.get(id))
+      .filter(Boolean);
   },
 
   goBack() {

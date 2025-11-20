@@ -59,3 +59,35 @@ func (r *UserRepository) FindByID(id uint) (*model.User, error) {
 	}
 	return &user, nil
 }
+
+// ListUsers 按条件查询用户列表。
+func (r *UserRepository) ListUsers(role, keyword string) ([]model.User, error) {
+	var users []model.User
+	query := r.db.Model(&model.User{})
+
+	if role != "" {
+		query = query.Where("role = ?", role)
+	}
+	if keyword != "" {
+		like := "%" + keyword + "%"
+		query = query.Where("work_no LIKE ? OR name LIKE ? OR phone LIKE ?", like, like, like)
+	}
+
+	if err := query.Order("id DESC").Find(&users).Error; err != nil {
+		return nil, errors.Wrap(err, "list users")
+	}
+	return users, nil
+}
+
+// FindByIDs 根据 ID 列表批量查询用户。
+func (r *UserRepository) FindByIDs(ids []uint) ([]model.User, error) {
+	if len(ids) == 0 {
+		return nil, nil
+	}
+
+	var users []model.User
+	if err := r.db.Where("id IN ?", ids).Find(&users).Error; err != nil {
+		return nil, errors.Wrap(err, "find users by ids")
+	}
+	return users, nil
+}

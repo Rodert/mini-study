@@ -1,15 +1,14 @@
-const mockService = require("../../services/mockService");
+const api = require("../../services/api");
 const app = getApp();
 
 Page({
   data: {
-    mobile: "",
-    employeeId: "",
+    phone: "",
+    workNo: "",
     name: "",
-    store: "",
     password: "",
     managers: [],
-    selectedManagerIds: [],
+    selectedManagerWorkNos: [],
     loading: false,
     error: ""
   },
@@ -20,33 +19,38 @@ Page({
 
   async loadManagers() {
     try {
-      const res = await mockService.fetchManagers();
-      this.setData({ managers: res.data || [] });
+      const res = await api.user.getManagers();
+      if (res.code === 200) {
+        this.setData({ managers: res.data || [] });
+      } else {
+        this.setData({ error: res.message || "获取店长列表失败" });
+      }
     } catch (err) {
       console.error("fetch managers error", err);
+      this.setData({ error: "获取店长列表失败" });
     }
   },
 
   handleInput(e) {
     const { field } = e.currentTarget.dataset;
     this.setData({
-      [field]: e.detail.value,
+      [field]: e.detail.value.trim(),
       error: ""
     });
   },
 
   handleManagerSelect(e) {
-    const { managerId } = e.currentTarget.dataset;
-    const { selectedManagerIds } = this.data;
-    const index = selectedManagerIds.indexOf(managerId);
+    const { workNo } = e.currentTarget.dataset;
+    const { selectedManagerWorkNos } = this.data;
+    const index = selectedManagerWorkNos.indexOf(workNo);
     
     if (index > -1) {
-      selectedManagerIds.splice(index, 1);
+      selectedManagerWorkNos.splice(index, 1);
     } else {
-      selectedManagerIds.push(managerId);
+      selectedManagerWorkNos.push(workNo);
     }
     
-    this.setData({ selectedManagerIds, error: "" });
+    this.setData({ selectedManagerWorkNos, error: "" });
   },
 
   async handleSubmit() {
@@ -57,25 +61,39 @@ Page({
 
     try {
       const payload = {
-        mobile: this.data.mobile,
-        employeeId: this.data.employeeId,
+        work_no: this.data.workNo,
+        phone: this.data.phone,
         name: this.data.name,
-        store: this.data.store,
         password: this.data.password,
-        role: "employee",
-        managerIds: this.data.selectedManagerIds
+        manager_ids: this.data.selectedManagerWorkNos
       };
-      const response = await mockService.register(payload);
+      const response = await api.user.register(payload);
 
-      if (!response.success) {
+      if (response.code !== 200) {
         this.setData({ error: response.message || "注册失败" });
         return;
       }
 
-      const user = response.data;
+      // 自动登录
+      const loginRes = await api.user.login({
+        work_no: payload.work_no,
+        password: payload.password
+      });
+      if (loginRes.code !== 200) {
+        this.setData({ error: loginRes.message || "登录失败，请手动登录" });
+        return;
+      }
+
+      const profileRes = await api.user.getCurrentUser();
+      if (profileRes.code !== 200) {
+        this.setData({ error: profileRes.message || "获取用户信息失败" });
+        return;
+      }
+
+      const user = profileRes.data;
       app.globalData.user = user;
       wx.setStorageSync("user", user);
-      wx.showToast({ title: "注册成功", icon: "success" });
+      wx.showToast({ title: "注册并登录成功", icon: "success" });
       setTimeout(() => {
         wx.reLaunch({ url: "/pages/home/index" });
       }, 500);
@@ -88,11 +106,11 @@ Page({
   },
 
   validate() {
-    if (!this.data.mobile || this.data.mobile.length !== 11) {
+    if (!this.data.phone || this.data.phone.length !== 11) {
       this.setData({ error: "请输入 11 位手机号" });
       return false;
     }
-    if (!this.data.employeeId) {
+    if (!this.data.workNo) {
       this.setData({ error: "请输入工号" });
       return false;
     }
@@ -104,7 +122,7 @@ Page({
       this.setData({ error: "请输入密码" });
       return false;
     }
-    if (this.data.selectedManagerIds.length === 0) {
+    if (this.data.selectedManagerWorkNos.length === 0) {
       this.setData({ error: "请至少选择一个店长" });
       return false;
     }

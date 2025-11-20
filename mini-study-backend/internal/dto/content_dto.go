@@ -47,6 +47,7 @@ type ContentCategoryResponse struct {
 	Name      string `json:"name" example:"产品培训"`       // 分类名称
 	RoleScope string `json:"role_scope" example:"both"` // 可见角色范围：employee(员工) manager(店长) both(全部)
 	SortOrder int    `json:"sort_order" example:"1"`    // 排序序号
+	Count     int64  `json:"count" example:"5"`         // 该分类下已发布且对当前用户可见的课程数量
 }
 
 // ContentResponse is returned to clients.
@@ -67,8 +68,8 @@ type ContentResponse struct {
 
 // LearningProgressRequest upserts learning progress.
 type LearningProgressRequest struct {
-	ContentID     uint  `json:"content_id" binding:"required" example:"1"`             // 内容ID
-	VideoPosition int64 `json:"video_position" binding:"required,gte=0" example:"120"` // 视频播放位置（秒）
+	ContentID     uint  `json:"content_id" binding:"required" example:"1"`              // 内容ID
+	VideoPosition int64 `json:"video_position" binding:"gte=0" example:"120"`           // 视频播放位置（秒），0表示文档类型或初始状态
 }
 
 // LearningProgressResponse returns progress info.
@@ -78,4 +79,22 @@ type LearningProgressResponse struct {
 	DurationSeconds int64  `json:"duration_seconds" example:"3600"` // 视频总时长（秒）
 	Progress        int    `json:"progress" example:"3"`            // 学习进度百分比（0-100）
 	Status          string `json:"status" example:"in_progress"`    // 学习状态：not_started(未开始) in_progress(进行中) completed(已完成)
+}
+
+// UserLearningStatsResponse returns learning statistics for a user.
+type UserLearningStatsResponse struct {
+	UserID         uint    `json:"user_id" example:"1"`                    // 用户ID
+	CompletedCount int64   `json:"completed_count" example:"5"`            // 已完成的学习内容数量
+	TotalCount     int64   `json:"total_count" example:"10"`              // 已开始学习的内容总数
+	TotalContents  int64   `json:"total_contents" example:"20"`           // 该角色可见的已发布内容总数
+	CompletionRate float64 `json:"completion_rate" example:"25.0"`        // 完成率（百分比）
+}
+
+// ContentCompletionStatsResponse returns completion statistics for a content.
+type ContentCompletionStatsResponse struct {
+	ContentID      uint    `json:"content_id" example:"1"`                // 内容ID
+	ContentTitle   string  `json:"content_title" example:"产品培训视频"`      // 内容标题
+	CompletedCount int64   `json:"completed_count" example:"15"`           // 已完成学习的用户数量
+	TotalCount     int64   `json:"total_count" example:"30"`              // 已开始学习的用户总数
+	CompletionRate float64 `json:"completion_rate" example:"50.0"`        // 完成率（百分比）
 }
