@@ -43,7 +43,7 @@ Page({
           title: item.title,
           summary: item.summary,
           type: item.type,
-          cover: item.cover_url,
+          cover: item.cover_url ? api.buildFileUrl(item.cover_url) : "",
           duration: this.formatDuration(item.duration_seconds)
         }));
         this.setData({ courses });

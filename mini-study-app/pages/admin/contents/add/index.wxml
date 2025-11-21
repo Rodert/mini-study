@@ -61,7 +61,28 @@
 
     <view class="form-item">
       <view class="form-label">封面图片</view>
-      <input class="form-input" placeholder="请输入封面图片 URL" value="{{form.cover_url}}" data-field="cover_url" bindinput="handleInput" />
+      <view class="file-upload">
+        <input
+          class="form-input readonly"
+          placeholder="请通过上传获取封面图片路径"
+          value="{{form.cover_url}}"
+          disabled
+        />
+        <button
+          class="btn-upload"
+          loading="{{uploadingCover}}"
+          disabled="{{uploadingCover}}"
+          bindtap="handleUploadCover"
+        >
+          {{uploadingCover ? '上传中...' : '上传封面'}}
+        </button>
+      </view>
+      <view class="upload-tip">
+        支持 jpg/png 等常见图片格式，上传后自动填写路径
+      </view>
+      <view class="cover-preview" wx:if="{{form.cover_url}}">
+        <image class="cover-image" src="{{coverPreviewUrl}}" mode="aspectFill" bindtap="handleUploadCover" />
+      </view>
     </view>
 
     <view class="form-item">

@@ -73,7 +73,7 @@ Page({
           title: detail.title,
           type: detail.type,
           summary: detail.summary,
-          cover: detail.cover_url,
+          cover: detail.cover_url ? api.buildFileUrl(detail.cover_url) : "",
           duration: this.formatDuration(detail.duration_seconds),
           durationSeconds: detail.duration_seconds || 0, // 保存原始时长（秒）
           mediaUrl,

@@ -5,7 +5,7 @@ import "time"
 // AdminCreateBannerRequest payload for creating banner.
 type AdminCreateBannerRequest struct {
 	Title        string     `json:"title" binding:"required,min=1,max=255" example:"春季促销活动"`                    // 轮播图标题
-	ImageURL     string     `json:"image_url" binding:"required,url" example:"https://example.com/banner.jpg"`  // 图片URL
+	ImageURL     string     `json:"image_url" binding:"required" example:"/uploads/banner.jpg"`                  // 图片URL或路径
 	LinkURL      string     `json:"link_url" binding:"required,url" example:"https://example.com/promotion"`     // 跳转链接
 	VisibleRoles string     `json:"visible_roles" binding:"omitempty,oneof=employee manager both" example:"both"` // 可见角色：employee(员工) manager(店长) both(全部)
 	SortOrder    int        `json:"sort_order" example:"1"`                                                      // 排序序号
@@ -17,7 +17,7 @@ type AdminCreateBannerRequest struct {
 // AdminUpdateBannerRequest payload for updating banner.
 type AdminUpdateBannerRequest struct {
 	Title        string     `json:"title" binding:"omitempty,min=1,max=255" example:"春季促销活动(更新)"`           // 轮播图标题
-	ImageURL     string     `json:"image_url" binding:"omitempty,url" example:"https://example.com/banner.jpg"` // 图片URL
+	ImageURL     string     `json:"image_url" binding:"omitempty" example:"/uploads/banner.jpg"`                 // 图片URL或路径
 	LinkURL      string     `json:"link_url" binding:"omitempty,url" example:"https://example.com/promotion"`    // 跳转链接
 	VisibleRoles string     `json:"visible_roles" binding:"omitempty,oneof=employee manager both" example:"both"` // 可见角色：employee(员工) manager(店长) both(全部)
 	SortOrder    *int       `json:"sort_order" example:"1"`                                                      // 排序序号

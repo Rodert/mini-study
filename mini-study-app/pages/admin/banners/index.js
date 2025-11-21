@@ -19,6 +19,8 @@ Page({
     loading: false,
     showForm: false,
     editingId: null,
+    uploadingImage: false,
+    imagePreviewUrl: "",
     form: createDefaultForm(),
     visibleRoleOptions: [
       { label: "全部可见", value: "both" },
@@ -49,7 +51,11 @@ Page({
     try {
       const res = await api.admin.listBanners();
       if (res.code === 200) {
-        this.setData({ banners: res.data || [] });
+        const banners = (res.data || []).map((item) => ({
+          ...item,
+          image_preview_url: item.image_url ? api.buildFileUrl(item.image_url) : ""
+        }));
+        this.setData({ banners });
       } else {
         wx.showToast({ title: res.message || "加载失败", icon: "none" });
       }
@@ -74,7 +80,8 @@ Page({
       showForm: true,
       editingId: null,
       form,
-      visibleRoleIndex: this.getRoleIndex(form.visible_roles)
+      visibleRoleIndex: this.getRoleIndex(form.visible_roles),
+      imagePreviewUrl: ""
     });
   },
 
@@ -98,6 +105,8 @@ Page({
       form,
       visibleRoleIndex: this.getRoleIndex(form.visible_roles)
     });
+    // 更新预览URL
+    this.updateImagePreview(form.image_url);
   },
 
   closeForm() {
@@ -110,6 +119,109 @@ Page({
     if (!field) return;
     this.setData({
       [`form.${field}`]: value
+    });
+    // 如果修改的是图片URL，更新预览URL
+    if (field === "image_url") {
+      this.updateImagePreview(value);
+    }
+  },
+
+  updateImagePreview(imageUrl) {
+    const previewUrl = imageUrl ? api.buildFileUrl(imageUrl) : "";
+    this.setData({ imagePreviewUrl: previewUrl });
+  },
+
+  handleUploadImage() {
+    if (this.data.uploadingImage) return;
+    wx.chooseImage({
+      count: 1,
+      sizeType: ["compressed", "original"],
+      sourceType: ["album", "camera"],
+      success: (res) => {
+        const filePath = res.tempFilePaths && res.tempFilePaths[0];
+        if (!filePath) {
+          wx.showToast({ title: "图片路径无效", icon: "none" });
+          return;
+        }
+        this.uploadImageToServer(filePath);
+      },
+      fail: (err) => {
+        if (err && err.errMsg !== "chooseImage:fail cancel") {
+          wx.showToast({ title: "选择图片失败", icon: "none" });
+        }
+      }
+    });
+  },
+
+  async uploadImageToServer(filePath) {
+    if (!filePath) return;
+    let usablePath = filePath;
+    try {
+      usablePath = await this.ensureWxFilePath(filePath);
+    } catch (err) {
+      console.error("prepare image path error", err);
+      wx.showToast({ title: err.message || "图片不可用，请重新选择", icon: "none" });
+      return;
+    }
+
+    this.setData({ uploadingImage: true });
+    wx.showLoading({ title: "上传图片中..." });
+    try {
+      const res = await api.file.upload(usablePath);
+      if (res.code === 200 && res.data && res.data.path) {
+        const imagePath = res.data.path;
+        this.setData({
+          "form.image_url": imagePath
+        });
+        this.updateImagePreview(imagePath);
+        wx.showToast({ title: "图片上传成功", icon: "success" });
+      } else {
+        wx.showToast({ title: res.message || "上传失败", icon: "none" });
+      }
+    } catch (err) {
+      console.error("upload image error", err);
+      wx.showToast({ title: err.message || "上传失败", icon: "none" });
+    } finally {
+      wx.hideLoading();
+      this.setData({ uploadingImage: false });
+    }
+  },
+
+  ensureWxFilePath(filePath) {
+    return new Promise((resolve, reject) => {
+      if (!filePath) {
+        reject(new Error("文件路径无效"));
+        return;
+      }
+
+      const normalizedPath = filePath.trim();
+      const isTempScheme =
+        normalizedPath.startsWith("wxfile://") || normalizedPath.startsWith("http://tmp/");
+      if (isTempScheme) {
+        resolve(normalizedPath);
+        return;
+      }
+
+      const fs = wx.getFileSystemManager();
+      const dotIndex = normalizedPath.lastIndexOf(".");
+      const ext = dotIndex !== -1 ? normalizedPath.slice(dotIndex) : "";
+      const targetPath = `${wx.env.USER_DATA_PATH}/upload_${Date.now()}${ext}`;
+      fs.readFile({
+        filePath: normalizedPath,
+        success: (readRes) => {
+          fs.writeFile({
+            filePath: targetPath,
+            data: readRes.data,
+            success: () => resolve(targetPath),
+            fail: (err) => {
+              reject(err || new Error("写入临时文件失败"));
+            }
+          });
+        },
+        fail: (err) => {
+          reject(err || new Error("无法读取文件"));
+        }
+      });
     });
   },
 
@@ -136,7 +248,7 @@ Page({
       return false;
     }
     if (!form.image_url || !form.image_url.trim()) {
-      wx.showToast({ title: "请输入图片链接", icon: "none" });
+      wx.showToast({ title: "请上传图片", icon: "none" });
       return false;
     }
     if (!form.link_url || !form.link_url.trim()) {

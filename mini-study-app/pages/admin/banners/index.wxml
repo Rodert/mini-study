@@ -12,7 +12,7 @@
 
     <view class="banner-list" wx:if="{{banners.length}}">
       <view class="banner-item" wx:for="{{banners}}" wx:key="id">
-        <image class="banner-cover" src="{{item.image_url}}" mode="aspectFill" />
+        <image class="banner-cover" src="{{item.image_preview_url}}" mode="aspectFill" />
         <view class="banner-info">
           <view class="banner-title">
             {{item.title}}
@@ -51,8 +51,29 @@
       </view>
 
       <view class="form-item">
-        <view class="form-label">图片链接</view>
-        <input class="form-input" placeholder="请输入图片 URL" value="{{form.image_url}}" data-field="image_url" bindinput="handleInput" />
+        <view class="form-label">图片</view>
+        <view class="file-upload">
+          <input
+            class="form-input readonly"
+            placeholder="请通过上传获取图片路径"
+            value="{{form.image_url}}"
+            disabled
+          />
+          <button
+            class="btn-upload"
+            loading="{{uploadingImage}}"
+            disabled="{{uploadingImage}}"
+            bindtap="handleUploadImage"
+          >
+            {{uploadingImage ? '上传中...' : '上传图片'}}
+          </button>
+        </view>
+        <view class="upload-tip">
+          支持 jpg/png 等常见图片格式，上传后自动填写路径
+        </view>
+        <view class="image-preview" wx:if="{{form.image_url}}">
+          <image class="preview-image" src="{{imagePreviewUrl}}" mode="aspectFill" bindtap="handleUploadImage" />
+        </view>
       </view>
 
       <view class="form-item">

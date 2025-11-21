@@ -1,0 +1,47 @@
+[
+  {
+    "title": "产品培训视频 - 基础篇",
+    "type": "video",
+    "category_id": 1,
+    "file_path": "/uploads/video-basic.mp4",
+    "cover_url": "./covers/basic.jpg",
+    "summary": "本视频介绍产品的基础功能和操作方法",
+    "visible_roles": "both",
+    "status": "published",
+    "duration_seconds": 1800
+  },
+  {
+    "title": "产品培训视频 - 进阶篇",
+    "type": "video",
+    "category_id": 1,
+    "file_path": "/uploads/video-advanced.mp4",
+    "cover_url": "./covers/advanced.jpg",
+    "summary": "深入讲解产品的高级功能和最佳实践",
+    "visible_roles": "manager",
+    "status": "published",
+    "duration_seconds": 3600
+  },
+  {
+    "title": "操作手册 - PDF",
+    "type": "doc",
+    "category_id": 2,
+    "file_path": "/uploads/manual.pdf",
+    "cover_url": "./covers/manual.jpg",
+    "summary": "详细的产品操作手册",
+    "visible_roles": "both",
+    "status": "published",
+    "duration_seconds": 0
+  },
+  {
+    "title": "安全培训文档",
+    "type": "doc",
+    "category_id": 3,
+    "file_path": "/uploads/safety.doc",
+    "cover_url": "",
+    "summary": "安全操作规范培训文档",
+    "visible_roles": "employee",
+    "status": "published",
+    "duration_seconds": 0
+  }
+]
+

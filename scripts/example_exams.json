@@ -1,0 +1,247 @@
+[
+  {
+    "title": "产品知识基础考试",
+    "description": "测试对产品基础知识的掌握程度",
+    "status": "published",
+    "target_role": "employee",
+    "time_limit_minutes": 30,
+    "pass_score": 60,
+    "questions": [
+      {
+        "type": "single",
+        "stem": "产品的核心功能是什么？",
+        "score": 10,
+        "analysis": "产品的核心功能包括用户管理、数据分析和报告生成等。",
+        "options": [
+          {
+            "label": "A",
+            "content": "用户管理和数据分析",
+            "is_correct": true,
+            "sort_order": 0
+          },
+          {
+            "label": "B",
+            "content": "仅用户管理",
+            "is_correct": false,
+            "sort_order": 1
+          },
+          {
+            "label": "C",
+            "content": "仅数据分析",
+            "is_correct": false,
+            "sort_order": 2
+          },
+          {
+            "label": "D",
+            "content": "仅报告生成",
+            "is_correct": false,
+            "sort_order": 3
+          }
+        ]
+      },
+      {
+        "type": "single",
+        "stem": "以下哪个不是产品的优势？",
+        "score": 10,
+        "analysis": "产品的主要优势包括易用性、高性能和可扩展性，但不包括复杂的学习曲线。",
+        "options": [
+          {
+            "label": "A",
+            "content": "易用性",
+            "is_correct": false,
+            "sort_order": 0
+          },
+          {
+            "label": "B",
+            "content": "高性能",
+            "is_correct": false,
+            "sort_order": 1
+          },
+          {
+            "label": "C",
+            "content": "复杂的学习曲线",
+            "is_correct": true,
+            "sort_order": 2
+          },
+          {
+            "label": "D",
+            "content": "可扩展性",
+            "is_correct": false,
+            "sort_order": 3
+          }
+        ]
+      },
+      {
+        "type": "multiple",
+        "stem": "产品支持哪些数据格式？（多选）",
+        "score": 15,
+        "analysis": "产品支持 CSV、JSON 和 Excel 等多种数据格式。",
+        "options": [
+          {
+            "label": "A",
+            "content": "CSV",
+            "is_correct": true,
+            "sort_order": 0
+          },
+          {
+            "label": "B",
+            "content": "JSON",
+            "is_correct": true,
+            "sort_order": 1
+          },
+          {
+            "label": "C",
+            "content": "Excel",
+            "is_correct": true,
+            "sort_order": 2
+          },
+          {
+            "label": "D",
+            "content": "Word",
+            "is_correct": false,
+            "sort_order": 3
+          }
+        ]
+      },
+      {
+        "type": "single",
+        "stem": "产品的目标用户群体是？",
+        "score": 10,
+        "analysis": "产品主要面向中小企业和个人用户。",
+        "options": [
+          {
+            "label": "A",
+            "content": "大型企业",
+            "is_correct": false,
+            "sort_order": 0
+          },
+          {
+            "label": "B",
+            "content": "中小企业和个人用户",
+            "is_correct": true,
+            "sort_order": 1
+          },
+          {
+            "label": "C",
+            "content": "仅大型企业",
+            "is_correct": false,
+            "sort_order": 2
+          },
+          {
+            "label": "D",
+            "content": "仅个人用户",
+            "is_correct": false,
+            "sort_order": 3
+          }
+        ]
+      },
+      {
+        "type": "multiple",
+        "stem": "使用产品时需要注意哪些事项？（多选）",
+        "score": 15,
+        "analysis": "使用产品时需要定期备份数据、保护账号安全，但不需要定期更换服务器。",
+        "options": [
+          {
+            "label": "A",
+            "content": "定期备份数据",
+            "is_correct": true,
+            "sort_order": 0
+          },
+          {
+            "label": "B",
+            "content": "保护账号安全",
+            "is_correct": true,
+            "sort_order": 1
+          },
+          {
+            "label": "C",
+            "content": "定期更换服务器",
+            "is_correct": false,
+            "sort_order": 2
+          },
+          {
+            "label": "D",
+            "content": "及时更新软件版本",
+            "is_correct": true,
+            "sort_order": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "高级管理知识考试",
+    "description": "针对店长的高级管理知识测试",
+    "status": "published",
+    "target_role": "manager",
+    "time_limit_minutes": 60,
+    "pass_score": 70,
+    "questions": [
+      {
+        "type": "single",
+        "stem": "作为店长，最重要的职责是什么？",
+        "score": 20,
+        "analysis": "店长的主要职责是团队管理和业绩达成。",
+        "options": [
+          {
+            "label": "A",
+            "content": "团队管理和业绩达成",
+            "is_correct": true,
+            "sort_order": 0
+          },
+          {
+            "label": "B",
+            "content": "仅业绩达成",
+            "is_correct": false,
+            "sort_order": 1
+          },
+          {
+            "label": "C",
+            "content": "仅团队管理",
+            "is_correct": false,
+            "sort_order": 2
+          },
+          {
+            "label": "D",
+            "content": "日常事务处理",
+            "is_correct": false,
+            "sort_order": 3
+          }
+        ]
+      },
+      {
+        "type": "multiple",
+        "stem": "有效的团队管理包括哪些方面？（多选）",
+        "score": 30,
+        "analysis": "有效的团队管理包括激励员工、制定目标和定期沟通，但不需要事无巨细的监督。",
+        "options": [
+          {
+            "label": "A",
+            "content": "激励员工",
+            "is_correct": true,
+            "sort_order": 0
+          },
+          {
+            "label": "B",
+            "content": "制定目标",
+            "is_correct": true,
+            "sort_order": 1
+          },
+          {
+            "label": "C",
+            "content": "定期沟通",
+            "is_correct": true,
+            "sort_order": 2
+          },
+          {
+            "label": "D",
+            "content": "事无巨细的监督",
+            "is_correct": false,
+            "sort_order": 3
+          }
+        ]
+      }
+    ]
+  }
+]
+

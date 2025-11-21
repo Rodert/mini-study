@@ -33,7 +33,7 @@ Page({
         const banners = (res.data || []).map((item) => ({
           id: item.id,
           title: item.title,
-          cover: item.image_url,
+          cover: item.image_url ? api.buildFileUrl(item.image_url) : "",
           url: item.link_url,
           type: item.visible_roles
         }));

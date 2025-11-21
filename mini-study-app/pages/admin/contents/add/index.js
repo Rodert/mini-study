@@ -24,6 +24,8 @@ Page({
     ],
     statusIndex: 0,
     uploadingFile: false,
+    uploadingCover: false,
+    coverPreviewUrl: "",
     form: {
       title: "",
       type: "doc",
@@ -69,9 +71,19 @@ Page({
   handleInput(e) {
     const { field } = e.currentTarget.dataset;
     if (!field) return;
+    const value = e.detail.value;
     this.setData({
-      [`form.${field}`]: e.detail.value
+      [`form.${field}`]: value
     });
+    // 如果修改的是封面URL，更新预览URL
+    if (field === "cover_url") {
+      this.updateCoverPreview(value);
+    }
+  },
+
+  updateCoverPreview(coverUrl) {
+    const previewUrl = coverUrl ? api.buildFileUrl(coverUrl) : "";
+    this.setData({ coverPreviewUrl: previewUrl });
   },
 
   handleCategoryChange(e) {
@@ -128,10 +140,7 @@ Page({
       wx.showToast({ title: "请输入文件地址", icon: "none" });
       return false;
     }
-    if (!form.cover_url || !form.cover_url.trim()) {
-      wx.showToast({ title: "请输入封面链接", icon: "none" });
-      return false;
-    }
+    // 封面图改为可选，可以通过上传获取
     if (!form.summary || !form.summary.trim()) {
       wx.showToast({ title: "请输入内容简介", icon: "none" });
       return false;
@@ -276,6 +285,62 @@ Page({
     });
   },
 
+  handleUploadCover() {
+    if (this.data.uploadingCover) return;
+    wx.chooseImage({
+      count: 1,
+      sizeType: ["compressed", "original"],
+      sourceType: ["album", "camera"],
+      success: (res) => {
+        const filePath = res.tempFilePaths && res.tempFilePaths[0];
+        if (!filePath) {
+          wx.showToast({ title: "图片路径无效", icon: "none" });
+          return;
+        }
+        this.uploadCoverToServer(filePath);
+      },
+      fail: (err) => {
+        if (err && err.errMsg !== "chooseImage:fail cancel") {
+          wx.showToast({ title: "选择图片失败", icon: "none" });
+        }
+      }
+    });
+  },
+
+  async uploadCoverToServer(filePath) {
+    if (!filePath) return;
+    let usablePath = filePath;
+    try {
+      usablePath = await this.ensureWxFilePath(filePath);
+    } catch (err) {
+      console.error("prepare cover path error", err);
+      wx.showToast({ title: err.message || "图片不可用，请重新选择", icon: "none" });
+      return;
+    }
+
+    this.setData({ uploadingCover: true });
+    wx.showLoading({ title: "上传封面中..." });
+    try {
+      const res = await api.file.upload(usablePath);
+      if (res.code === 200 && res.data && res.data.path) {
+        const coverPath = res.data.path;
+        this.setData({
+          "form.cover_url": coverPath
+        });
+        this.updateCoverPreview(coverPath);
+        wx.showToast({ title: "封面上传成功", icon: "success" });
+      } else {
+        wx.showToast({ title: res.message || "上传失败", icon: "none" });
+      }
+    } catch (err) {
+      console.error("upload cover error", err);
+      wx.showToast({ title: err.message || "上传失败", icon: "none" });
+    } finally {
+      wx.hideLoading();
+      this.setData({ uploadingCover: false });
+    }
+  },
+
   async handleSubmit() {
     if (!this.validateForm()) return;
 
@@ -285,7 +350,7 @@ Page({
       type: form.type,
       category_id: form.category_id,
       file_path: form.file_path.trim(),
-      cover_url: form.cover_url.trim(),
+      cover_url: form.cover_url ? form.cover_url.trim() : "",
       summary: form.summary.trim(),
       visible_roles: form.visible_roles,
       status: form.status,
