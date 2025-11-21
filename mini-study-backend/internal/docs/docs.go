@@ -718,6 +718,81 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/admin/points": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "返回所有用户的积分列表，按积分降序排列，支持分页和搜索",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理后台-积分"
+                ],
+                "summary": "管理员查看所有用户积分列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "关键词（工号/姓名/手机号）",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "角色过滤（employee/manager/admin）",
+                        "name": "role",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码，从1开始",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量，默认20，最大100",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.AdminListPointsResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/admin/users": {
             "get": {
                 "security": [
@@ -887,6 +962,76 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/users/{id}/points": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "返回指定用户的积分总数及明细，支持分页",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理后台-积分"
+                ],
+                "summary": "管理员查看用户积分明细",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "用户ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码，从1开始",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量，默认20，最大100",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/utils.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.UserPointDetailResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/utils.Response"
                         }
@@ -2119,9 +2264,9 @@ const docTemplate = `{
                     "example": "2024-12-31T23:59:59Z"
                 },
                 "image_url": {
-                    "description": "图片URL",
+                    "description": "图片URL或路径",
                     "type": "string",
-                    "example": "https://example.com/banner.jpg"
+                    "example": "/uploads/banner.jpg"
                 },
                 "link_url": {
                     "description": "跳转链接",
@@ -2418,6 +2563,20 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.AdminListPointsResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.UserPointListItem"
+                    }
+                },
+                "pagination": {
+                    "$ref": "#/definitions/dto.Pagination"
+                }
+            }
+        },
         "dto.AdminUpdateBannerRequest": {
             "type": "object",
             "properties": {
@@ -2427,9 +2586,9 @@ const docTemplate = `{
                     "example": "2024-12-31T23:59:59Z"
                 },
                 "image_url": {
-                    "description": "图片URL",
+                    "description": "图片URL或路径",
                     "type": "string",
-                    "example": "https://example.com/banner.jpg"
+                    "example": "/uploads/banner.jpg"
                 },
                 "link_url": {
                     "description": "跳转链接",
@@ -2604,6 +2763,10 @@ const docTemplate = `{
                     "description": "手机号",
                     "type": "string",
                     "example": "13800138000"
+                },
+                "points": {
+                    "description": "积分总数",
+                    "type": "integer"
                 },
                 "role": {
                     "description": "角色：employee(员工) manager(店长) admin(管理员)",
@@ -3238,6 +3401,62 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.Pagination": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "page_size": {
+                    "type": "integer",
+                    "example": 20
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 100
+                }
+            }
+        },
+        "dto.PointTransactionResponse": {
+            "type": "object",
+            "properties": {
+                "change": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "content_id": {
+                    "type": "integer",
+                    "example": 12
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "完成课程《产品介绍》"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "memo": {
+                    "type": "string"
+                },
+                "reference_id": {
+                    "type": "string",
+                    "example": "content:12"
+                },
+                "source": {
+                    "type": "string",
+                    "example": "content_completion"
+                },
+                "user_id": {
+                    "type": "integer",
+                    "example": 10
+                }
+            }
+        },
         "dto.RefreshTokenRequest": {
             "type": "object",
             "required": [
@@ -3341,6 +3560,66 @@ const docTemplate = `{
                     "description": "用户ID",
                     "type": "integer",
                     "example": 1
+                }
+            }
+        },
+        "dto.UserPointDetailResponse": {
+            "type": "object",
+            "properties": {
+                "pagination": {
+                    "$ref": "#/definitions/dto.Pagination"
+                },
+                "total_points": {
+                    "type": "integer"
+                },
+                "transactions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.PointTransactionResponse"
+                    }
+                },
+                "user": {
+                    "$ref": "#/definitions/dto.UserResponse"
+                }
+            }
+        },
+        "dto.UserPointListItem": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "用户ID",
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string",
+                    "example": "张三"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string",
+                    "example": "13800138000"
+                },
+                "points": {
+                    "description": "积分总数",
+                    "type": "integer",
+                    "example": 100
+                },
+                "role": {
+                    "description": "角色：employee(员工) manager(店长) admin(管理员)",
+                    "type": "string",
+                    "example": "employee"
+                },
+                "status": {
+                    "description": "状态：true(启用) false(禁用)",
+                    "type": "boolean",
+                    "example": true
+                },
+                "work_no": {
+                    "description": "工号",
+                    "type": "string",
+                    "example": "E001"
                 }
             }
         },
