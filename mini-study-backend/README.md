@@ -352,7 +352,7 @@ make swagger
 安装 Air：
 
 ```bash
-go install github.com/cosmtrek/air@latest
+go install github.com/air-verse/air@latest
 ```
 
 使用 Air 启动服务（自动热重载）：

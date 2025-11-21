@@ -9,7 +9,7 @@
 - **MySQL**: 5.7+ 或 8.0+
 - **Air** (可选): 用于热重载开发，推荐安装
   ```bash
-  go install github.com/cosmtrek/air@latest
+  go install github.com/air-verse/air@latest
   ```
 
 ### 前端环境
@@ -251,7 +251,7 @@ make run
 
 **解决方案**:
 ```bash
-go install github.com/cosmtrek/air@latest
+go install github.com/air-verse/air@latest
 # 确保 $GOPATH/bin 或 $GOBIN 在 PATH 中
 ```
 
