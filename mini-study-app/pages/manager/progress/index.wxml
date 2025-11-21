@@ -1,45 +1,121 @@
-<view class="page-wrap">
-  <view class="section-title">考试进度</view>
-  <view class="grid auto-fit" wx:if="{{progress.length}}">
-    <view class="card progress-card" wx:for="{{progress}}" wx:key="id">
-      <text class="course-title">{{item.title}}</text>
-      <view class="progress-bar">
-        <view class="progress-fill" style="width: {{item.passRate}}%;"></view>
-      </view>
-      <view class="progress-meta">
-        <text>通过率 {{item.passRate}}%</text>
-        <text>平均 {{item.avgScore}} 分</text>
-        <text>{{item.attemptCount}} 人次</text>
+<view class="progress-page">
+  <!-- 考试进度部分 -->
+  <view class="section">
+    <view class="section-header">
+      <view class="section-title-group">
+        <text class="section-icon">📊</text>
+        <view>
+          <view class="section-title">考试进度</view>
+          <view class="section-subtitle">各考试通过率统计</view>
+        </view>
       </view>
     </view>
+    
+    <view class="grid auto-fit" wx:if="{{progress.length}}">
+      <view class="card progress-card" wx:for="{{progress}}" wx:key="id">
+        <view class="progress-card-header">
+          <view class="progress-icon">📝</view>
+          <text class="course-title">{{item.title}}</text>
+        </view>
+        <view class="progress-bar-wrapper">
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{item.passRate}}%;"></view>
+          </view>
+          <text class="progress-percent">{{item.passRate}}%</text>
+        </view>
+        <view class="progress-meta">
+          <view class="meta-item">
+            <text class="meta-label">通过率</text>
+            <text class="meta-value">{{item.passRate}}%</text>
+          </view>
+          <view class="meta-item">
+            <text class="meta-label">平均分</text>
+            <text class="meta-value">{{item.avgScore}} 分</text>
+          </view>
+          <view class="meta-item">
+            <text class="meta-label">参考人数</text>
+            <text class="meta-value">{{item.attemptCount}} 人</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="empty-block" wx:else>
+      <text class="empty-icon">📋</text>
+      <text class="empty-text">暂无考试数据</text>
+    </view>
   </view>
-  <view class="empty-block" wx:else>暂无考试数据</view>
 
-  <view class="section-title">学员完成情况</view>
-  <view wx:if="{{employees.length}}">
-  <view class="card employee-card" wx:for="{{employees}}" wx:key="id">
-    <view class="employee-header">
-      <view>
-        <text class="employee-name">{{item.name}}</text>
-          <text class="employee-store">工号：{{item.workNo}}</text>
+  <!-- 学员完成情况部分 -->
+  <view class="section">
+    <view class="section-header">
+      <view class="section-title-group">
+        <text class="section-icon">👥</text>
+        <view>
+          <view class="section-title">学员完成情况</view>
+          <view class="section-subtitle">员工学习进度跟踪</view>
+        </view>
       </view>
-      <text class="employee-percent">{{item.percent}}%</text>
     </view>
-    <view class="progress-bar small">
-      <view class="progress-fill" style="width: {{item.percent}}%;"></view>
+    
+    <view wx:if="{{employees.length}}">
+      <view class="card employee-card" wx:for="{{employees}}" wx:key="id">
+        <view class="employee-header">
+          <view class="employee-info-group">
+            <view class="employee-avatar">{{item.avatar}}</view>
+            <view class="employee-info">
+              <text class="employee-name">{{item.name}}</text>
+              <text class="employee-store">工号：{{item.workNo}}</text>
+            </view>
+          </view>
+          <view class="employee-percent-badge">
+            <text class="employee-percent">{{item.percent}}%</text>
+          </view>
+        </view>
+        
+        <view class="progress-bar-wrapper">
+          <view class="progress-bar small">
+            <view class="progress-fill" style="width: {{item.percent}}%;"></view>
+          </view>
+        </view>
+        
+        <view class="employee-stats">
+          <view class="stat-item">
+            <text class="stat-label">已完成</text>
+            <text class="stat-value highlight">{{item.completed}}/{{item.total}}</text>
+          </view>
+          <view class="stat-divider"></view>
+          <view class="stat-item">
+            <text class="stat-label">待补</text>
+            <text class="stat-value warning">{{item.pending}}</text>
+          </view>
+        </view>
+        
+        <view class="exam-info" wx:if="{{item.latestExam}}">
+          <view class="exam-info-header">
+            <text class="exam-label">最新成绩</text>
+            <view class="exam-score-badge {{item.latestExam.pass ? 'pass' : 'fail'}}">
+              <text>{{item.latestExam.score}} 分</text>
+            </view>
+          </view>
+          <view class="exam-details">
+            <text class="exam-title">{{item.latestExam.examTitle}}</text>
+            <text class="exam-status {{item.latestExam.pass ? 'text-pass' : 'text-fail'}}">
+              {{item.latestExam.pass ? '✓ 及格' : '✗ 未及格'}}
+            </text>
+          </view>
+        </view>
+        <view class="exam-info empty" wx:else>
+          <text class="exam-empty-text">尚未参加考试</text>
+        </view>
+      </view>
     </view>
-    <view class="employee-meta">
-      已完成：{{item.completed}} / {{item.total}} · 待补：{{item.pending}}
-      </view>
-      <view class="exam-meta" wx:if="{{item.latestExam}}">
-        最新成绩：{{item.latestExam.examTitle}} · {{item.latestExam.score}} 分 ·
-        <text class="{{item.latestExam.pass ? 'text-pass' : 'text-fail'}}">
-          {{item.latestExam.pass ? '及格' : '未及格'}}
-        </text>
-      </view>
-      <view class="exam-meta muted" wx:else>尚未参加考试</view>
+    <view class="empty-block" wx:else>
+      <text class="empty-icon">👤</text>
+      <text class="empty-text">暂无员工统计</text>
     </view>
   </view>
-  <view class="empty-block" wx:else>暂无员工统计</view>
+  
+  <!-- 底部空间 -->
+  <view class="bottom-space"></view>
 </view>
 

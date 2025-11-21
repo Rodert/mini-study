@@ -43,6 +43,7 @@ Page({
           return {
             id: item.employee_id,
             name: item.name,
+            avatar: item.name ? item.name.charAt(0) : 'U',
             workNo: item.work_no,
             completed: progressInfo.completed || 0,
             total: progressInfo.total || 0,

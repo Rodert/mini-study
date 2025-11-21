@@ -1,43 +1,163 @@
 @import "../../../styles/theme.wxss";
 @import "../../../styles/layout.wxss";
 
-.progress-card {
-  padding: 32rpx;
+.progress-page {
+  background: linear-gradient(180deg, #f5f7fa 0%, #f0f4ff 100%);
+  min-height: 100vh;
+  padding-bottom: 40rpx;
+}
+
+.section {
+  padding: 32rpx 24rpx 0;
+}
+
+.section-header {
+  margin-bottom: 24rpx;
+}
+
+.section-title-group {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 12rpx;
 }
 
-.progress-bar {
-  width: 100%;
-  height: 16rpx;
-  border-radius: 999rpx;
-  background: rgba(37, 99, 235, 0.12);
+.section-icon {
+  font-size: 36rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.section-subtitle {
+  font-size: 24rpx;
+  color: var(--muted);
+  margin-top: 4rpx;
+}
+
+/* 考试进度卡片 */
+.progress-card {
+  padding: 28rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  transition: all 0.3s ease;
+  position: relative;
   overflow: hidden;
 }
 
+.progress-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4rpx;
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+}
+
+.progress-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.progress-icon {
+  font-size: 32rpx;
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 12rpx;
+  background: rgba(37, 99, 235, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.course-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--text);
+  flex: 1;
+  line-height: 1.4;
+}
+
+.progress-bar-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 20rpx;
+  border-radius: 999rpx;
+  background: rgba(37, 99, 235, 0.12);
+  overflow: hidden;
+  position: relative;
+}
+
 .progress-bar.small {
-  height: 12rpx;
+  height: 16rpx;
 }
 
 .progress-fill {
   height: 100%;
-  background: var(--brand);
+  background: linear-gradient(90deg, var(--brand), #3b82f6);
   border-radius: 999rpx;
+  transition: width 0.6s ease;
+  box-shadow: 0 2rpx 8rpx rgba(37, 99, 235, 0.3);
+}
+
+.progress-percent {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--brand);
+  min-width: 60rpx;
+  text-align: right;
 }
 
 .progress-meta {
   display: flex;
   justify-content: space-between;
-  font-size: 24rpx;
+  gap: 12rpx;
+  padding-top: 8rpx;
+  border-top: 1rpx solid rgba(37, 99, 235, 0.08);
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  flex: 1;
+}
+
+.meta-label {
+  font-size: 22rpx;
   color: var(--muted);
 }
 
+.meta-value {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* 学员卡片 */
 .employee-card {
-  margin-bottom: 24rpx;
+  margin-bottom: 20rpx;
+  padding: 28rpx;
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
+  gap: 20rpx;
+  transition: all 0.3s ease;
+}
+
+.employee-card:active {
+  transform: translateY(-2rpx);
+  box-shadow: 0 8rpx 24rpx rgba(15, 23, 42, 0.12);
 }
 
 .employee-header {
@@ -46,35 +166,176 @@
   align-items: center;
 }
 
+.employee-info-group {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  flex: 1;
+}
+
+.employee-avatar {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #ffffff;
+  flex-shrink: 0;
+  box-shadow: 0 4rpx 12rpx rgba(37, 99, 235, 0.2);
+}
+
+.employee-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+  flex: 1;
+}
+
 .employee-name {
   font-size: 30rpx;
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--text);
 }
 
 .employee-store {
   font-size: 24rpx;
   color: var(--muted);
-  margin-left: 8rpx;
+}
+
+.employee-percent-badge {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(37, 99, 235, 0.05));
+  padding: 12rpx 20rpx;
+  border-radius: 20rpx;
+  border: 2rpx solid var(--brand);
 }
 
 .employee-percent {
   font-size: 28rpx;
   color: var(--brand);
-  font-weight: 600;
+  font-weight: 700;
 }
 
-.employee-meta {
-  font-size: 24rpx;
+.employee-stats {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx;
+  background: rgba(37, 99, 235, 0.04);
+  border-radius: 12rpx;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 22rpx;
   color: var(--muted);
 }
 
-.exam-meta {
-  font-size: 24rpx;
+.stat-value {
+  font-size: 28rpx;
+  font-weight: 700;
   color: var(--text);
 }
 
-.exam-meta.muted {
+.stat-value.highlight {
+  color: var(--brand);
+}
+
+.stat-value.warning {
+  color: var(--accent);
+}
+
+.stat-divider {
+  width: 1rpx;
+  height: 40rpx;
+  background: rgba(37, 99, 235, 0.2);
+}
+
+.exam-info {
+  padding: 16rpx;
+  background: rgba(37, 99, 235, 0.03);
+  border-radius: 12rpx;
+  border-left: 4rpx solid var(--brand);
+}
+
+.exam-info.empty {
+  background: rgba(107, 114, 128, 0.05);
+  border-left-color: var(--muted);
+}
+
+.exam-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.exam-label {
+  font-size: 24rpx;
   color: var(--muted);
+  font-weight: 600;
+}
+
+.exam-score-badge {
+  padding: 6rpx 16rpx;
+  border-radius: 16rpx;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.exam-score-badge.pass {
+  background: rgba(22, 163, 74, 0.15);
+  color: #16a34a;
+}
+
+.exam-score-badge.fail {
+  background: rgba(220, 38, 38, 0.15);
+  color: #dc2626;
+}
+
+.exam-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.exam-title {
+  font-size: 24rpx;
+  color: var(--text);
+  flex: 1;
+}
+
+.exam-status {
+  font-size: 24rpx;
+  font-weight: 600;
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+}
+
+.exam-status.text-pass {
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.1);
+}
+
+.exam-status.text-fail {
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.exam-empty-text {
+  font-size: 24rpx;
+  color: var(--muted);
+  text-align: center;
 }
 
 .text-pass {
@@ -87,7 +348,24 @@
 
 .empty-block {
   text-align: center;
+  padding: 80rpx 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.empty-icon {
+  font-size: 64rpx;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 28rpx;
   color: var(--muted);
-  padding: 40rpx 0;
+}
+
+.bottom-space {
+  height: 40rpx;
 }
 
