@@ -69,7 +69,7 @@ type AdminUpdateEmployeeManagersRequest struct {
 // AdminListUsersQuery filters admin user list.
 type AdminListUsersQuery struct {
 	Role    string `form:"role" binding:"omitempty,oneof=employee manager admin" example:"employee"` // 角色过滤
-	Keyword string `form:"keyword" binding:"omitempty,max=100" example:"张三"`                          // 关键词（工号/姓名/手机号）
+	Keyword string `form:"keyword" binding:"omitempty,max=100" example:"张三"`                         // 关键词（工号/姓名/手机号）
 }
 
 // ManagerBrief 提供店长的简要信息。
@@ -85,6 +85,7 @@ type AdminUserResponse struct {
 	UserResponse
 	ManagerIDs []uint         `json:"manager_ids"` // 绑定的店长ID列表
 	Managers   []ManagerBrief `json:"managers"`    // 店长详情
+	Points     int64          `json:"points"`      // 积分总数
 }
 
 // AdminUpdateUserRoleRequest updates user role.

@@ -66,12 +66,14 @@ func main() {
 	examRepo := repository.NewExamRepository(db)
 	examAttemptRepo := repository.NewExamAttemptRepository(db)
 	bannerRepo := repository.NewBannerRepository(db)
+	pointRepo := repository.NewPointRepository(db)
 
 	auditService := service.NewAuditService(auditRepo)
 	tokenService := service.NewTokenService(cfg.JWT.Secret, cfg.JWT.Issuer, cfg.JWT.TTL, cfg.JWT.RefreshTTL, userRepo)
-	userService := service.NewUserService(userRepo, relationRepo, auditService)
+	pointService := service.NewPointService(pointRepo, userRepo)
+	userService := service.NewUserService(userRepo, relationRepo, auditService, pointService)
 	contentService := service.NewContentService(contentCategoryRepo, contentRepo, userRepo)
-	learningService := service.NewLearningService(learningRecordRepo, contentRepo, userRepo)
+	learningService := service.NewLearningService(learningRecordRepo, contentRepo, userRepo, pointService)
 	examService := service.NewExamService(examRepo, examAttemptRepo, userRepo, relationRepo, learningRecordRepo, contentRepo)
 	bannerService := service.NewBannerService(bannerRepo, userRepo, auditService)
 
@@ -82,10 +84,11 @@ func main() {
 	examHandler := handler.NewExamHandler(examService)
 	uploadHandler := handler.NewUploadHandler(cfg.Upload.Dir, cfg.Upload.MaxSizeMB, auditService)
 	systemHandler := handler.NewSystemHandler(cfg.App.Name, cfg.App.Version)
+	pointHandler := handler.NewPointHandler(pointService)
 
 	engine := gin.New()
 	bootstrap.RegisterMiddlewares(engine, cfg, logger, validate)
-	bootstrap.RegisterRoutes(engine, cfg, userHandler, contentHandler, learningHandler, bannerHandler, examHandler, uploadHandler, systemHandler)
+	bootstrap.RegisterRoutes(engine, cfg, userHandler, contentHandler, learningHandler, bannerHandler, examHandler, uploadHandler, systemHandler, pointHandler)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port),

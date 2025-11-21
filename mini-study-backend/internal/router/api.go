@@ -18,6 +18,7 @@ func RegisterRoutes(
 	examHandler *handler.ExamHandler,
 	uploadHandler *handler.UploadHandler,
 	systemHandler *handler.SystemHandler,
+	pointHandler *handler.PointHandler,
 ) {
 	api := engine.Group("/api/v1")
 
@@ -91,6 +92,8 @@ func RegisterRoutes(
 		admin.POST("/employees", userHandler.AdminCreateEmployee)
 		admin.POST("/users/:id/promote-manager", userHandler.AdminPromoteToManager)
 		admin.PUT("/users/:id/managers", userHandler.AdminUpdateEmployeeManagers)
+		admin.GET("/users/:id/points", pointHandler.AdminGetUserPoints)
+		admin.GET("/points", pointHandler.AdminListAllPoints)
 
 		adminContents := admin.Group("/contents")
 		{

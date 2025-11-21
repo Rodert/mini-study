@@ -157,6 +157,10 @@ Page({
 
   goExamList() {
     wx.navigateTo({ url: "/pages/exams/list/index" });
+  },
+
+  goPointsManagement() {
+    wx.navigateTo({ url: "/pages/admin/points/index" });
   }
 });
 

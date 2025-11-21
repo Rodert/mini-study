@@ -1,0 +1,69 @@
+<view class="points-page">
+  <!-- 顶部返回栏 -->
+  <view class="top-bar">
+    <view class="back-button" bindtap="goBack">
+      <text>←</text>
+    </view>
+    <view class="top-title">积分管理</view>
+    <view class="top-placeholder"></view>
+  </view>
+
+  <!-- 搜索和筛选 -->
+  <view class="search-bar">
+    <view class="search-input-wrapper">
+      <text class="search-icon">🔍</text>
+      <input 
+        class="search-input"
+        type="text"
+        placeholder="搜索用户名字、工号或手机号"
+        value="{{searchText}}"
+        bindinput="handleSearch"
+      />
+    </view>
+  </view>
+
+  <!-- 积分列表 -->
+  <view class="points-list">
+    <view class="point-card" wx:for="{{filteredPoints}}" wx:key="id" bindtap="goPointDetail" data-user-id="{{item.id}}">
+      <view class="card-header">
+        <view class="user-avatar">{{item.name.charAt(0)}}</view>
+        <view class="user-basic">
+          <view class="user-name">{{item.name}}</view>
+          <view class="user-workno">工号：{{item.workNo}}</view>
+        </view>
+        <view class="points-badge">
+          <text class="points-value">{{item.points}}</text>
+          <text class="points-label">积分</text>
+        </view>
+      </view>
+
+      <view class="card-body">
+        <view class="info-row">
+          <text class="info-label">手机号</text>
+          <text class="info-value">{{item.phone}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">角色</text>
+          <text class="role-badge {{item.role}}">{{item.role === 'employee' ? '员工' : item.role === 'manager' ? '店长' : '管理员'}}</text>
+        </view>
+      </view>
+
+      <view class="card-footer">
+        <view class="arrow">→</view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{!filteredPoints.length && !loading}}">
+      <text class="empty-icon">🎯</text>
+      <text class="empty-text">暂无积分数据</text>
+    </view>
+
+    <view class="loading-more" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+
+    <view class="no-more" wx:if="{{!hasMore && filteredPoints.length > 0 && !loading}}">
+      <text>没有更多了</text>
+    </view>
+  </view>
+</view>

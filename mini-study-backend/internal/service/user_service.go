@@ -17,11 +17,12 @@ type UserService struct {
 	repo         *repository.UserRepository
 	relationRepo *repository.ManagerEmployeeRepository
 	audit        *AuditService
+	points       *PointService
 }
 
 // NewUserService builds a user service.
-func NewUserService(userRepo *repository.UserRepository, relationRepo *repository.ManagerEmployeeRepository, audit *AuditService) *UserService {
-	return &UserService{repo: userRepo, relationRepo: relationRepo, audit: audit}
+func NewUserService(userRepo *repository.UserRepository, relationRepo *repository.ManagerEmployeeRepository, audit *AuditService, pointSvc *PointService) *UserService {
+	return &UserService{repo: userRepo, relationRepo: relationRepo, audit: audit, points: pointSvc}
 }
 
 // Register creates a new user.
@@ -156,7 +157,9 @@ func (s *UserService) buildAdminUserResponses(users []model.User) ([]dto.AdminUs
 
 	resp := make([]dto.AdminUserResponse, 0, len(users))
 	employeeIDs := make([]uint, 0)
+	allUserIDs := make([]uint, 0, len(users))
 	for _, user := range users {
+		allUserIDs = append(allUserIDs, user.ID)
 		if user.Role == model.RoleEmployee {
 			employeeIDs = append(employeeIDs, user.ID)
 		}
@@ -194,6 +197,15 @@ func (s *UserService) buildAdminUserResponses(users []model.User) ([]dto.AdminUs
 		}
 	}
 
+	var pointTotals map[uint]int64
+	if s.points != nil && len(allUserIDs) > 0 {
+		pt, err := s.points.GetTotalsMap(allUserIDs)
+		if err != nil {
+			return nil, err
+		}
+		pointTotals = pt
+	}
+
 	for _, user := range users {
 		boundManagerIDs := bindingMap[user.ID]
 		var copiedIDs []uint
@@ -213,6 +225,13 @@ func (s *UserService) buildAdminUserResponses(users []model.User) ([]dto.AdminUs
 			managerBriefs = []dto.ManagerBrief{}
 		}
 
+		points := int64(0)
+		if pointTotals != nil {
+			if val, ok := pointTotals[user.ID]; ok {
+				points = val
+			}
+		}
+
 		resp = append(resp, dto.AdminUserResponse{
 			UserResponse: dto.UserResponse{
 				ID:     user.ID,
@@ -224,6 +243,7 @@ func (s *UserService) buildAdminUserResponses(users []model.User) ([]dto.AdminUs
 			},
 			ManagerIDs: copiedIDs,
 			Managers:   managerBriefs,
+			Points:     points,
 		})
 	}
 

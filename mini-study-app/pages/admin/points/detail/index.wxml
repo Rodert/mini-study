@@ -1,0 +1,72 @@
+<view class="detail-page">
+  <!-- 顶部返回栏 -->
+  <view class="top-bar">
+    <view class="back-button" bindtap="goBack">
+      <text>←</text>
+    </view>
+    <view class="top-title">积分明细</view>
+    <view class="top-placeholder"></view>
+  </view>
+
+  <!-- 用户信息和积分总数 -->
+  <view class="user-info-card">
+    <view class="user-avatar">{{user.name ? user.name.charAt(0) : 'U'}}</view>
+    <view class="user-info">
+      <view class="user-name">{{user.name || '—'}}</view>
+      <view class="user-meta">
+        <text class="meta-item">工号：{{user.workNo || '—'}}</text>
+        <text class="meta-divider">|</text>
+        <text class="meta-item">手机：{{user.phone || '—'}}</text>
+      </view>
+    </view>
+    <view class="points-summary">
+      <view class="points-label">总积分</view>
+      <view class="points-value">{{totalPoints}}</view>
+    </view>
+  </view>
+
+  <!-- 积分明细列表 -->
+  <view class="transactions-list">
+    <view class="section-header">
+      <text class="section-icon">📋</text>
+      <text class="section-title">积分明细</text>
+    </view>
+
+    <view class="transaction-item" wx:for="{{transactions}}" wx:key="id">
+      <view class="transaction-left">
+        <view class="transaction-type">
+          <text class="type-icon">{{item.change > 0 ? '➕' : '➖'}}</text>
+          <text class="type-text">{{item.sourceText}}</text>
+        </view>
+        <view class="transaction-desc" wx:if="{{item.description}}">
+          {{item.description}}
+        </view>
+        <view class="transaction-memo" wx:if="{{item.memo}}">
+          {{item.memo}}
+        </view>
+        <view class="transaction-time">
+          {{item.createdAtText}}
+        </view>
+      </view>
+      <view class="transaction-right">
+        <view class="transaction-points {{item.change > 0 ? 'positive' : 'negative'}}">
+          {{item.change > 0 ? '+' : ''}}{{item.change}}
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{!transactions.length && !loading}}">
+      <text class="empty-icon">📝</text>
+      <text class="empty-text">暂无积分明细</text>
+    </view>
+
+    <view class="loading-more" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+
+    <view class="no-more" wx:if="{{!hasMore && transactions.length > 0 && !loading}}">
+      <text>没有更多了</text>
+    </view>
+  </view>
+</view>
+

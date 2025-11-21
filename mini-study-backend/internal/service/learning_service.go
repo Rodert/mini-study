@@ -16,6 +16,7 @@ type LearningService struct {
 	records  *repository.LearningRecordRepository
 	contents *repository.ContentRepository
 	users    *repository.UserRepository
+	points   *PointService
 }
 
 // NewLearningService builds learning service.
@@ -23,11 +24,13 @@ func NewLearningService(
 	recordRepo *repository.LearningRecordRepository,
 	contentRepo *repository.ContentRepository,
 	userRepo *repository.UserRepository,
+	pointSvc *PointService,
 ) *LearningService {
 	return &LearningService{
 		records:  recordRepo,
 		contents: contentRepo,
 		users:    userRepo,
+		points:   pointSvc,
 	}
 }
 
@@ -54,6 +57,8 @@ func (s *LearningService) UpdateProgress(userID uint, req dto.LearningProgressRe
 	if err != nil {
 		return nil, err
 	}
+	prevRecord := *record
+	wasCompleted := record.Status == "completed"
 
 	// 如果是文档类型，打开即视为完成
 	if content.Type == "doc" {
@@ -75,7 +80,7 @@ func (s *LearningService) UpdateProgress(userID uint, req dto.LearningProgressRe
 		if duration <= 0 {
 			duration = 1
 		}
-		
+
 		// 计算进度百分比
 		progress := int((record.VideoPosition * 100) / duration)
 		if progress > 100 {
@@ -108,8 +113,19 @@ func (s *LearningService) UpdateProgress(userID uint, req dto.LearningProgressRe
 		}
 	}
 
+	nowCompleted := record.Status == "completed"
+
 	if err := s.records.Upsert(record); err != nil {
 		return nil, err
+	}
+
+	if !wasCompleted && nowCompleted && s.points != nil {
+		if err := s.points.AwardContentCompletion(user.ID, content); err != nil {
+			rollback := prevRecord
+			// best-effort rollback to previous state
+			_ = s.records.Upsert(&rollback)
+			return nil, err
+		}
 	}
 	return s.buildProgressResponse(record, content), nil
 }

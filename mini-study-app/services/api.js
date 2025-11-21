@@ -41,6 +41,19 @@ function request(options) {
   return new Promise((resolve, reject) => {
     const { url, method = 'GET', data = {}, header = {} } = options;
     
+    // 过滤掉 undefined、null 和空字符串的值（GET 请求时）
+    const cleanData = {};
+    if (method === 'GET') {
+      Object.keys(data).forEach(key => {
+        const value = data[key];
+        if (value !== undefined && value !== null && value !== '') {
+          cleanData[key] = value;
+        }
+      });
+    } else {
+      Object.assign(cleanData, data);
+    }
+    
     // 添加 token
     const token = getToken();
     if (token) {
@@ -51,7 +64,7 @@ function request(options) {
     wx.request({
       url: `${API_BASE_URL}${url}`,
       method,
-      data,
+      data: cleanData,
       header,
       success: (res) => {
         if (res.statusCode >= 200 && res.statusCode < 300) {
@@ -434,6 +447,21 @@ module.exports = {
         url: `/admin/exams/${id}`,
         method: 'PUT',
         data
+      });
+    },
+    // 积分管理
+    listPoints(params = {}) {
+      return request({
+        url: '/admin/points',
+        method: 'GET',
+        data: params
+      });
+    },
+    getUserPoints(userId, params = {}) {
+      return request({
+        url: `/admin/users/${userId}/points`,
+        method: 'GET',
+        data: params
       });
     }
   }

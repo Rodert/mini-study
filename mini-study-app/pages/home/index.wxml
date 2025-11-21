@@ -104,6 +104,13 @@
         <view class="action-desc">创建和管理考试</view>
         <view class="action-arrow">→</view>
       </view>
+
+      <view class="admin-action-card" bindtap="goPointsManagement">
+        <view class="action-icon">⭐</view>
+        <view class="action-title">积分管理</view>
+        <view class="action-desc">查看所有用户积分</view>
+        <view class="action-arrow">→</view>
+      </view>
     </view>
   </view>
 

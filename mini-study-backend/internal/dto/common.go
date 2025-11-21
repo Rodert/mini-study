@@ -6,3 +6,10 @@ type APIResponse[T any] struct {
 	Message string `json:"message"`
 	Data    T      `json:"data"`
 }
+
+// Pagination describes paged list metadata.
+type Pagination struct {
+	Page     int   `json:"page" example:"1"`
+	PageSize int   `json:"page_size" example:"20"`
+	Total    int64 `json:"total" example:"100"`
+}
