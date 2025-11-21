@@ -1,37 +1,29 @@
 #!/usr/bin/env python3
 """
-学习内容批量导入脚本
+学习内容 CSV 批量导入脚本
 
 使用方法:
-    python3 import_content.py --host http://localhost:8080 --username admin --password admin123456 --data contents.json
+    python3 import_content_csv.py --host http://localhost:8080 --username admin --password admin123456 --data contents.csv
 
-示例数据格式 (contents.json):
-    [
-        {
-            "title": "产品培训视频",
-            "type": "video",  # doc 或 video
-            "category_id": 1,  # 分类ID，需要先在系统中创建分类
-            "file_path": "/uploads/video.mp4",
-            "cover_url": "./covers/cover.jpg",  # 支持本地文件路径（自动上传）或 URL 或已上传路径
-            "summary": "本视频介绍产品核心功能",
-            "visible_roles": "both",  # employee / manager / both
-            "status": "published",  # draft / published
-            "duration_seconds": 3600  # 视频时长（秒），视频类型必填
-        }
-    ]
-    
-文件路径规范说明:
-    1. 文件目录规范：
-       - 视频/文档文件：使用 video/ 目录（如 video/basic.mp4）
-       - 封面图片：使用 img/ 目录（如 img/basic.jpg）
-    
-    2. 路径格式支持：
-       - 本地文件路径: "video/basic.mp4" 或 "./video/basic.mp4" - 脚本会自动上传
-       - 已上传路径: "/uploads/xxx.mp4" - 直接使用
-       - 外部URL: "https://example.com/video.mp4" - 直接使用
+CSV 格式说明:
+    必须包含以下列（列名不区分大小写）:
+    - title: 内容标题
+    - type: 内容类型 (doc/video)
+    - category_id: 分类ID
+    - file_path: 文件路径
+    - cover_url: 封面图路径（可选，支持本地文件自动上传）
+    - summary: 内容摘要（可选）
+    - visible_roles: 可见角色 (employee/manager/both, 可选)
+    - status: 状态 (draft/published, 可选，默认draft)
+    - duration_seconds: 视频时长（秒，视频类型必填）
+
+示例 CSV 文件:
+    title,type,category_id,file_path,cover_url,summary,visible_roles,status,duration_seconds
+    产品培训视频,video,1,/uploads/video.mp4,./covers/cover.jpg,本视频介绍产品核心功能,both,published,3600
 """
 
 import argparse
+import csv
 import json
 import os
 import requests
@@ -176,7 +168,7 @@ class ContentImporter:
             else:
                 # 规范化已上传路径或外部URL
                 content_data["cover_url"] = cover_url
-        
+
         url = f"{self.base_url}/api/v1/admin/contents"
         headers = {
             "Authorization": f"Bearer {self.token}",
@@ -197,8 +189,72 @@ class ContentImporter:
             print(f"  ✗ 创建失败: {content_data.get('title')} - {e}")
             return False
 
-    def import_from_file(self, file_path: str, show_categories: bool = False):
-        """从 JSON 文件导入内容"""
+    def normalize_column_name(self, col_name: str) -> str:
+        """标准化列名（去除空格，转小写）"""
+        return col_name.strip().lower().replace(' ', '_')
+
+    def parse_csv_row(self, row: Dict, headers: List[str]) -> Optional[Dict]:
+        """解析 CSV 行数据为内容对象"""
+        normalized_headers = {self.normalize_column_name(h): h for h in headers}
+        
+        content = {}
+        
+        # 必填字段
+        title = row.get(normalized_headers.get('title', 'title'))
+        content_type = row.get(normalized_headers.get('type', 'type'))
+        category_id = row.get(normalized_headers.get('category_id', 'category_id'))
+        file_path = row.get(normalized_headers.get('file_path', 'file_path'))
+        
+        if not all([title, content_type, category_id, file_path]):
+            print(f"  ✗ 缺少必填字段: title={title}, type={content_type}, category_id={category_id}, file_path={file_path}")
+            return None
+        
+        content['title'] = title.strip()
+        content['type'] = content_type.strip().lower()
+        if content['type'] not in ['doc', 'video']:
+            print(f"  ✗ 类型错误: {content['type']} (必须是 doc 或 video)")
+            return None
+        
+        try:
+            content['category_id'] = int(category_id)
+        except ValueError:
+            print(f"  ✗ category_id 格式错误: {category_id}")
+            return None
+        
+        content['file_path'] = self.normalize_path(file_path)
+        
+        # 可选字段
+        cover_url = row.get(normalized_headers.get('cover_url', 'cover_url'), '').strip()
+        if cover_url:
+            content['cover_url'] = self.normalize_path(cover_url)
+        
+        summary = row.get(normalized_headers.get('summary', 'summary'), '').strip()
+        if summary:
+            content['summary'] = summary
+        
+        visible_roles = row.get(normalized_headers.get('visible_roles', 'visible_roles'), '').strip().lower()
+        if visible_roles:
+            content['visible_roles'] = visible_roles
+        
+        status = row.get(normalized_headers.get('status', 'status'), '').strip().lower()
+        if status:
+            content['status'] = status
+        
+        duration_seconds = row.get(normalized_headers.get('duration_seconds', 'duration_seconds'), '').strip()
+        if duration_seconds:
+            try:
+                content['duration_seconds'] = int(duration_seconds)
+            except ValueError:
+                print(f"  ⚠ duration_seconds 格式错误: {duration_seconds}，将使用 0")
+                content['duration_seconds'] = 0
+        else:
+            # 如果是视频类型但没有提供时长，默认 0
+            content['duration_seconds'] = 0
+        
+        return content
+
+    def import_from_csv(self, csv_path: str, show_categories: bool = False):
+        """从 CSV 文件导入内容"""
         if not self.token:
             print("✗ 请先登录")
             return
@@ -212,32 +268,55 @@ class ContentImporter:
 
         # 读取并导入数据
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                contents = json.load(f)
+            with open(csv_path, 'r', encoding='utf-8-sig') as f:  # utf-8-sig 处理 BOM
+                # 检测分隔符
+                sample = f.read(1024)
+                f.seek(0)
+                sniffer = csv.Sniffer()
+                delimiter = sniffer.sniff(sample).delimiter
+                
+                reader = csv.DictReader(f, delimiter=delimiter)
+                headers = reader.fieldnames or []
+                
+                if not headers:
+                    print("✗ CSV 文件没有表头")
+                    return
+                
+                print(f"\n检测到列: {', '.join(headers)}\n")
+                
+                contents = []
+                for idx, row in enumerate(reader, 1):
+                    content = self.parse_csv_row(row, headers)
+                    if content:
+                        contents.append(content)
+                    else:
+                        print(f"  ⚠ 跳过第 {idx + 1} 行（表头为第 1 行）")
+                
+                if not contents:
+                    print("✗ 没有有效的数据行")
+                    return
+                
+                print(f"\n开始导入 {len(contents)} 条学习内容...\n")
+                success_count = 0
+                for idx, content in enumerate(contents, 1):
+                    print(f"[{idx}/{len(contents)}] {content.get('title', '无标题')}")
+                    if self.create_content(content):
+                        success_count += 1
+                
+                print(f"\n导入完成: 成功 {success_count}/{len(contents)}")
+                
+        except FileNotFoundError:
+            print(f"✗ 文件不存在: {csv_path}")
         except Exception as e:
-            print(f"✗ 读取文件失败: {e}")
-            return
-
-        if not isinstance(contents, list):
-            print("✗ 数据格式错误: 根元素必须是数组")
-            return
-
-        print(f"\n开始导入 {len(contents)} 条学习内容...\n")
-        success_count = 0
-        for idx, content in enumerate(contents, 1):
-            print(f"[{idx}/{len(contents)}] {content.get('title', '无标题')}")
-            if self.create_content(content):
-                success_count += 1
-
-        print(f"\n导入完成: 成功 {success_count}/{len(contents)}")
+            print(f"✗ 读取 CSV 文件失败: {e}")
 
 
 def main():
-    parser = argparse.ArgumentParser(description='批量导入学习内容')
+    parser = argparse.ArgumentParser(description='批量导入学习内容（CSV 格式）')
     parser.add_argument('--host', default='http://localhost:8080', help='API 服务器地址')
     parser.add_argument('--username', default='admin', help='管理员用户名（工号）')
     parser.add_argument('--password', default='admin123456', help='管理员密码')
-    parser.add_argument('--data', required=True, help='JSON 数据文件路径')
+    parser.add_argument('--data', required=True, help='CSV 数据文件路径')
     parser.add_argument('--categories', action='store_true', help='显示可用分类列表')
 
     args = parser.parse_args()
@@ -247,7 +326,7 @@ def main():
     if not importer.login():
         sys.exit(1)
 
-    importer.import_from_file(args.data, show_categories=args.categories)
+    importer.import_from_csv(args.data, show_categories=args.categories)
 
 
 if __name__ == '__main__':

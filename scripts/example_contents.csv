@@ -1,0 +1,6 @@
+title,type,category_id,file_path,cover_url,summary,visible_roles,status,duration_seconds
+产品培训视频 - 基础篇,video,1,video/basic.mp4,img/basic.jpg,本视频介绍产品的基础功能和操作方法,both,published,1800
+产品培训视频 - 进阶篇,video,1,video/advanced.mp4,img/advanced.jpg,深入讲解产品的高级功能和最佳实践,manager,published,3600
+操作手册 - PDF,doc,2,video/manual.pdf,img/manual.jpg,详细的产品操作手册,both,published,0
+安全培训文档,doc,3,video/safety.doc,,安全操作规范培训文档,employee,published,0
+

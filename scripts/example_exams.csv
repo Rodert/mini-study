@@ -1,0 +1,9 @@
+exam_title,exam_description,exam_status,target_role,time_limit_minutes,pass_score,question_type,question_stem,question_score,question_analysis,options
+产品知识基础考试,测试对产品基础知识的掌握程度,published,employee,30,60,single,产品的核心功能是什么？,10,产品的核心功能包括用户管理、数据分析和报告生成等。,"A:用户管理和数据分析:true|B:仅用户管理:false|C:仅数据分析:false|D:仅报告生成:false"
+产品知识基础考试,测试对产品基础知识的掌握程度,published,employee,30,60,single,以下哪个不是产品的优势？,10,产品的主要优势包括易用性、高性能和可扩展性，但不包括复杂的学习曲线。,"A:易用性:false|B:高性能:false|C:复杂的学习曲线:true|D:可扩展性:false"
+产品知识基础考试,测试对产品基础知识的掌握程度,published,employee,30,60,multiple,产品支持哪些数据格式？（多选）,15,产品支持 CSV、JSON 和 Excel 等多种数据格式。,"A:CSV:true|B:JSON:true|C:Excel:true|D:Word:false"
+产品知识基础考试,测试对产品基础知识的掌握程度,published,employee,30,60,single,产品的目标用户群体是？,10,产品主要面向中小企业和个人用户。,"A:大型企业:false|B:中小企业和个人用户:true|C:仅大型企业:false|D:仅个人用户:false"
+产品知识基础考试,测试对产品基础知识的掌握程度,published,employee,30,60,multiple,使用产品时需要注意哪些事项？（多选）,15,使用产品时需要定期备份数据、保护账号安全，但不需要定期更换服务器。,"A:定期备份数据:true|B:保护账号安全:true|C:定期更换服务器:false|D:及时更新软件版本:true"
+高级管理知识考试,针对店长的高级管理知识测试,published,manager,60,70,single,作为店长，最重要的职责是什么？,20,店长的主要职责是团队管理和业绩达成。,"A:团队管理和业绩达成:true|B:仅业绩达成:false|C:仅团队管理:false|D:日常事务处理:false"
+高级管理知识考试,针对店长的高级管理知识测试,published,manager,60,70,multiple,有效的团队管理包括哪些方面？（多选）,30,有效的团队管理包括激励员工、制定目标和定期沟通，但不需要事无巨细的监督。,"A:激励员工:true|B:制定目标:true|C:定期沟通:true|D:事无巨细的监督:false"
+
