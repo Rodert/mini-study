@@ -1,4 +1,4 @@
-const mockService = require("../../../../services/mockService");
+const api = require("../../../../services/api");
 const app = getApp();
 
 Page({
@@ -34,22 +34,22 @@ Page({
 
   async loadData() {
     try {
-      const [usersRes, managersRes] = await Promise.all([
-        mockService.fetchAllUsers(),
-        mockService.fetchManagers()
+      const [userRes, managersRes] = await Promise.all([
+        api.admin.getUser(this.data.userId),
+        api.user.getManagers()
       ]);
 
-      const user = usersRes.data.find(u => u.id === this.data.userId);
-      if (!user) {
+      if (userRes.code !== 200 || !userRes.data) {
         wx.showToast({ title: "用户不存在", icon: "none" });
         wx.navigateBack();
         return;
       }
 
-      const selectedManagerIds = user.managerIds || [];
+      const user = userRes.data;
+      const selectedManagerIds = user.manager_ids || [];
       this.setData({
         user,
-        managers: managersRes.data || [],
+        managers: managersRes.code === 200 ? (managersRes.data || []) : [],
         selectedManagerIds,
         originalRole: user.role,
         originalManagerIds: [...selectedManagerIds]
@@ -114,17 +114,32 @@ Page({
 
       if (roleChanged && managerChanged) {
         // 同时修改角色和店长绑定
-        await mockService.updateUserRole(this.data.userId, user.role);
-        response = await mockService.updateUserManagers(this.data.userId, selectedManagerIds);
+        await api.admin.updateUserRole(this.data.userId, user.role);
+        // 获取店长工号列表（从 managers 中查找）
+        const managers = this.data.managers;
+        const managerWorkNos = selectedManagerIds
+          .map(id => {
+            const m = managers.find(m => m.id === id);
+            return m ? m.work_no : null;
+          })
+          .filter(Boolean);
+        response = await api.admin.updateEmployeeManagers(this.data.userId, managerWorkNos);
       } else if (roleChanged) {
         // 只修改角色
-        response = await mockService.updateUserRole(this.data.userId, user.role);
+        response = await api.admin.updateUserRole(this.data.userId, user.role);
       } else {
         // 只修改店长绑定
-        response = await mockService.updateUserManagers(this.data.userId, selectedManagerIds);
+        const managers = this.data.managers;
+        const managerWorkNos = selectedManagerIds
+          .map(id => {
+            const m = managers.find(m => m.id === id);
+            return m ? m.work_no : null;
+          })
+          .filter(Boolean);
+        response = await api.admin.updateEmployeeManagers(this.data.userId, managerWorkNos);
       }
 
-      if (response.success) {
+      if (response.code === 200) {
         wx.hideLoading();
         wx.showToast({ title: "用户已更新", icon: "success" });
         setTimeout(() => {

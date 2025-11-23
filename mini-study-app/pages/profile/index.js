@@ -1,5 +1,4 @@
 const api = require("../../services/api");
-const mockService = require("../../services/mockService");
 const app = getApp();
 
 Page({

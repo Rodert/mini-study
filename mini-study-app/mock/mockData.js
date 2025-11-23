@@ -1,113 +1,154 @@
 const banners = [
   {
     id: 1,
-    type: "web",
-    cover: "https://inews.gtimg.com/newsapp_bt/0/15956949227/1000",
-    url: "https://news.qq.com/rain/a/20251118A014A400",
-    title: "企业新闻 · 最新资讯"
+    title: "企业新闻 · 最新资讯",
+    image_url: "https://inews.gtimg.com/newsapp_bt/0/15956949227/1000",
+    link_url: "https://news.qq.com/rain/a/20251118A014A400",
+    visible_roles: "both",
+    sort_order: 1,
+    status: true,
+    start_at: null,
+    end_at: null
   },
   {
     id: 2,
-    type: "web",
-    cover: "https://example.com/banner2.jpg",
-    url: "https://www.qq.com",
-    title: "新人训 · 快速入口"
+    title: "新人训 · 快速入口",
+    image_url: "https://example.com/banner2.jpg",
+    link_url: "https://www.qq.com",
+    visible_roles: "employee",
+    sort_order: 2,
+    status: true,
+    start_at: null,
+    end_at: null
   },
   {
     id: 3,
-    type: "web",
-    cover: "https://example.com/banner3.jpg",
-    url: "https://www.tencent.com",
-    title: "视频教学 · 销售技巧"
+    title: "视频教学 · 销售技巧",
+    image_url: "https://example.com/banner3.jpg",
+    link_url: "https://www.tencent.com",
+    visible_roles: "both",
+    sort_order: 3,
+    status: true,
+    start_at: null,
+    end_at: null
   }
 ];
 
 const courseCategories = [
-  { id: 1, name: "专题特训", role: "employee" },
-  { id: 2, name: "金牌课程", role: "employee" },
-  { id: 3, name: "新人养成", role: "employee" },
-  { id: 4, name: "短视频教学", role: "employee" },
-  { id: 5, name: "营销推广", role: "employee" },
-  { id: 6, name: "学习执行", role: "employee" },
-  { id: 7, name: "销售技巧", role: "employee" },
-  { id: 101, name: "店长特训", role: "manager" },
-  { id: 102, name: "新员工培训", role: "manager" },
-  { id: 103, name: "老员工进阶", role: "manager" },
-  { id: 104, name: "管理知识与自我提升", role: "manager" }
+  { id: 1, name: "专题特训", role_scope: "employee", sort_order: 1, count: 5 },
+  { id: 2, name: "金牌课程", role_scope: "employee", sort_order: 2, count: 8 },
+  { id: 3, name: "新人养成", role_scope: "employee", sort_order: 3, count: 3 },
+  { id: 4, name: "短视频教学", role_scope: "employee", sort_order: 4, count: 12 },
+  { id: 5, name: "营销推广", role_scope: "employee", sort_order: 5, count: 6 },
+  { id: 6, name: "学习执行", role_scope: "employee", sort_order: 6, count: 4 },
+  { id: 7, name: "销售技巧", role_scope: "employee", sort_order: 7, count: 10 },
+  { id: 101, name: "店长特训", role_scope: "manager", sort_order: 1, count: 3 },
+  { id: 102, name: "新员工培训", role_scope: "manager", sort_order: 2, count: 5 },
+  { id: 103, name: "老员工进阶", role_scope: "manager", sort_order: 3, count: 4 },
+  { id: 104, name: "管理知识与自我提升", role_scope: "manager", sort_order: 4, count: 6 }
 ];
 
 const courses = [
   {
     id: 10,
     category_id: 1,
+    category_name: "专题特训",
     title: "销售基础特训 01",
-    cover: "https://example.com/course1.jpg",
+    cover_url: "https://example.com/course1.jpg",
     type: "video",
-    duration: "12min",
-    url: "https://example.com/video1.mp4",
-    summary: "覆盖销售模型、客户洞察等核心内容"
+    file_path: "/uploads/video1.mp4",
+    duration_seconds: 720,
+    summary: "覆盖销售模型、客户洞察等核心内容",
+    status: "published",
+    visible_roles: "employee",
+    publish_at: "2024-01-01T00:00:00Z"
   },
   {
     id: 20,
     category_id: 101,
+    category_name: "店长特训",
     title: "店长管理基础 01",
-    cover: "https://example.com/course2.jpg",
-    type: "article",
-    duration: "15min",
-    content: "<p>文章内容……</p>",
-    summary: "聚焦门店管理、团队带教"
+    cover_url: "https://example.com/course2.jpg",
+    type: "doc",
+    file_path: "/uploads/doc1.pdf",
+    duration_seconds: 0,
+    summary: "聚焦门店管理、团队带教",
+    status: "published",
+    visible_roles: "manager",
+    publish_at: "2024-01-01T00:00:00Z"
   }
 ];
 
 const managers = [
   {
     id: 2,
+    work_no: "manager001",
     name: "李婷",
-    store: "上海一店",
-    mobile: "13911110000"
+    phone: "13911110000",
+    role: "manager",
+    status: true
   },
   {
     id: 3,
+    work_no: "manager002",
     name: "张三",
-    store: "上海二店",
-    mobile: "13922220000"
+    phone: "13922220000",
+    role: "manager",
+    status: true
   },
   {
     id: 4,
+    work_no: "manager003",
     name: "王五",
-    store: "上海三店",
-    mobile: "13933330000"
+    phone: "13933330000",
+    role: "manager",
+    status: true
   }
 ];
 
 const users = [
   {
     id: 1,
-    username: "1001",
+    work_no: "employee001",
     name: "王明",
-    mobile: "13900000000",
+    phone: "13900000000",
     role: "employee",
-    store: "上海一店",
-    managerIds: [2],
+    status: true,
+    manager_ids: [2],
+    managers: [
+      {
+        id: 2,
+        work_no: "manager001",
+        name: "李婷",
+        phone: "13911110000"
+      }
+    ],
+    points: 100,
     password: "123456"
   },
   {
     id: 2,
-    username: "2001",
+    work_no: "manager001",
     name: "李婷",
-    mobile: "13911110000",
+    phone: "13911110000",
     role: "manager",
-    store: "上海一店",
+    status: true,
+    manager_ids: [],
+    managers: [],
+    points: 200,
     password: "123456"
   },
   {
     id: 3,
-    username: "admin",
+    work_no: "admin",
     name: "管理员",
-    mobile: "13900000001",
+    phone: "13900000001",
     role: "admin",
-    store: "总部",
-    password: "123456"
+    status: true,
+    manager_ids: [],
+    managers: [],
+    points: 0,
+    password: "admin123456"
   }
 ];
 
@@ -153,16 +194,18 @@ const managerProgressEmployees = [
 
 const learningStats = {
   1: {
-    totalHours: 12,
-    completedCourses: 6,
-    totalCourses: 8,
-    streakDays: 5
+    user_id: 1,
+    completed_count: 6,
+    total_count: 8,
+    total_contents: 20,
+    completion_rate: 30.0
   },
   2: {
-    totalHours: 18,
-    completedCourses: 9,
-    totalCourses: 10,
-    streakDays: 8
+    user_id: 2,
+    completed_count: 9,
+    total_count: 10,
+    total_contents: 15,
+    completion_rate: 60.0
   }
 };
 

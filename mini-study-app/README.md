@@ -22,17 +22,25 @@
 
 ### 配置步骤
 
-#### 1. 修改 API 地址
+#### 1. 配置 Mock 模式或真实 API
 
-编辑 `services/api.js`，修改 API 基础地址：
+编辑 `services/config.js`，配置是否使用 Mock 数据：
 
 ```javascript
+// 是否使用 Mock 数据（开发环境可以设置为 true，生产环境应设置为 false）
+const USE_MOCK = false; // 设置为 true 使用 mock 数据，false 使用真实 API
+
+// API 基础地址配置
 const API_BASE_URL = 'http://localhost:8080/api/v1'; // 根据实际环境修改
 ```
 
+**配置说明：**
+- **USE_MOCK = true**: 使用本地 Mock 数据，无需后端服务，适合前端独立开发
+- **USE_MOCK = false**: 使用真实 API，需要后端服务运行
+
 > 💡 **提示**: 
-> - 开发环境：使用 `http://localhost:8080`
-> - 生产环境：修改为实际的后端服务器地址
+> - 开发环境：可以设置 `USE_MOCK = true` 进行前端开发，或 `USE_MOCK = false` 连接后端
+> - 生产环境：必须设置 `USE_MOCK = false` 并使用真实后端地址
 > - 真机调试：将 `localhost` 改为本机 IP 地址（如 `http://192.168.1.100:8080`）
 
 #### 2. 打开微信开发者工具
@@ -215,11 +223,17 @@ mini-study-app/
 
 ### API 配置
 
-在 `services/api.js` 中配置：
+在 `services/config.js` 中配置：
 
 ```javascript
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+const USE_MOCK = false; // 是否使用 Mock 数据
+const API_BASE_URL = 'http://localhost:8080/api/v1'; // API 地址
 ```
+
+**Mock 模式说明：**
+- 当 `USE_MOCK = true` 时，所有 API 调用会自动使用 `mockService.js` 中的 Mock 数据
+- Mock 数据位于 `mock/mockData.js`，可以根据需要修改
+- Mock 模式下的响应格式已与真实 API 保持一致
 
 ### 权限配置
 

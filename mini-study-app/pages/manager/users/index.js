@@ -1,4 +1,4 @@
-const mockService = require("../../../services/mockService");
+const api = require("../../../services/api");
 const app = getApp();
 
 Page({
@@ -21,8 +21,12 @@ Page({
 
   async loadUsers() {
     try {
-      const res = await mockService.fetchAllUsers();
-      this.setData({ users: res.data || [] });
+      const res = await api.admin.listUsers();
+      if (res.code === 200) {
+        this.setData({ users: res.data || [] });
+      } else {
+        wx.showToast({ title: res.message || "加载用户失败", icon: "none" });
+      }
     } catch (err) {
       console.error("fetch users error", err);
       wx.showToast({ title: "加载用户失败", icon: "none" });
