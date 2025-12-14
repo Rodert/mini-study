@@ -148,7 +148,7 @@ Page({
   },
 
   goContentCreate() {
-    wx.navigateTo({ url: "/pages/admin/contents/add/index" });
+    wx.navigateTo({ url: "/pages/admin/contents/index/index" });
   },
 
   goExamManagement() {

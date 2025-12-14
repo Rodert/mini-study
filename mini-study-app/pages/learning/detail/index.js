@@ -68,6 +68,13 @@ Page({
         const detail = res.data || {};
         const mediaUrl = api.buildFileUrl(detail.file_path);
         const normalizedPath = detail.file_path ? detail.file_path.replace(/\\/g, "/") : "";
+        const rawBlocks = detail.article_blocks || [];
+        const articleBlocks = rawBlocks.map((block) => ({
+          type: block.type,
+          text: block.text || "",
+          image_path: block.image_path || "",
+          imageUrl: block.image_path ? api.buildFileUrl(block.image_path) : ""
+        }));
         const course = {
           id: detail.id,
           title: detail.title,
@@ -79,7 +86,8 @@ Page({
           mediaUrl,
           rawFilePath: detail.file_path,
           fileName: normalizedPath ? normalizedPath.split("/").pop() : "",
-          content: detail.summary || ""
+          content: detail.summary || "",
+          articleBlocks
         };
         this.setData({
           course,
@@ -87,6 +95,10 @@ Page({
             this.data.docSourceUrl === mediaUrl ? this.data.docTempPath : "",
           docSourceUrl: this.data.docSourceUrl === mediaUrl ? this.data.docSourceUrl : ""
         });
+        if (course.type === "article") {
+          // 图文类型：进入详情页即视为开始学习
+          this.updateProgress(0, true);
+        }
         this.loadProgress();
       } else {
         wx.showToast({ title: res.message || "获取课程失败", icon: "none" });

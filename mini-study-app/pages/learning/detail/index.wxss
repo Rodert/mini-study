@@ -21,6 +21,16 @@
   line-height: 1.6;
 }
 
+.article-text {
+  margin-bottom: 20rpx;
+}
+
+.article-image {
+  width: 100%;
+  border-radius: 16rpx;
+  margin: 12rpx 0;
+}
+
 .doc-viewer {
   display: flex;
   flex-direction: column;

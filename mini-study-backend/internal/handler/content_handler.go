@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -251,6 +252,10 @@ func (h *ContentHandler) toContentResponse(content *model.Content) dto.ContentRe
 	if content.Category.ID != 0 {
 		categoryName = content.Category.Name
 	}
+	var articleBlocks []dto.ArticleBlock
+	if content.BodyBlocksJSON != "" {
+		_ = json.Unmarshal([]byte(content.BodyBlocksJSON), &articleBlocks)
+	}
 	return dto.ContentResponse{
 		ID:              content.ID,
 		Title:           content.Title,
@@ -264,5 +269,6 @@ func (h *ContentHandler) toContentResponse(content *model.Content) dto.ContentRe
 		VisibleRoles:    content.VisibleRoles,
 		DurationSeconds: content.DurationSeconds,
 		PublishAt:       content.PublishAt,
+		ArticleBlocks:   articleBlocks,
 	}
 }
