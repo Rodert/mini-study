@@ -3678,8 +3678,61 @@ const docTemplate = `{
             "name": "Authorization",
             "in": "header"
         }
+    },
+    "parameters": [
+        {
+            "description": "分类ID",
+            "name": "category_id",
+            "in": "query"
+        },
+        {
+            "type": "string",
+            "description": "内容类型(doc/video/article)",
+            "name": "type",
+            "in": "query"
+        }
+    ],
+    "paths": {
+        "/admin/contents": {
+            "get": {
+                "summary": "管理员查询内容列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "分类ID",
+                        "name": "category_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "内容类型(doc/video/article)",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ]
+            }
+        },
+        "/public/contents": {
+            "get": {
+                "summary": "公共内容列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "分类ID",
+                        "name": "category_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "内容类型(doc/video/article)",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ]
+            }
+        }
     }
-}`
+}
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{

@@ -70,7 +70,7 @@ func (h *ContentHandler) ListCategories(c *gin.Context) {
 // @Security Bearer
 // @Produce json
 // @Param category_id query int false "分类ID"
-// @Param type query string false "内容类型(doc/video)"
+// @Param type query string false "内容类型(doc/video/article)"
 // @Success 200 {object} utils.Response{data=[]dto.ContentResponse}
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response
@@ -138,7 +138,7 @@ func (h *ContentHandler) GetContentDetail(c *gin.Context) {
 // @Security Bearer
 // @Produce json
 // @Param category_id query int false "分类ID"
-// @Param type query string false "内容类型(doc/video)"
+// @Param type query string false "内容类型(doc/video/article)"
 // @Param status query string false "内容状态(draft/published/offline)"
 // @Success 200 {object} utils.Response{data=[]dto.ContentResponse}
 // @Failure 401 {object} utils.Response

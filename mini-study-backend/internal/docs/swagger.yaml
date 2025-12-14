@@ -1176,7 +1176,7 @@ paths:
         in: query
         name: category_id
         type: integer
-      - description: 内容类型(doc/video)
+      - description: 内容类型(doc/video/article)
         in: query
         name: type
         type: string
@@ -1756,7 +1756,7 @@ paths:
         in: query
         name: category_id
         type: integer
-      - description: 内容类型(doc/video)
+      - description: 内容类型(doc/video/article)
         in: query
         name: type
         type: string
