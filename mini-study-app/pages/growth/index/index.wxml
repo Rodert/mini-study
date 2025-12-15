@@ -1,0 +1,53 @@
+<view class="growth-page">
+  <view class="top-bar">
+    <view class="top-title">成长圈</view>
+  </view>
+
+  <view class="search-bar">
+    <view class="search-input-wrapper">
+      <text class="search-icon">🔍</text>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="搜索成长圈内容"
+        value="{{keyword}}"
+        bindinput="handleSearchInput"
+        confirm-type="search"
+        bindconfirm="handleSearchConfirm"
+      />
+    </view>
+  </view>
+
+  <view class="manager-actions" wx:if="{{user.role === 'manager'}}">
+    <button class="btn-secondary" bindtap="goMyPosts">我的成长圈</button>
+  </view>
+
+  <scroll-view class="post-list" scroll-y="true">
+    <view class="post-card" wx:for="{{posts}}" wx:key="id">
+      <view class="post-header">
+        <view class="avatar">{{item.avatarText}}</view>
+        <view class="post-header-info">
+          <view class="publisher-name">{{item.publisherName}}</view>
+          <view class="post-meta">{{item.createdAtText}}</view>
+        </view>
+      </view>
+      <view class="post-content">{{item.content}}</view>
+      <view class="image-grid" wx:if="{{item.images && item.images.length}}">
+        <image
+          class="post-image"
+          wx:for="{{item.images}}"
+          wx:key="{{index}}"
+          src="{{item}}"
+          mode="aspectFill"
+        />
+      </view>
+      <view class="post-actions">
+        <button class="btn-copy" data-index="{{index}}" bindtap="handleCopyAndDownload">复制下载</button>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{!loading && (!posts || !posts.length)}}">
+      <text>暂无成长圈动态</text>
+    </view>
+  </scroll-view>
+</view>

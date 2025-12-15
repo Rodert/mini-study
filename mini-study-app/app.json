@@ -14,6 +14,9 @@
     "pages/admin/exams/add/index",
     "pages/admin/points/index",
     "pages/admin/points/detail/index",
+    "pages/growth/index/index",
+    "pages/growth/mine/index",
+    "pages/admin/growth/index/index",
     "pages/profile/edit/index",
     "pages/learning/index/index",
     "pages/learning/list/index",
@@ -41,6 +44,10 @@
       {
         "pagePath": "pages/home/index",
         "text": "首页"
+      },
+      {
+        "pagePath": "pages/growth/index/index",
+        "text": "成长圈"
       },
       {
         "pagePath": "pages/profile/index",

@@ -671,6 +671,56 @@ module.exports = {
     }
   },
 
+  // 成长圈
+  growth: {
+    // 成长圈公开列表（已审核通过，可搜索）
+    list(params = {}) {
+      if (USE_MOCK) {
+        return Promise.resolve({ code: 200, message: 'success', data: [] });
+      }
+      return request({
+        url: '/growth',
+        method: 'GET',
+        data: params
+      });
+    },
+
+    // 我的成长圈列表
+    listMine(params = {}) {
+      if (USE_MOCK) {
+        return Promise.resolve({ code: 200, message: 'success', data: [] });
+      }
+      return request({
+        url: '/growth/mine',
+        method: 'GET',
+        data: params
+      });
+    },
+
+    // 店长发布成长圈动态
+    create(data) {
+      if (USE_MOCK) {
+        return Promise.resolve({ code: 200, message: 'success', data: null });
+      }
+      return request({
+        url: '/growth',
+        method: 'POST',
+        data
+      });
+    },
+
+    // 删除成长圈动态（店长删除自己的未通过，管理员可删任意）
+    delete(id) {
+      if (USE_MOCK) {
+        return Promise.resolve({ code: 200, message: 'success', data: null });
+      }
+      return request({
+        url: `/growth/${id}`,
+        method: 'DELETE'
+      });
+    }
+  },
+
   // 轮播图
   banner: {
     listVisible() {
@@ -804,6 +854,35 @@ module.exports = {
         url: '/admin/managers',
         method: 'POST',
         data
+      });
+    },
+    // 成长圈管理
+    listGrowth(params = {}) {
+      if (USE_MOCK) {
+        return Promise.resolve({ code: 200, message: 'success', data: [] });
+      }
+      return request({
+        url: '/admin/growth',
+        method: 'GET',
+        data: params
+      });
+    },
+    approveGrowth(id) {
+      if (USE_MOCK) {
+        return Promise.resolve({ code: 200, message: 'success', data: null });
+      }
+      return request({
+        url: `/admin/growth/${id}/approve`,
+        method: 'POST'
+      });
+    },
+    rejectGrowth(id) {
+      if (USE_MOCK) {
+        return Promise.resolve({ code: 200, message: 'success', data: null });
+      }
+      return request({
+        url: `/admin/growth/${id}/reject`,
+        method: 'POST'
       });
     },
     // 轮播管理

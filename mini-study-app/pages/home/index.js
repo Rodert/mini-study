@@ -161,6 +161,10 @@ Page({
 
   goPointsManagement() {
     wx.navigateTo({ url: "/pages/admin/points/index" });
+  },
+
+  goGrowthManagement() {
+    wx.navigateTo({ url: "/pages/admin/growth/index/index" });
   }
 });
 
