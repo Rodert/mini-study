@@ -11,7 +11,7 @@ func (GrowthPost) TableName() string {
 type GrowthPost struct {
 	Base
 	CreatorID  uint  `gorm:"not null;index;comment:发布者用户ID" json:"creator_id"`
-	Creator    User  `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Creator    User  `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;"`
 	Content    string `gorm:"type:text;not null;comment:动态文本内容" json:"content"`
 	ImagePaths string `gorm:"type:text;comment:图片路径数组(JSON)" json:"-"`
 	Status     string `gorm:"size:16;default:'pending';comment:状态(pending待审核/approved已通过/rejected已拒绝)" json:"status"`

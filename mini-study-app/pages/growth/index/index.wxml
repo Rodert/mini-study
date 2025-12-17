@@ -25,11 +25,14 @@
   <scroll-view class="post-list" scroll-y="true">
     <view class="post-card" wx:for="{{posts}}" wx:key="id">
       <view class="post-header">
-        <view class="avatar">{{item.avatarText}}</view>
-        <view class="post-header-info">
-          <view class="publisher-name">{{item.publisherName}}</view>
-          <view class="post-meta">{{item.createdAtText}}</view>
+        <view class="post-header-main">
+          <view class="avatar">{{item.avatarText}}</view>
+          <view class="post-header-info">
+            <view class="publisher-name">{{item.publisherName}}</view>
+            <view class="post-meta">{{item.createdAtText}}</view>
+          </view>
         </view>
+        <button class="btn-copy-small" data-index="{{index}}" bindtap="handleCopyAndDownload">复制</button>
       </view>
       <view class="post-content">{{item.content}}</view>
       <view class="image-grid" wx:if="{{item.images && item.images.length}}">
@@ -40,9 +43,6 @@
           src="{{item}}"
           mode="aspectFill"
         />
-      </view>
-      <view class="post-actions">
-        <button class="btn-copy" data-index="{{index}}" bindtap="handleCopyAndDownload">复制下载</button>
       </view>
     </view>
 
