@@ -307,6 +307,18 @@ Page({
     saveNext(0);
   },
 
+  handlePreviewImage(e) {
+    const postIndex = Number(e.currentTarget.dataset.postIndex);
+    const imageIndex = Number(e.currentTarget.dataset.imageIndex);
+    const post = this.data.posts[postIndex];
+    if (!post || !post.images || !post.images.length) return;
+
+    wx.previewImage({
+      current: post.images[imageIndex] || post.images[0],
+      urls: post.images
+    });
+  },
+
   goBack() {
     wx.navigateBack();
   }

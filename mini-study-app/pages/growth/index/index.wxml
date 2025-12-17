@@ -36,13 +36,21 @@
       </view>
       <view class="post-content">{{item.content}}</view>
       <view class="image-grid" wx:if="{{item.images && item.images.length}}">
-        <image
-          class="post-image"
+        <view
+          class="post-image-wrapper"
           wx:for="{{item.images}}"
-          wx:key="{{index}}"
-          src="{{item}}"
-          mode="aspectFill"
-        />
+          wx:for-index="imgIndex"
+          wx:key="{{imgIndex}}"
+          data-post-index="{{index}}"
+          data-image-index="{{imgIndex}}"
+          bindtap="handlePreviewImage"
+        >
+          <image
+            class="post-image"
+            src="{{item}}"
+            mode="aspectFill"
+          />
+        </view>
       </view>
     </view>
 
