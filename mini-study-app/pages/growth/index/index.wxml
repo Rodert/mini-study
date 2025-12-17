@@ -32,7 +32,9 @@
             <view class="post-meta">{{item.createdAtText}}</view>
           </view>
         </view>
-        <button class="btn-copy-small" data-index="{{index}}" bindtap="handleCopyAndDownload">复制</button>
+        <button class="btn-copy-small" data-index="{{index}}" bindtap="handleCopyAndDownload">
+          <text class="btn-copy-icon">📋</text>
+        </button>
       </view>
       <view class="post-content">{{item.content}}</view>
       <view class="image-grid" wx:if="{{item.images && item.images.length}}">

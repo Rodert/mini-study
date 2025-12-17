@@ -165,6 +165,10 @@
   font-size: 22rpx;
 }
 
+.btn-copy-icon {
+  font-size: 24rpx;
+}
+
 .empty-state {
   padding: 80rpx 0;
   text-align: center;

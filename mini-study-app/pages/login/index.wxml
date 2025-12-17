@@ -73,26 +73,36 @@
         <button class="btn-tertiary" type="default" bindtap="quickSwitch">
           <text class="btn-icon">⚡</text> 快速切换示例账号
         </button>
-
-        <view class="helper-text">
-          <text class="helper-icon">💡</text>
-          <text>体验账号：员工（employee001 / 123456）、店长（manager001 / 123456）、管理员（admin / admin123456）</text>
-        </view>
-        
-        <!-- 显示当前模式 -->
-        <view class="mode-indicator">
-          <text class="mode-label">当前模式：</text>
-          <text class="mode-value {{useMock ? 'mock' : 'api'}}">
-            {{useMock ? 'Mock 数据' : '真实 API'}}
-          </text>
-          <text class="mode-url" wx:if="{{!useMock}}">{{apiUrl}}</text>
-        </view>
       </form>
     </view>
 
     <!-- 底部装饰 -->
     <view class="footer-decoration">
       <view class="decoration-circle circle-3"></view>
+    </view>
+
+    <!-- 正式环境：底部出品方信息 -->
+    <view class="login-footer-info login-footer-official" wx:if="{{!useMock}}">
+      <text class="official-footer-text">出品方：企业培训中心 · 2025 v1.0.0</text>
+    </view>
+
+    <!-- 开发 / 体验环境：体验账号 + 模式说明 -->
+    <view class="login-footer-info" wx:if="{{useMock}}">
+      <view class="helper-text">
+        <text class="helper-icon">💡</text>
+        <text>
+          体验账号：员工（employee001 / 123456）、店长（manager001 / 123456）、管理员（admin / admin123456）
+        </text>
+      </view>
+
+      <!-- 显示当前模式 -->
+      <view class="mode-indicator">
+        <text class="mode-label">当前模式：</text>
+        <text class="mode-value {{useMock ? 'mock' : 'api'}}">
+          {{useMock ? 'Mock 数据' : '真实 API'}}
+        </text>
+        <text class="mode-url" wx:if="{{!useMock}}">{{apiUrl}}</text>
+      </view>
     </view>
   </view>
 </view>
