@@ -1,5 +1,10 @@
 # syntax=docker/dockerfile:1
 FROM golang:1.23 AS builder
+
+ENV GOPROXY=https://goproxy.cn,direct
+ENV GOSUMDB=sum.golang.google.cn
+
+
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
