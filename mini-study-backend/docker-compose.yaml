@@ -15,7 +15,7 @@ services:
         condition: service_completed_successfully
     restart: unless-stopped
     volumes:
-      - ./storage/uploads:/data/storage/uploads
+      - ./storage/uploads:/app/storage/uploads
   mysql:
     image: mysql:8
     restart: always
@@ -31,13 +31,13 @@ services:
       retries: 10
       start_period: 10s
     volumes:
-      - mysql_data:/data/mysql
+      - mysql_data:/var/lib/mysql 
   redis:
     image: redis:7
     ports:
       - "6379:6379"
     volumes:
-      - redis_data:/data/redis
+      - redis_data:/data
   migrate:
     build: .
     environment:
