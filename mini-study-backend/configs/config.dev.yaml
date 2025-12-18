@@ -7,4 +7,4 @@ server:
 jwt:
   secret: dev-secret
 database:
-  dsn: dev:devpass@tcp(127.0.0.1:3306)/mini_study_dev?charset=utf8mb4&parseTime=True&loc=Local
+  dsn: root:root@tcp(127.0.0.1:3306)/mini_study?charset=utf8mb4&parseTime=True&loc=Local

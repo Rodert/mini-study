@@ -4,26 +4,26 @@
 .home-page {
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, #f5f7fa 0%, #f0f4ff 100%);
+  background: #f5f5f7;
   min-height: 100vh;
   padding: 0;
 }
 
 /* 欢迎栏 */
 .welcome-bar {
-  padding: 20rpx 24rpx;
-  background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%);
-  color: #ffffff;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 4rpx 12rpx rgba(37, 99, 235, 0.15);
+  padding: 16rpx 24rpx 8rpx;
+  background: transparent;
 }
 
 .welcome-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 20rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.03);
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .welcome-greeting {
@@ -56,20 +56,22 @@
 }
 
 .header-btn {
-  width: 56rpx;
-  height: 56rpx;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
+  width: 44rpx;
+  height: 44rpx;
+  background: #ffffff;
+  border-radius: 999rpx;
+  border: 1rpx solid #e5e5ea;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32rpx;
-  transition: all 0.3s ease;
+  font-size: 26rpx;
+  color: #007aff;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .header-btn:active {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(0.95);
+  background: #f2f2f7;
+  transform: scale(0.96);
 }
 
 .btn-icon {
@@ -80,7 +82,7 @@
 
 /* 分区 */
 .section {
-  padding: 32rpx 24rpx;
+  padding: 16rpx 24rpx 24rpx;
 }
 
 .section-header {
@@ -132,9 +134,9 @@
 
 /* 轮播卡片 */
 .banner-card {
-  border-radius: 24rpx;
+  border-radius: 20rpx;
   overflow: hidden;
-  box-shadow: 0 8rpx 24rpx rgba(15, 23, 42, 0.1);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
 }
 
 .banner-card swiper {
@@ -214,13 +216,13 @@
 
 .entry-card {
   background: #ffffff;
-  border-radius: 20rpx;
-  padding: 24rpx;
+  border-radius: 16rpx;
+  padding: 20rpx;
   display: flex;
   flex-direction: column;
   gap: 12rpx;
-  box-shadow: 0 4rpx 12rpx rgba(15, 23, 42, 0.08);
-  border: 1rpx solid rgba(37, 99, 235, 0.05);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.03);
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -232,13 +234,13 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 4rpx;
-  background: linear-gradient(90deg, var(--brand), var(--accent));
+  height: 2rpx;
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .entry-card:active {
-  transform: translateY(-4rpx);
-  box-shadow: 0 8rpx 20rpx rgba(15, 23, 42, 0.12);
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
 }
 
 .entry-icon {
@@ -299,8 +301,8 @@
   display: flex;
   flex-direction: column;
   gap: 12rpx;
-  box-shadow: 0 6rpx 16rpx rgba(15, 23, 42, 0.08);
-  border: 1rpx solid rgba(37, 99, 235, 0.08);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.03);
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
   position: relative;
   overflow: hidden;
   min-height: 180rpx;
@@ -393,14 +395,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2rpx 8rpx rgba(15, 23, 42, 0.06);
-  border: 1rpx solid rgba(37, 99, 235, 0.05);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.03);
+  border: 1rpx solid rgba(0, 0, 0, 0.04);
   transition: all 0.3s ease;
 }
 
 .employee-item:active {
-  transform: translateY(-2rpx);
-  box-shadow: 0 4rpx 12rpx rgba(15, 23, 42, 0.1);
+  transform: scale(0.99);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
 }
 
 .employee-avatar {

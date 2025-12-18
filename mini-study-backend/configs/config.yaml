@@ -13,7 +13,7 @@ server:
     - "*"
 database:
   driver: mysql
-  dsn: root:root123456@tcp(127.0.0.1:3306)/mini_study?charset=utf8mb4&parseTime=True&loc=Local
+  dsn: root:root@tcp(127.0.0.1:3306)/mini_study?charset=utf8mb4&parseTime=True&loc=Local
 jwt:
   issuer: mini-study
   secret: change-me-please

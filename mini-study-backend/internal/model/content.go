@@ -25,13 +25,14 @@ func (Content) TableName() string {
 type Content struct {
 	Base
 	Title           string          `gorm:"size:255;comment:标题" json:"title"`
-	Type            string          `gorm:"size:16;comment:内容类型(document文档/video视频)" json:"type"`
+	Type            string          `gorm:"size:16;comment:内容类型(document文档/video视频/article图文)" json:"type"`
 	CategoryID      uint            `gorm:"comment:分类ID" json:"category_id"`
 	Category        ContentCategory `json:"category" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	VisibleRoles    string          `gorm:"size:16;comment:可见角色(employee员工/manager店长/both全部)" json:"visible_roles"`
 	FilePath        string          `gorm:"size:512;comment:文件路径" json:"file_path"`
 	CoverURL        string          `gorm:"size:512;comment:封面图片URL" json:"cover_url"`
 	Summary         string          `gorm:"type:text;comment:摘要" json:"summary"`
+	BodyBlocksJSON  string          `gorm:"type:longtext;comment:图文内容结构(JSON)" json:"-"`
 	Status          string          `gorm:"size:16;comment:状态(draft草稿/published已发布)" json:"status"`
 	PublishAt       *time.Time      `gorm:"comment:发布时间" json:"publish_at"`
 	CreatorID       uint            `gorm:"comment:创建者ID" json:"creator_id"`

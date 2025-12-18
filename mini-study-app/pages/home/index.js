@@ -148,7 +148,7 @@ Page({
   },
 
   goContentCreate() {
-    wx.navigateTo({ url: "/pages/admin/contents/add/index" });
+    wx.navigateTo({ url: "/pages/admin/contents/index/index" });
   },
 
   goExamManagement() {
@@ -161,6 +161,10 @@ Page({
 
   goPointsManagement() {
     wx.navigateTo({ url: "/pages/admin/points/index" });
+  },
+
+  goGrowthManagement() {
+    wx.navigateTo({ url: "/pages/admin/growth/index/index" });
   }
 });
 

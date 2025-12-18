@@ -36,7 +36,7 @@
       <input class="form-input" type="number" placeholder="例如：3600" value="{{form.duration_seconds}}" data-field="duration_seconds" bindinput="handleInput" />
     </view>
 
-    <view class="form-item">
+    <view class="form-item" wx:if="{{form.type !== 'article'}}">
       <view class="form-label">文件上传</view>
       <view class="file-upload">
         <input
@@ -88,6 +88,38 @@
     <view class="form-item">
       <view class="form-label">简介</view>
       <textarea class="form-textarea" placeholder="请输入内容简介" value="{{form.summary}}" data-field="summary" bindinput="handleInput" maxlength="200" />
+    </view>
+
+    <view class="form-item" wx:if="{{form.type === 'article'}}">
+      <view class="form-label">图文内容块</view>
+      <textarea
+        class="form-textarea"
+        placeholder="请输入一段文本内容，然后点击“添加文本块”"
+        value="{{articleEditorText}}"
+        bindinput="handleArticleTextInput"
+      />
+      <view class="file-upload">
+        <button class="btn-upload" bindtap="addArticleTextBlock">添加文本块</button>
+        <button
+          class="btn-upload"
+          loading="{{uploadingFile}}"
+          disabled="{{uploadingFile}}"
+          bindtap="handleAddArticleImageBlock"
+        >
+          添加图片块
+        </button>
+      </view>
+      <view class="upload-tip">图文将按顺序展示，可以添加多段文本和多张图片。</view>
+      <view wx:if="{{form.article_blocks.length}}">
+        <view class="upload-tip">当前内容块：</view>
+        <block wx:for="{{form.article_blocks}}" wx:key="index">
+          <view class="article-block-row">
+            <view wx:if="{{item.type === 'text'}}" class="article-block-text">{{item.text}}</view>
+            <view wx:elif="{{item.type === 'image'}}" class="article-block-image-path">图片：{{item.image_path}}</view>
+            <button class="btn-upload" data-index="{{index}}" bindtap="removeArticleBlock">删除</button>
+          </view>
+        </block>
+      </view>
     </view>
 
     <view class="form-item">

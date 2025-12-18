@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"errors"
 	"time"
 
@@ -80,8 +81,25 @@ func (s *ContentService) AdminCreateContent(adminID uint, req dto.AdminCreateCon
 	if req.Type == "video" && req.DurationSeconds <= 0 {
 		return nil, errors.New("视频必须提供 duration_seconds")
 	}
+	if (req.Type == "doc" || req.Type == "video") && req.FilePath == "" {
+		return nil, errors.New("文件路径不能为空")
+	}
+	if req.Type == "article" {
+		if len(req.ArticleBlocks) == 0 {
+			return nil, errors.New("图文内容不能为空")
+		}
+	}
 	if req.VisibleRoles == "" {
 		req.VisibleRoles = category.RoleScope
+	}
+
+	var bodyBlocksJSON string
+	if len(req.ArticleBlocks) > 0 {
+		b, err := json.Marshal(req.ArticleBlocks)
+		if err != nil {
+			return nil, err
+		}
+		bodyBlocksJSON = string(b)
 	}
 
 	content := &model.Content{
@@ -92,6 +110,7 @@ func (s *ContentService) AdminCreateContent(adminID uint, req dto.AdminCreateCon
 		FilePath:        req.FilePath,
 		CoverURL:        req.CoverURL,
 		Summary:         req.Summary,
+		BodyBlocksJSON:  bodyBlocksJSON,
 		Status:          req.Status,
 		CreatorID:       adminID,
 		DurationSeconds: req.DurationSeconds,
@@ -152,6 +171,13 @@ func (s *ContentService) AdminUpdateContent(adminID, contentID uint, req dto.Adm
 	}
 	if req.VisibleRoles != "" {
 		content.VisibleRoles = req.VisibleRoles
+	}
+	if len(req.ArticleBlocks) > 0 {
+		b, err := json.Marshal(req.ArticleBlocks)
+		if err != nil {
+			return nil, err
+		}
+		content.BodyBlocksJSON = string(b)
 	}
 	if req.DurationSeconds > 0 {
 		content.DurationSeconds = req.DurationSeconds

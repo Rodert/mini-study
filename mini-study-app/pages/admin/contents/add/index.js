@@ -9,7 +9,8 @@ Page({
     categoryIndex: -1,
     typeOptions: [
       { label: "文档", value: "doc" },
-      { label: "视频", value: "video" }
+      { label: "视频", value: "video" },
+      { label: "图文", value: "article" }
     ],
     typeIndex: 0,
     visibleRoleOptions: [
@@ -35,7 +36,25 @@ Page({
       summary: "",
       visible_roles: "both",
       status: "draft",
-      duration_seconds: ""
+      duration_seconds: "",
+      article_blocks: []
+    },
+    articleEditorText: "",
+    isEdit: false,
+    contentId: null
+  },
+
+  onLoad(options) {
+    const id = options && options.id ? Number(options.id) : 0;
+    if (id) {
+      this.setData({
+        isEdit: true,
+        contentId: id
+      });
+      wx.setNavigationBarTitle({ title: "编辑内容" });
+      this.loadContentDetail(id);
+    } else {
+      wx.setNavigationBarTitle({ title: "新增内容" });
     }
   },
 
@@ -55,9 +74,18 @@ Page({
       const res = await api.content.listCategories();
       if (res.code === 200) {
         const categories = res.data || [];
+        let categoryIndex = this.data.categoryIndex;
+        const form = this.data.form || {};
+        if (form.category_id && categoryIndex < 0) {
+          const idx = categories.findIndex((c) => c.id === form.category_id);
+          if (idx !== -1) {
+            categoryIndex = idx;
+          }
+        }
         this.setData({
           categories,
-          categoryNames: categories.map((c) => c.name)
+          categoryNames: categories.map((c) => c.name),
+          categoryIndex
         });
       } else {
         wx.showToast({ title: res.message || "加载分类失败", icon: "none" });
@@ -65,6 +93,64 @@ Page({
     } catch (err) {
       console.error("load categories error", err);
       wx.showToast({ title: "加载分类失败", icon: "none" });
+    }
+  },
+
+  async loadContentDetail(id) {
+    if (!id) return;
+    try {
+      const res = await api.content.getDetail(id);
+      if (res.code !== 200 || !res.data) {
+        wx.showToast({ title: res.message || "加载内容失败", icon: "none" });
+        return;
+      }
+      const detail = res.data;
+      const rawBlocks = detail.article_blocks || [];
+      const articleBlocks = rawBlocks.map((block) => ({
+        type: block.type,
+        text: block.text || "",
+        image_path: block.image_path || ""
+      }));
+
+      const form = {
+        ...this.data.form,
+        title: detail.title || "",
+        type: detail.type || "doc",
+        category_id: detail.category_id || null,
+        file_path: detail.file_path || "",
+        cover_url: detail.cover_url || "",
+        summary: detail.summary || "",
+        visible_roles: detail.visible_roles || "both",
+        status: detail.status || "draft",
+        duration_seconds: detail.duration_seconds || "",
+        article_blocks: articleBlocks
+      };
+
+      const typeIndex = this.data.typeOptions.findIndex((o) => o.value === form.type);
+      const visibleRoleIndex = this.data.visibleRoleOptions.findIndex(
+        (o) => o.value === form.visible_roles
+      );
+      const statusIndex = this.data.statusOptions.findIndex((o) => o.value === form.status);
+
+      this.setData({
+        form,
+        typeIndex: typeIndex >= 0 ? typeIndex : 0,
+        visibleRoleIndex: visibleRoleIndex >= 0 ? visibleRoleIndex : 0,
+        statusIndex: statusIndex >= 0 ? statusIndex : 0,
+        coverPreviewUrl: form.cover_url ? api.buildFileUrl(form.cover_url) : ""
+      });
+
+      // 如果分类已经加载过，尝试设置分类下标
+      const categories = this.data.categories || [];
+      if (categories.length && form.category_id && this.data.categoryIndex < 0) {
+        const idx = categories.findIndex((c) => c.id === form.category_id);
+        if (idx !== -1) {
+          this.setData({ categoryIndex: idx });
+        }
+      }
+    } catch (err) {
+      console.error("load content detail error", err);
+      wx.showToast({ title: "加载内容失败", icon: "none" });
     }
   },
 
@@ -79,6 +165,88 @@ Page({
     if (field === "cover_url") {
       this.updateCoverPreview(value);
     }
+  },
+
+  handleArticleTextInput(e) {
+    const value = e.detail.value || "";
+    this.setData({ articleEditorText: value });
+  },
+
+  addArticleTextBlock() {
+    const text = (this.data.articleEditorText || "").trim();
+    if (!text) {
+      wx.showToast({ title: "请输入文本内容", icon: "none" });
+      return;
+    }
+    const blocks = this.data.form.article_blocks || [];
+    blocks.push({ type: "text", text });
+    this.setData({
+      "form.article_blocks": blocks,
+      articleEditorText: ""
+    });
+  },
+
+  handleAddArticleImageBlock() {
+    if (this.data.uploadingFile) return;
+    wx.chooseImage({
+      count: 1,
+      sizeType: ["compressed", "original"],
+      sourceType: ["album", "camera"],
+      success: (res) => {
+        const filePath = res.tempFilePaths && res.tempFilePaths[0];
+        if (!filePath) {
+          wx.showToast({ title: "图片路径无效", icon: "none" });
+          return;
+        }
+        this.uploadArticleImageToServer(filePath);
+      },
+      fail: (err) => {
+        if (err && err.errMsg !== "chooseImage:fail cancel") {
+          wx.showToast({ title: "选择图片失败", icon: "none" });
+        }
+      }
+    });
+  },
+
+  async uploadArticleImageToServer(filePath) {
+    if (!filePath) return;
+    let usablePath = filePath;
+    try {
+      usablePath = await this.ensureWxFilePath(filePath);
+    } catch (err) {
+      console.error("prepare article image path error", err);
+      wx.showToast({ title: err.message || "图片不可用，请重新选择", icon: "none" });
+      return;
+    }
+
+    this.setData({ uploadingFile: true });
+    wx.showLoading({ title: "上传图片中..." });
+    try {
+      const res = await api.file.upload(usablePath);
+      if (res.code === 200 && res.data && res.data.path) {
+        const path = res.data.path;
+        const blocks = this.data.form.article_blocks || [];
+        blocks.push({ type: "image", image_path: path });
+        this.setData({ "form.article_blocks": blocks });
+        wx.showToast({ title: "图片块已添加", icon: "success" });
+      } else {
+        wx.showToast({ title: res.message || "上传失败", icon: "none" });
+      }
+    } catch (err) {
+      console.error("upload article image error", err);
+      wx.showToast({ title: err.message || "上传失败", icon: "none" });
+    } finally {
+      wx.hideLoading();
+      this.setData({ uploadingFile: false });
+    }
+  },
+
+  removeArticleBlock(e) {
+    const index = Number(e.currentTarget.dataset.index);
+    const blocks = this.data.form.article_blocks || [];
+    if (index < 0 || index >= blocks.length) return;
+    blocks.splice(index, 1);
+    this.setData({ "form.article_blocks": blocks });
   },
 
   updateCoverPreview(coverUrl) {
@@ -136,9 +304,11 @@ Page({
       wx.showToast({ title: "请选择分类", icon: "none" });
       return false;
     }
-    if (!form.file_path || !form.file_path.trim()) {
-      wx.showToast({ title: "请输入文件地址", icon: "none" });
-      return false;
+    if (form.type === "doc" || form.type === "video") {
+      if (!form.file_path || !form.file_path.trim()) {
+        wx.showToast({ title: "请输入文件地址", icon: "none" });
+        return false;
+      }
     }
     // 封面图改为可选，可以通过上传获取
     if (!form.summary || !form.summary.trim()) {
@@ -152,6 +322,13 @@ Page({
         return false;
       }
     }
+    if (form.type === "article") {
+      const blocks = form.article_blocks || [];
+      if (!blocks.length) {
+        wx.showToast({ title: "请至少添加一个图文内容块", icon: "none" });
+        return false;
+      }
+    }
     return true;
   },
 
@@ -159,8 +336,11 @@ Page({
     if (this.data.uploadingFile) return;
     if (this.data.form.type === "video") {
       this.chooseVideo();
-    } else {
+    } else if (this.data.form.type === "doc") {
       this.chooseDocument();
+    } else {
+      // 图文类型不使用文件上传作为主体内容
+      return;
     }
   },
 
@@ -349,20 +529,27 @@ Page({
       title: form.title.trim(),
       type: form.type,
       category_id: form.category_id,
-      file_path: form.file_path.trim(),
+      file_path: form.type === "article" ? "" : form.file_path.trim(),
       cover_url: form.cover_url ? form.cover_url.trim() : "",
       summary: form.summary.trim(),
       visible_roles: form.visible_roles,
       status: form.status,
       duration_seconds:
-        form.type === "video" ? Number(form.duration_seconds) || 0 : undefined
+        form.type === "video" ? Number(form.duration_seconds) || 0 : undefined,
+      article_blocks:
+        form.type === "article" ? (form.article_blocks || []) : undefined
     };
 
     wx.showLoading({ title: "提交中..." });
     try {
-      const res = await api.admin.createContent(payload);
+      let res;
+      if (this.data.isEdit && this.data.contentId) {
+        res = await api.admin.updateContent(this.data.contentId, payload);
+      } else {
+        res = await api.admin.createContent(payload);
+      }
       if (res.code === 200) {
-        wx.showToast({ title: "创建成功", icon: "success" });
+        wx.showToast({ title: this.data.isEdit ? "保存成功" : "创建成功", icon: "success" });
         setTimeout(() => {
           wx.navigateBack();
         }, 600);

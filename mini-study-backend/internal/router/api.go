@@ -19,6 +19,7 @@ func RegisterRoutes(
 	uploadHandler *handler.UploadHandler,
 	systemHandler *handler.SystemHandler,
 	pointHandler *handler.PointHandler,
+	growthHandler *handler.GrowthHandler,
 ) {
 	api := engine.Group("/api/v1")
 
@@ -45,6 +46,16 @@ func RegisterRoutes(
 		content.GET("/categories", contentHandler.ListCategories)
 		content.GET("/", contentHandler.ListPublishedContents)
 		content.GET("/:id", contentHandler.GetContentDetail)
+	}
+
+	// Growth circle routes (need auth)
+	growth := api.Group("/growth")
+	growth.Use(authMiddleware)
+	{
+		growth.GET("/", growthHandler.ListPublicPosts)
+		growth.GET("/mine", growthHandler.ListMyPosts)
+		growth.POST("/", growthHandler.CreatePost)
+		growth.DELETE("/:id", growthHandler.DeletePost)
 	}
 
 	// Learning routes
@@ -115,6 +126,13 @@ func RegisterRoutes(
 			adminExams.GET("/:id", examHandler.AdminGetExam)
 			adminExams.POST("/", examHandler.AdminCreateExam)
 			adminExams.PUT("/:id", examHandler.AdminUpdateExam)
+		}
+
+		adminGrowth := admin.Group("/growth")
+		{
+			adminGrowth.GET("/", growthHandler.AdminListPosts)
+			adminGrowth.POST("/:id/approve", growthHandler.AdminApprovePost)
+			adminGrowth.POST("/:id/reject", growthHandler.AdminRejectPost)
 		}
 	}
 

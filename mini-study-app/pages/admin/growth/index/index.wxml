@@ -1,0 +1,65 @@
+<!--pages/admin/growth/index/index.wxml-->
+<view class="admin-page">
+  <view class="top-bar">
+    <view class="back-button" bindtap="goBack">
+      <text>←</text>
+    </view>
+    <view class="top-title">成长圈审核</view>
+    <view class="top-placeholder"></view>
+  </view>
+
+  <view class="filters">
+    <view class="filter-item">
+      <view class="filter-label">状态</view>
+      <picker
+        class="picker"
+        mode="selector"
+        range="{{statusFilterOptions}}"
+        range-key="label"
+        value="{{statusFilterIndex}}"
+        bindchange="handleStatusChange"
+      >
+        <view class="picker-value">
+          {{statusFilterOptions[statusFilterIndex].label}}
+        </view>
+      </picker>
+    </view>
+    <view class="filter-item">
+      <view class="filter-label">搜索</view>
+      <view class="search-input-wrapper">
+        <input
+          class="search-input"
+          type="text"
+          placeholder="按内容或发布人搜索"
+          value="{{keyword}}"
+          bindinput="handleSearchInput"
+          confirm-type="search"
+          bindconfirm="handleSearchConfirm"
+        />
+      </view>
+    </view>
+  </view>
+
+  <scroll-view class="post-list" scroll-y="true">
+    <view class="post-card" wx:for="{{posts}}" wx:key="id">
+      <view class="post-header">
+        <view class="avatar">{{item.avatarText}}</view>
+        <view class="post-header-info">
+          <view class="publisher-name">{{item.publisherName}}</view>
+          <view class="post-meta">{{item.createdAtText}}</view>
+        </view>
+        <view class="status-tag {{item.status}}">{{item.statusText}}</view>
+      </view>
+      <view class="post-content">{{item.content}}</view>
+      <view class="post-actions">
+        <button class="btn-danger" data-id="{{item.id}}" bindtap="handleDelete">删除</button>
+        <button class="btn-secondary" data-id="{{item.id}}" bindtap="handleReject" wx:if="{{item.status === 'pending'}}">拒绝</button>
+        <button class="btn-primary" data-id="{{item.id}}" bindtap="handleApprove" wx:if="{{item.status === 'pending'}}">通过</button>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{!loading && (!posts || !posts.length)}}">
+      <text>暂无成长圈动态</text>
+    </view>
+  </scroll-view>
+</view>

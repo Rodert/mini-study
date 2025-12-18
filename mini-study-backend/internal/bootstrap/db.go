@@ -49,6 +49,7 @@ func InitDatabase(cfg *Config, logger *zap.Logger) (*gorm.DB, error) {
 		&model.ExamAttempt{},
 		&model.UserPoint{},
 		&model.PointTransaction{},
+		&model.GrowthPost{},
 	); err != nil {
 		return nil, fmt.Errorf("auto migrate: %w", err)
 	}
@@ -69,6 +70,7 @@ func InitDatabase(cfg *Config, logger *zap.Logger) (*gorm.DB, error) {
 			"exam_attempts":      "考试记录表",
 			"user_points":        "用户积分表",
 			"point_transactions": "积分明细表",
+			"growth_posts":       "成长圈动态表",
 		}
 
 		for tableName, comment := range tableComments {

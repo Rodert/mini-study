@@ -105,6 +105,13 @@
         <view class="action-arrow">→</view>
       </view>
 
+      <view class="admin-action-card" bindtap="goGrowthManagement">
+        <view class="action-icon">🌱</view>
+        <view class="action-title">成长圈审核</view>
+        <view class="action-desc">查看并审核成长圈动态</view>
+        <view class="action-arrow">→</view>
+      </view>
+
       <view class="admin-action-card" bindtap="goPointsManagement">
         <view class="action-icon">⭐</view>
         <view class="action-title">积分管理</view>

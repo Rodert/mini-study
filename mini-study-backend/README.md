@@ -235,13 +235,15 @@ swagger:
 | 方法 | 路径 | 说明 | 鉴权 |
 | --- | --- | --- | --- |
 | GET | `/api/v1/contents/categories` | 获取当前用户可见的分类列表 | 是 |
-| GET | `/api/v1/contents` | 查询已发布内容（可通过分类、类型筛选） | 是 |
+| GET | `/api/v1/contents` | 查询已发布内容（可通过分类、类型筛选，类型支持 doc/video/article） | 是 |
 | GET | `/api/v1/contents/:id` | 查看内容详情 | 是 |
 | GET | `/api/v1/admin/contents` | 管理员查询内容列表（支持状态过滤） | 管理员 |
-| POST | `/api/v1/admin/contents` | 管理员创建内容（文档/视频） | 管理员 |
+| POST | `/api/v1/admin/contents` | 管理员创建内容（文档/视频/图文） | 管理员 |
 | PUT | `/api/v1/admin/contents/:id` | 管理员更新内容（含上下架） | 管理员 |
 
-> 文档/视频上传走 `/api/v1/files/upload`，返回的磁盘路径填写在内容 `file_path` 字段，视频需额外提供 `duration_seconds`。
+> 内容类型 `type` 支持：`doc`(文档) / `video`(视频) / `article`(图文)。
+> - 文档/视频上传走 `/api/v1/files/upload`，返回的磁盘路径填写在内容 `file_path` 字段，视频需额外提供 `duration_seconds`。
+> - 图文内容通过请求体中的 `article_blocks` 字段传输结构化文本/图片块，后端以 JSON 串存储在 `BodyBlocksJSON` 字段。
 
 ### 学习记录
 
@@ -299,6 +301,27 @@ POST /api/v1/learning
 | PUT | `/api/v1/admin/banners/:id` | 管理员更新轮播图信息或上下线 | 管理员 |
 
 > 轮播图仅支持 H5 外链跳转，如需跳小程序内部页面可在 H5 中自行跳转。
+
+### 成长圈（Growth Circle）
+
+成长圈是公司级的动态流功能，由店长发布、管理员审核，通过后所有角色可见。
+
+**用户端接口：**
+
+| 方法 | 路径 | 说明 | 鉴权 |
+| --- | --- | --- | --- |
+| GET | `/api/v1/growth` | 查询已审核通过的成长圈动态列表，可按关键字搜索内容 | 是 |
+| GET | `/api/v1/growth/mine` | 查询当前登录用户发布的成长圈动态，可按状态/关键字筛选 | 是 |
+| POST | `/api/v1/growth` | 店长发布成长圈动态（纯文本 + 多图） | 店长 |
+| DELETE | `/api/v1/growth/:id` | 删除成长圈动态：店长可删自己未通过的动态，管理员可删任意动态 | 店长/管理员 |
+
+**管理员审核接口：**
+
+| 方法 | 路径 | 说明 | 鉴权 |
+| --- | --- | --- | --- |
+| GET | `/api/v1/admin/growth` | 管理员查询成长圈动态列表，可按状态/关键字筛选 | 管理员 |
+| POST | `/api/v1/admin/growth/:id/approve` | 管理员审核通过指定动态（状态置为 approved） | 管理员 |
+| POST | `/api/v1/admin/growth/:id/reject` | 管理员拒绝指定动态（状态置为 rejected） | 管理员 |
 
 ### 积分管理
 
@@ -401,8 +424,8 @@ docker-compose up -d
 | 角色 | 工号 | 密码 | 说明 |
 |------|------|------|------|
 | 管理员 | `admin` | `admin123456` | 系统管理员，拥有所有权限 |
-| 店长 | `manager001` | `manager123456` | 示例店长账号 |
-| 员工 | `employee001` | `employee123456` | 示例员工账号 |
+| 店长 | `manager001` | `123456` | 示例店长账号 |
+| 员工 | `employee001` | `123456` | 示例员工账号 |
 
 > ⚠️ **安全提示**: 生产环境请务必修改默认密码！
 

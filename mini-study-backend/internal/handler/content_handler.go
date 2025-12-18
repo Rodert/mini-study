@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -69,7 +70,7 @@ func (h *ContentHandler) ListCategories(c *gin.Context) {
 // @Security Bearer
 // @Produce json
 // @Param category_id query int false "分类ID"
-// @Param type query string false "内容类型(doc/video)"
+// @Param type query string false "内容类型(doc/video/article)"
 // @Success 200 {object} utils.Response{data=[]dto.ContentResponse}
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response
@@ -137,7 +138,7 @@ func (h *ContentHandler) GetContentDetail(c *gin.Context) {
 // @Security Bearer
 // @Produce json
 // @Param category_id query int false "分类ID"
-// @Param type query string false "内容类型(doc/video)"
+// @Param type query string false "内容类型(doc/video/article)"
 // @Param status query string false "内容状态(draft/published/offline)"
 // @Success 200 {object} utils.Response{data=[]dto.ContentResponse}
 // @Failure 401 {object} utils.Response
@@ -251,6 +252,10 @@ func (h *ContentHandler) toContentResponse(content *model.Content) dto.ContentRe
 	if content.Category.ID != 0 {
 		categoryName = content.Category.Name
 	}
+	var articleBlocks []dto.ArticleBlock
+	if content.BodyBlocksJSON != "" {
+		_ = json.Unmarshal([]byte(content.BodyBlocksJSON), &articleBlocks)
+	}
 	return dto.ContentResponse{
 		ID:              content.ID,
 		Title:           content.Title,
@@ -264,5 +269,6 @@ func (h *ContentHandler) toContentResponse(content *model.Content) dto.ContentRe
 		VisibleRoles:    content.VisibleRoles,
 		DurationSeconds: content.DurationSeconds,
 		PublishAt:       content.PublishAt,
+		ArticleBlocks:   articleBlocks,
 	}
 }

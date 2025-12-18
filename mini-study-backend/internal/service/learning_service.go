@@ -60,8 +60,8 @@ func (s *LearningService) UpdateProgress(userID uint, req dto.LearningProgressRe
 	prevRecord := *record
 	wasCompleted := record.Status == "completed"
 
-	// 如果是文档类型，打开即视为完成
-	if content.Type == "doc" {
+	// 如果是文档或图文类型，打开即视为完成
+	if content.Type == "doc" || content.Type == "article" {
 		if record.Status != "completed" {
 			record.Status = "completed"
 			record.Progress = 100

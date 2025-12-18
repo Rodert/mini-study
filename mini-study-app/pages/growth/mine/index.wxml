@@ -1,0 +1,120 @@
+<!--pages/growth/mine/index.wxml-->
+<view class="mine-page">
+  <view class="top-bar">
+    <view class="back-button" bindtap="goBack">
+      <text>←</text>
+    </view>
+    <view class="top-title">我的成长圈</view>
+    <view class="top-placeholder"></view>
+  </view>
+
+  <!-- 发布区域（仅店长可见） -->
+  <view class="publish-card" wx:if="{{user.role === 'manager'}}">
+    <view class="publish-title">发布成长圈</view>
+    <textarea
+      class="publish-input"
+      placeholder="分享门店日常、经验或表扬员工..."
+      value="{{form.content}}"
+      auto-height
+      maxlength="1000"
+      bindinput="handleContentInput"
+    />
+    <view class="image-preview" wx:if="{{imagePreviewList && imagePreviewList.length}}">
+      <image
+        class="preview-image"
+        wx:for="{{imagePreviewList}}"
+        wx:key="{{index}}"
+        src="{{item}}"
+        mode="aspectFill"
+      />
+    </view>
+    <view class="publish-actions">
+      <button class="btn-secondary" bindtap="handleChooseImages" loading="{{uploading}}" disabled="{{uploading}}">
+        {{uploading ? '上传中...' : '添加图片'}}
+      </button>
+      <button class="btn-primary" bindtap="handleSubmit">发布</button>
+    </view>
+  </view>
+
+  <!-- 筛选与搜索 -->
+  <view class="filters">
+    <view class="filter-item">
+      <view class="filter-label">状态</view>
+      <picker
+        class="picker"
+        mode="selector"
+        range="{{statusFilterOptions}}"
+        range-key="label"
+        value="{{statusFilterIndex}}"
+        bindchange="handleStatusChange"
+      >
+        <view class="picker-value">
+          {{statusFilterOptions[statusFilterIndex].label}}
+        </view>
+      </picker>
+    </view>
+    <view class="filter-item">
+      <view class="filter-label">搜索</view>
+      <view class="search-input-wrapper">
+        <input
+          class="search-input"
+          type="text"
+          placeholder="按内容搜索"
+          value="{{keyword}}"
+          bindinput="handleSearchInput"
+          confirm-type="search"
+          bindconfirm="handleSearchConfirm"
+        />
+      </view>
+    </view>
+  </view>
+
+  <!-- 我的动态列表 -->
+  <scroll-view class="post-list" scroll-y="true">
+    <view class="post-card" wx:for="{{posts}}" wx:key="id">
+      <view class="post-header">
+        <view class="avatar">{{item.avatarText}}</view>
+        <view class="post-header-info">
+          <view class="publisher-name">{{item.publisherName || '我'}}</view>
+          <view class="post-meta-row">
+            <view class="post-meta">{{item.createdAtText}}</view>
+            <view class="status-tag {{item.status}}">{{item.statusText}}</view>
+          </view>
+        </view>
+      </view>
+      <view class="post-content">{{item.content}}</view>
+      <view class="image-grid" wx:if="{{item.images && item.images.length}}">
+        <view
+          class="post-image-wrapper"
+          wx:for="{{item.images}}"
+          wx:for-index="imgIndex"
+          wx:key="{{imgIndex}}"
+          data-post-index="{{index}}"
+          data-image-index="{{imgIndex}}"
+          bindtap="handlePreviewImage"
+        >
+          <image
+            class="post-image"
+            src="{{item}}"
+            mode="aspectFill"
+          />
+        </view>
+      </view>
+      <view class="post-actions">
+        <button class="btn-copy-small" data-index="{{index}}" bindtap="handleCopyAndDownload">
+          <text class="btn-copy-icon">📋</text>
+        </button>
+        <button
+          class="btn-danger"
+          wx:if="{{item.status !== 'approved'}}"
+          data-id="{{item.id}}"
+          bindtap="handleDelete"
+        >删除</button>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{!loading && (!posts || !posts.length)}}">
+      <text>暂无成长圈动态</text>
+    </view>
+  </scroll-view>
+</view>

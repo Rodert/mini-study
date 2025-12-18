@@ -1,0 +1,69 @@
+<view class="admin-page">
+  <view class="top-bar">
+    <view class="back-button" bindtap="goBack">
+      <text>←</text>
+    </view>
+    <view class="top-title">内容管理</view>
+    <view class="top-placeholder"></view>
+  </view>
+
+  <view class="content">
+    <view class="filters">
+      <view class="filter-item">
+        <view class="filter-label">类型</view>
+        <picker
+          class="picker"
+          mode="selector"
+          range="{{typeFilterOptions}}"
+          range-key="label"
+          value="{{typeFilterIndex}}"
+          bindchange="handleTypeFilterChange"
+        >
+          <view class="picker-value">
+            {{typeFilterOptions[typeFilterIndex].label}}
+          </view>
+        </picker>
+      </view>
+      <view class="filter-item">
+        <view class="filter-label">状态</view>
+        <picker
+          class="picker"
+          mode="selector"
+          range="{{statusFilterOptions}}"
+          range-key="label"
+          value="{{statusFilterIndex}}"
+          bindchange="handleStatusFilterChange"
+        >
+          <view class="picker-value">
+            {{statusFilterOptions[statusFilterIndex].label}}
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <button class="btn-primary" bindtap="goCreate">新增内容</button>
+
+    <view class="content-list" wx:if="{{contents.length}}">
+      <view class="content-item" wx:for="{{contents}}" wx:key="id">
+        <view class="item-main">
+          <view class="item-title">{{item.title}}</view>
+          <view class="item-meta">
+            <text>{{item.categoryName || '未分类'}}</text>
+            <text>{{item.typeText}}</text>
+          </view>
+          <view class="item-meta">
+            <text>可见：{{item.visibleRolesText}}</text>
+            <text>状态：{{item.statusText}}</text>
+          </view>
+        </view>
+        <view class="item-actions">
+          <button class="btn-secondary" data-id="{{item.id}}" bindtap="goEdit">编辑</button>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{!contents.length && !loading}}">
+      <text>暂无内容数据</text>
+    </view>
+  </view>
+</view>
