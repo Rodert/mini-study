@@ -7,7 +7,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o mini-study ./cmd/server
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o migrate ./scripts/migrate.go
 
-FROM gcr.io/distroless/base-debian12
+FROM golang:1.23
 WORKDIR /app
 COPY --from=builder /app/mini-study ./mini-study
 COPY --from=builder /app/migrate ./migrate
