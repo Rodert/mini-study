@@ -1038,6 +1038,28 @@ module.exports = {
         data: params
       });
     },
+    examOverview(params = {}) {
+      if (USE_MOCK) {
+        return Promise.resolve({
+          code: 200,
+          message: 'success',
+          data: {
+            exam_progress: [],
+            users: [],
+            pagination: {
+              page: params.page || 1,
+              page_size: params.page_size || 20,
+              total: 0
+            }
+          }
+        });
+      }
+      return request({
+        url: '/admin/exams/overview',
+        method: 'GET',
+        data: params
+      });
+    },
     createExam(data) {
       if (USE_MOCK) {
         // Mock 模式下创建考试

@@ -249,6 +249,42 @@ func (h *ExamHandler) AdminUpdateExam(c *gin.Context) {
 	utils.NewSuccessResponse(resp).JSON(c)
 }
 
+// AdminOverview godoc
+// @Summary 管理员查看全员考试与学习进度
+// @Tags 管理端/考试
+// @Security Bearer
+// @Produce json
+// @Param role query string false "角色 employee/manager/admin/all"
+// @Param manager_id query int false "店长ID，用于过滤其名下员工和其本人"
+// @Param keyword query string false "关键词（工号/姓名/手机号）"
+// @Param page query int false "页码，从1开始"
+// @Param page_size query int false "每页数量，默认20，最大100"
+// @Success 200 {object} utils.Response{data=dto.AdminExamOverviewResponse}
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Router /api/v1/admin/exams/overview [get]
+func (h *ExamHandler) AdminOverview(c *gin.Context) {
+	adminID := middleware.GetUserID(c)
+	if adminID == 0 {
+		utils.NewErrorResponse(http.StatusUnauthorized, "未登录").JSON(c)
+		return
+	}
+
+	var query dto.AdminExamOverviewQuery
+	if err := c.ShouldBindQuery(&query); err != nil {
+		utils.NewErrorResponse(http.StatusBadRequest, err.Error()).JSON(c)
+		return
+	}
+
+	resp, err := h.service.GetAdminOverview(adminID, query)
+	if err != nil {
+		utils.NewErrorResponse(http.StatusBadRequest, err.Error()).JSON(c)
+		return
+	}
+
+	utils.NewSuccessResponse(resp).JSON(c)
+}
+
 // ManagerOverview godoc
 // @Summary 店长查看员工考试与学习进度
 // @Tags 店长

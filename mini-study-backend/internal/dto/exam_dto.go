@@ -165,3 +165,29 @@ type ManagerExamOverviewResponse struct {
 	ExamProgress []ManagerExamProgressItem   `json:"exam_progress"`
 	Employees    []ManagerEmployeeExamRecord `json:"employees"`
 }
+
+// AdminExamOverviewQuery controls filtering and pagination for admin exam overview.
+type AdminExamOverviewQuery struct {
+	Role      string `form:"role" binding:"omitempty,oneof=employee manager admin all" example:"all"`
+	ManagerID uint   `form:"manager_id" binding:"omitempty,min=1" example:"2"`
+	Keyword   string `form:"keyword" binding:"omitempty,max=100" example:"张三"`
+	Page      int    `form:"page" binding:"omitempty,min=1" example:"1"`
+	PageSize  int    `form:"page_size" binding:"omitempty,min=1,max=100" example:"20"`
+}
+
+// AdminUserExamRecord summarises each user row for admin overview.
+type AdminUserExamRecord struct {
+	UserID           uint                      `json:"user_id"`
+	Name             string                    `json:"name"`
+	WorkNo           string                    `json:"work_no"`
+	Role             string                    `json:"role"`
+	LatestExam       *EmployeeLatestExamResult `json:"latest_exam"`
+	LearningProgress EmployeeLearningProgress  `json:"learning_progress"`
+}
+
+// AdminExamOverviewResponse returns exam & learning overview for admin.
+type AdminExamOverviewResponse struct {
+	ExamProgress []ManagerExamProgressItem `json:"exam_progress"`
+	Users        []AdminUserExamRecord     `json:"users"`
+	Pagination   Pagination                `json:"pagination"`
+}

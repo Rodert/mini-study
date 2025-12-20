@@ -105,6 +105,13 @@
         <view class="action-arrow">→</view>
       </view>
 
+      <view class="admin-action-card" bindtap="goAdminProgress">
+        <view class="action-icon">📊</view>
+        <view class="action-title">考核进度</view>
+        <view class="action-desc">查看全员进度</view>
+        <view class="action-arrow">→</view>
+      </view>
+
       <view class="admin-action-card" bindtap="goGrowthManagement">
         <view class="action-icon">🌱</view>
         <view class="action-title">成长圈审核</view>

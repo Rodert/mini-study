@@ -123,6 +123,7 @@ func RegisterRoutes(
 		adminExams := admin.Group("/exams")
 		{
 			adminExams.GET("/", examHandler.AdminListExams)
+			adminExams.GET("/overview", examHandler.AdminOverview)
 			adminExams.GET("/:id", examHandler.AdminGetExam)
 			adminExams.POST("/", examHandler.AdminCreateExam)
 			adminExams.PUT("/:id", examHandler.AdminUpdateExam)

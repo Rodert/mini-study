@@ -12,6 +12,7 @@
     "pages/admin/contents/add/index",
     "pages/admin/exams/index",
     "pages/admin/exams/add/index",
+    "pages/admin/progress/index",
     "pages/admin/points/index",
     "pages/admin/points/detail/index",
     "pages/growth/index/index",

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"math"
 	"sort"
+	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -539,6 +540,258 @@ func (s *ExamService) GetManagerOverview(managerID uint) (*dto.ManagerExamOvervi
 	return &dto.ManagerExamOverviewResponse{
 		ExamProgress: progressList,
 		Employees:    employeeRecords,
+	}, nil
+}
+
+// GetAdminOverview returns learning/exam summary for all users (with filters) for admin.
+func (s *ExamService) GetAdminOverview(adminID uint, query dto.AdminExamOverviewQuery) (*dto.AdminExamOverviewResponse, error) {
+	if err := s.ensureAdmin(adminID); err != nil {
+		return nil, err
+	}
+
+	page := query.Page
+	if page <= 0 {
+		page = 1
+	}
+	size := query.PageSize
+	if size <= 0 {
+		size = 20
+	}
+
+	// Normalise role filter: "" or "all" means no role restriction.
+	roleFilter := query.Role
+	if roleFilter == "" || roleFilter == "all" {
+		roleFilter = ""
+	}
+
+	var users []model.User
+
+	// When manager is specified, restrict to that manager and their employees,
+	// then apply role/keyword filter in-memory.
+	if query.ManagerID > 0 {
+		manager, err := s.users.FindByID(query.ManagerID)
+		if err != nil {
+			return nil, err
+		}
+
+		if manager.Role != model.RoleManager && manager.Role != model.RoleAdmin {
+			return nil, errors.New("仅店长或管理员可作为店长筛选条件")
+		}
+
+		employeeIDs, err := s.relations.ListEmployeeIDsByManager(query.ManagerID)
+		if err != nil {
+			return nil, err
+		}
+
+		userMap := make(map[uint]model.User)
+		// Add manager themselves
+		userMap[manager.ID] = *manager
+
+		if len(employeeIDs) > 0 {
+			employees, err := s.users.FindByIDs(employeeIDs)
+			if err != nil {
+				return nil, err
+			}
+			for _, emp := range employees {
+				userMap[emp.ID] = emp
+			}
+		}
+
+		for _, u := range userMap {
+			users = append(users, u)
+		}
+
+		// Apply role filter if provided (and not "all").
+		if roleFilter != "" {
+			filtered := make([]model.User, 0, len(users))
+			for _, u := range users {
+				if string(u.Role) == roleFilter {
+					filtered = append(filtered, u)
+				}
+			}
+			users = filtered
+		}
+
+		// Apply keyword filter (work_no / name / phone contains, case-insensitive).
+		if query.Keyword != "" {
+			kw := strings.ToLower(query.Keyword)
+			filtered := make([]model.User, 0, len(users))
+			for _, u := range users {
+				if strings.Contains(strings.ToLower(u.WorkNo), kw) ||
+					strings.Contains(strings.ToLower(u.Name), kw) ||
+					strings.Contains(strings.ToLower(u.Phone), kw) {
+					filtered = append(filtered, u)
+				}
+			}
+			users = filtered
+		}
+	} else {
+		// No manager filter, delegate to repository-level filtering.
+		var err error
+		users, err = s.users.ListUsers(roleFilter, query.Keyword)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if len(users) == 0 {
+		return &dto.AdminExamOverviewResponse{
+			ExamProgress: []dto.ManagerExamProgressItem{},
+			Users:        []dto.AdminUserExamRecord{},
+			Pagination: dto.Pagination{
+				Page:     page,
+				PageSize: size,
+				Total:    0,
+			},
+		}, nil
+	}
+
+	// Build user ID list for aggregation.
+	userIDs := make([]uint, 0, len(users))
+	for _, u := range users {
+		userIDs = append(userIDs, u.ID)
+	}
+
+	learningAgg, err := s.learning.AggregateByUsers(userIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	latestAttempts, err := s.attempts.ListLatestByUsers(userIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	examStats, err := s.attempts.AggregateByExamForUsers(userIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	// Use employee role for content visibility baseline, same as manager overview.
+	totalContents, err := s.contents.CountPublishedForRole(string(model.RoleEmployee))
+	if err != nil {
+		return nil, err
+	}
+
+	examIDSet := make(map[uint]struct{}, len(examStats))
+	examIDs := make([]uint, 0, len(examStats))
+	for _, row := range examStats {
+		if _, exists := examIDSet[row.ExamID]; exists {
+			continue
+		}
+		examIDSet[row.ExamID] = struct{}{}
+		examIDs = append(examIDs, row.ExamID)
+	}
+
+	examInfos := make(map[uint]model.ExamPaper)
+	if len(examIDs) > 0 {
+		exams, err := s.exams.FindByIDs(examIDs)
+		if err != nil {
+			return nil, err
+		}
+		for _, exam := range exams {
+			examInfos[exam.ID] = exam
+		}
+	}
+
+	progressList := make([]dto.ManagerExamProgressItem, 0, len(examStats))
+	for _, row := range examStats {
+		info, ok := examInfos[row.ExamID]
+		if !ok {
+			continue
+		}
+		passRate := 0.0
+		if row.AttemptCount > 0 {
+			passRate = float64(row.PassCount) / float64(row.AttemptCount)
+		}
+		progressList = append(progressList, dto.ManagerExamProgressItem{
+			ExamID:       row.ExamID,
+			Title:        info.Title,
+			AttemptCount: row.AttemptCount,
+			PassRate:     math.Round(passRate*1000) / 1000,
+			AvgScore:     math.Round(row.AvgScore*10) / 10,
+		})
+	}
+	sort.Slice(progressList, func(i, j int) bool {
+		return progressList[i].AttemptCount > progressList[j].AttemptCount
+	})
+
+	// Sort users by name for stable ordering.
+	sort.Slice(users, func(i, j int) bool {
+		return users[i].Name < users[j].Name
+	})
+
+	totalUsers := len(users)
+	start := (page - 1) * size
+	if start < 0 {
+		start = 0
+	}
+	if start > totalUsers {
+		start = totalUsers
+	}
+	end := start + size
+	if end > totalUsers {
+		end = totalUsers
+	}
+
+	pagedUsers := users[start:end]
+	totalContentsInt := int(totalContents)
+
+	userRecords := make([]dto.AdminUserExamRecord, 0, len(pagedUsers))
+	for _, u := range pagedUsers {
+		agg := learningAgg[u.ID]
+		completed := int(agg.Completed)
+		pending := totalContentsInt - completed
+		if pending < 0 {
+			pending = 0
+		}
+		percent := 0
+		if totalContentsInt > 0 {
+			percent = int(math.Round(float64(completed) * 100 / float64(totalContentsInt)))
+		}
+
+		progress := dto.EmployeeLearningProgress{
+			Completed: completed,
+			Total:     totalContentsInt,
+			Pending:   pending,
+			Percent:   percent,
+		}
+
+		var latest *dto.EmployeeLatestExamResult
+		if att, ok := latestAttempts[u.ID]; ok {
+			if att.Exam.ID > 0 {
+				submitted := att.CreatedAt
+				if att.SubmittedAt != nil {
+					submitted = *att.SubmittedAt
+				}
+				latest = &dto.EmployeeLatestExamResult{
+					ExamID:      att.ExamID,
+					ExamTitle:   att.Exam.Title,
+					Score:       att.Score,
+					Pass:        att.Pass,
+					SubmittedAt: submitted,
+				}
+			}
+		}
+
+		userRecords = append(userRecords, dto.AdminUserExamRecord{
+			UserID:           u.ID,
+			Name:             u.Name,
+			WorkNo:           u.WorkNo,
+			Role:             string(u.Role),
+			LatestExam:       latest,
+			LearningProgress: progress,
+		})
+	}
+
+	return &dto.AdminExamOverviewResponse{
+		ExamProgress: progressList,
+		Users:        userRecords,
+		Pagination: dto.Pagination{
+			Page:     page,
+			PageSize: size,
+			Total:    int64(totalUsers),
+		},
 	}, nil
 }
 

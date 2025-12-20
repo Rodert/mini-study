@@ -1,0 +1,168 @@
+<view class="progress-page">
+  <!-- 筛选区 -->
+  <view class="section filter-section">
+    <view class="section-header">
+      <view class="section-title-group">
+        <text class="section-icon">📊</text>
+        <view>
+          <view class="section-title">考核进度总览</view>
+          <view class="section-subtitle">查看全员考试与学习进度</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="filter-row">
+      <view class="filter-item">
+        <text class="filter-label">角色</text>
+        <picker mode="selector" range="{{roles}}" range-key="label" value="{{roleIndex}}" bindchange="handleRoleChange">
+          <view class="filter-picker">
+            <text>{{roles[roleIndex].label}}</text>
+          </view>
+        </picker>
+      </view>
+
+      <view class="filter-item">
+        <text class="filter-label">店长</text>
+        <picker mode="selector" range="{{managers}}" range-key="name" value="{{managerIndex >= 0 ? managerIndex : 0}}" bindchange="handleManagerChange">
+          <view class="filter-picker">
+            <text>{{managerIndex >= 0 ? managers[managerIndex].name : '全部店长'}}</text>
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <view class="filter-row keyword-row">
+      <view class="filter-item flex-1">
+        <text class="filter-label">关键字</text>
+        <input class="filter-input" placeholder="工号 / 姓名 / 手机号" value="{{filters.keyword}}" bindinput="handleKeywordInput" />
+      </view>
+      <button class="btn-primary small" bindtap="handleSearch">查询</button>
+    </view>
+  </view>
+
+  <!-- 考试进度部分 -->
+  <view class="section">
+    <view class="section-header">
+      <view class="section-title-group">
+        <text class="section-icon">📝</text>
+        <view>
+          <view class="section-title">考试进度</view>
+          <view class="section-subtitle">当前筛选范围内各考试通过率</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="grid auto-fit" wx:if="{{examProgress.length}}">
+      <view class="card progress-card" wx:for="{{examProgress}}" wx:key="id">
+        <view class="progress-card-header">
+          <view class="progress-icon">📄</view>
+          <text class="course-title">{{item.title}}</text>
+        </view>
+        <view class="progress-bar-wrapper">
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{item.passRate}}%;"></view>
+          </view>
+          <text class="progress-percent">{{item.passRate}}%</text>
+        </view>
+        <view class="progress-meta">
+          <view class="meta-item">
+            <text class="meta-label">通过率</text>
+            <text class="meta-value">{{item.passRate}}%</text>
+          </view>
+          <view class="meta-item">
+            <text class="meta-label">平均分</text>
+            <text class="meta-value">{{item.avgScore}} 分</text>
+          </view>
+          <view class="meta-item">
+            <text class="meta-label">参考人数</text>
+            <text class="meta-value">{{item.attemptCount}} 人</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="empty-block" wx:else>
+      <text class="empty-icon">📋</text>
+      <text class="empty-text">暂无考试数据</text>
+    </view>
+  </view>
+
+  <!-- 用户完成情况部分 -->
+  <view class="section">
+    <view class="section-header">
+      <view class="section-title-group">
+        <text class="section-icon">👥</text>
+        <view>
+          <view class="section-title">人员完成情况</view>
+          <view class="section-subtitle">当前筛选范围内的学习与考试进度</view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:if="{{users.length}}">
+      <view class="card employee-card" wx:for="{{users}}" wx:key="id">
+        <view class="employee-header">
+          <view class="employee-info-group">
+            <view class="employee-avatar">{{item.avatar}}</view>
+            <view class="employee-info">
+              <text class="employee-name">{{item.name}}</text>
+              <text class="employee-store">工号：{{item.workNo}} · 角色：{{item.role}}</text>
+            </view>
+          </view>
+          <view class="employee-percent-badge">
+            <text class="employee-percent">{{item.percent}}%</text>
+          </view>
+        </view>
+
+        <view class="progress-bar-wrapper">
+          <view class="progress-bar small">
+            <view class="progress-fill" style="width: {{item.percent}}%;"></view>
+          </view>
+        </view>
+
+        <view class="employee-stats">
+          <view class="stat-item">
+            <text class="stat-label">已完成</text>
+            <text class="stat-value highlight">{{item.completed}}/{{item.total}}</text>
+          </view>
+          <view class="stat-divider"></view>
+          <view class="stat-item">
+            <text class="stat-label">待补</text>
+            <text class="stat-value warning">{{item.pending}}</text>
+          </view>
+        </view>
+
+        <view class="exam-info" wx:if="{{item.latestExam}}">
+          <view class="exam-info-header">
+            <text class="exam-label">最新成绩</text>
+            <view class="exam-score-badge {{item.latestExam.pass ? 'pass' : 'fail'}}">
+              <text>{{item.latestExam.score}} 分</text>
+            </view>
+          </view>
+          <view class="exam-details">
+            <text class="exam-title">{{item.latestExam.examTitle}}</text>
+            <text class="exam-status {{item.latestExam.pass ? 'text-pass' : 'text-fail'}}">
+              {{item.latestExam.pass ? '✓ 及格' : '✗ 未及格'}}
+            </text>
+          </view>
+        </view>
+        <view class="exam-info empty" wx:else>
+          <text class="exam-empty-text">尚未参加考试</text>
+        </view>
+      </view>
+
+      <!-- 分页区域 -->
+      <view class="pagination-bar">
+        <button class="btn-secondary small" bindtap="handlePrevPage" disabled="{{pagination.page <= 1}}">上一页</button>
+        <text class="pagination-text">第 {{pagination.page}} / {{pagination.maxPage}} 页 · 共 {{pagination.total}} 人</text>
+        <button class="btn-secondary small" bindtap="handleNextPage" disabled="{{pagination.page >= pagination.maxPage}}">下一页</button>
+      </view>
+    </view>
+    <view class="empty-block" wx:else>
+      <text class="empty-icon">👤</text>
+      <text class="empty-text">暂无人员统计</text>
+    </view>
+  </view>
+
+  <!-- 底部空间 -->
+  <view class="bottom-space"></view>
+</view>
