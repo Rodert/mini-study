@@ -6,7 +6,6 @@ Page({
     loading: false,
     filters: {
       role: "all",
-      managerId: "",
       keyword: "",
       page: 1,
       pageSize: 20
@@ -17,7 +16,6 @@ Page({
       { label: "店长", value: "manager" },
       { label: "管理员", value: "admin" }
     ],
-    managers: [],
     examProgress: [],
     users: [],
     pagination: {
@@ -26,8 +24,7 @@ Page({
       total: 0,
       maxPage: 1
     },
-    roleIndex: 0,
-    managerIndex: -1
+    roleIndex: 0
   },
 
   onShow() {
@@ -41,24 +38,7 @@ Page({
   },
 
   async initPage() {
-    await this.loadManagers();
     this.loadData();
-  },
-
-  async loadManagers() {
-    try {
-      const res = await api.user.getManagers();
-      if (res.code === 200) {
-        const managers = (res.data || []).map((m) => ({
-          id: m.id,
-          name: m.name,
-          workNo: m.work_no
-        }));
-        this.setData({ managers });
-      }
-    } catch (e) {
-      console.error("load managers error", e);
-    }
   },
 
   async loadData() {
@@ -67,7 +47,6 @@ Page({
     try {
       const params = {
         role: filters.role === "all" ? "" : filters.role,
-        manager_id: filters.managerId || "",
         keyword: filters.keyword || "",
         page: filters.page,
         page_size: filters.pageSize
@@ -138,17 +117,6 @@ Page({
     this.setData({
       roleIndex: idx,
       "filters.role": roleItem.value,
-      "filters.page": 1
-    });
-    this.loadData();
-  },
-
-  handleManagerChange(e) {
-    const idx = Number(e.detail.value || 0);
-    const mgr = this.data.managers[idx];
-    this.setData({
-      managerIndex: mgr ? idx : -1,
-      "filters.managerId": mgr ? mgr.id : "",
       "filters.page": 1
     });
     this.loadData();

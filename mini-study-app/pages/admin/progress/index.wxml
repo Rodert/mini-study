@@ -20,15 +20,6 @@
           </view>
         </picker>
       </view>
-
-      <view class="filter-item">
-        <text class="filter-label">店长</text>
-        <picker mode="selector" range="{{managers}}" range-key="name" value="{{managerIndex >= 0 ? managerIndex : 0}}" bindchange="handleManagerChange">
-          <view class="filter-picker">
-            <text>{{managerIndex >= 0 ? managers[managerIndex].name : '全部店长'}}</text>
-          </view>
-        </picker>
-      </view>
     </view>
 
     <view class="filter-row keyword-row">
