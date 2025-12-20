@@ -28,6 +28,7 @@ App({
     wx.removeStorageSync("refresh_token");
     wx.removeStorageSync("user");
     this.globalData.user = null;
+    this.globalData.hasShownNotice = false;
   },
   globalData: {
     theme: {
@@ -39,7 +40,8 @@ App({
       card: "#ffffff",
       background: "#f4f6fb"
     },
-    user: null
+    user: null,
+    hasShownNotice: false
   }
 });
 

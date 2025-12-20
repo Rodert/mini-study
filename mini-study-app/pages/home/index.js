@@ -5,7 +5,9 @@ Page({
   data: {
     user: {},
     banners: [],
-    categories: []
+    categories: [],
+    noticeModalVisible: false,
+    latestNotice: null
   },
 
   onShow() {
@@ -16,6 +18,7 @@ Page({
     }
     this.setData({ user });
     this.loadInitialData();
+    this.checkLatestNotice();
   },
 
   async loadInitialData() {
@@ -75,6 +78,32 @@ Page({
     this.loadBanners();
   },
 
+  async checkLatestNotice() {
+    try {
+      if (app.globalData.hasShownNotice) {
+        return;
+      }
+      const res = await api.notice.latest();
+      if (res.code !== 200 || !res.data) {
+        return;
+      }
+      const notice = res.data;
+      const mapped = {
+        id: notice.id,
+        title: notice.title || "系统公告",
+        content: notice.content || "",
+        imageUrl: notice.image_url ? api.buildFileUrl(notice.image_url) : ""
+      };
+      this.setData({
+        noticeModalVisible: true,
+        latestNotice: mapped
+      });
+      app.globalData.hasShownNotice = true;
+    } catch (err) {
+      console.error("fetch latest notice error", err);
+    }
+  },
+
   handleBannerTap(e) {
     console.log("[Banner] 点击事件触发");
     console.log("[Banner] 事件对象:", e);
@@ -117,6 +146,10 @@ Page({
       console.error("[Banner] navigateTo异常:", err);
       wx.showToast({ title: "打开失败", icon: "none" });
     }
+  },
+
+  handleNoticeClose() {
+    this.setData({ noticeModalVisible: false });
   },
 
   goProgress() {
@@ -169,6 +202,10 @@ Page({
 
   goAdminProgress() {
     wx.navigateTo({ url: "/pages/admin/progress/index" });
+  },
+
+  goNoticeManagement() {
+    wx.navigateTo({ url: "/pages/admin/notices/index" });
   }
 });
 

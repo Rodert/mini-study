@@ -91,6 +91,13 @@
         <view class="action-arrow">→</view>
       </view>
 
+      <view class="admin-action-card" bindtap="goNoticeManagement">
+        <view class="action-icon">📢</view>
+        <view class="action-title">公告管理</view>
+        <view class="action-desc">编辑系统公告</view>
+        <view class="action-arrow">→</view>
+      </view>
+
       <view class="admin-action-card" bindtap="goContentCreate">
         <view class="action-icon">➕</view>
         <view class="action-title">新增学习内容</view>
@@ -174,5 +181,19 @@
 
   <!-- 底部空间 -->
   <view class="bottom-space"></view>
+
+  <!-- 系统公告弹窗 -->
+  <view wx:if="{{noticeModalVisible}}" class="notice-mask">
+    <view class="notice-dialog">
+      <view class="notice-header">
+        <text class="notice-title">{{latestNotice.title}}</text>
+      </view>
+      <scroll-view scroll-y="true" class="notice-body">
+        <image wx:if="{{latestNotice.imageUrl}}" class="notice-image" src="{{latestNotice.imageUrl}}" mode="widthFix" />
+        <text wx:if="{{latestNotice.content}}" class="notice-content">{{latestNotice.content}}</text>
+      </scroll-view>
+      <button class="btn-primary notice-confirm" bindtap="handleNoticeClose">我知道了</button>
+    </view>
+  </view>
 </view>
 

@@ -15,6 +15,7 @@ func RegisterRoutes(
 	contentHandler *handler.ContentHandler,
 	learningHandler *handler.LearningHandler,
 	bannerHandler *handler.BannerHandler,
+	noticeHandler *handler.NoticeHandler,
 	examHandler *handler.ExamHandler,
 	uploadHandler *handler.UploadHandler,
 	systemHandler *handler.SystemHandler,
@@ -92,6 +93,13 @@ func RegisterRoutes(
 		banners.GET("/", bannerHandler.ListVisibleBanners)
 	}
 
+	// Notice routes
+	notices := api.Group("/notices")
+	notices.Use(authMiddleware)
+	{
+		notices.GET("/latest", noticeHandler.GetLatestNotice)
+	}
+
 	// Admin-only endpoints (admin check in handler/service)
 	admin := api.Group("/admin")
 	admin.Use(authMiddleware)
@@ -105,6 +113,13 @@ func RegisterRoutes(
 		admin.PUT("/users/:id/managers", userHandler.AdminUpdateEmployeeManagers)
 		admin.GET("/users/:id/points", pointHandler.AdminGetUserPoints)
 		admin.GET("/points", pointHandler.AdminListAllPoints)
+
+		adminNotices := admin.Group("/notices")
+		{
+			adminNotices.GET("/", noticeHandler.AdminListNotices)
+			adminNotices.POST("/", noticeHandler.AdminCreateNotice)
+			adminNotices.PUT(":id", noticeHandler.AdminUpdateNotice)
+		}
 
 		adminContents := admin.Group("/contents")
 		{

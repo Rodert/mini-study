@@ -209,6 +209,29 @@ const learningStats = {
   }
 };
 
+const notices = [
+  {
+    id: 1,
+    title: "系统维护公告",
+    content: "本周日 22:00-23:00 将进行系统维护，期间部分功能可能短暂不可用，请合理安排学习与考试时间。",
+    image_url: "",
+    status: true,
+    start_at: null,
+    end_at: null,
+    created_at: "2024-01-01T10:00:00Z"
+  },
+  {
+    id: 2,
+    title: "新品培训上线",
+    content: "新品培训课程已上线，请各位员工在本周内完成相关学习内容。",
+    image_url: "",
+    status: true,
+    start_at: null,
+    end_at: null,
+    created_at: "2024-02-01T09:00:00Z"
+  }
+];
+
 module.exports = {
   banners,
   courseCategories,
@@ -217,6 +240,7 @@ module.exports = {
   managers,
   managerProgress,
   managerProgressEmployees,
-  learningStats
+  learningStats,
+  notices
 };
 

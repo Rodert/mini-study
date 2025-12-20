@@ -316,12 +316,15 @@ module.exports = {
     },
     listPublished(params = {}) {
       if (USE_MOCK) {
-        if (params.category_id) {
-          return mockService.fetchCoursesByCategory(params.category_id);
-        }
-        // 返回所有课程
         const mock = require('../mock/mockData');
-        return Promise.resolve({ code: 200, message: 'success', data: mock.courses });
+        let list = (mock.courses || []).filter(c => !c.status || c.status === 'published');
+        if (params.category_id) {
+          list = list.filter(c => c.category_id === params.category_id);
+        }
+        if (params.type) {
+          list = list.filter(c => c.type === params.type);
+        }
+        return Promise.resolve({ code: 200, message: 'success', data: list });
       }
       return request({
         url: '/contents',
@@ -733,6 +736,18 @@ module.exports = {
       });
     }
   },
+
+  notice: {
+    latest() {
+      if (USE_MOCK) {
+        return mockService.latestNotice();
+      }
+      return request({
+        url: '/notices/latest',
+        method: 'GET'
+      });
+    }
+  },
   
   // 管理员相关
   admin: {
@@ -947,6 +962,37 @@ module.exports = {
         data
       });
     },
+    // 公告管理
+    listNotices(params = {}) {
+      if (USE_MOCK) {
+        return mockService.fetchNotices();
+      }
+      return request({
+        url: '/admin/notices',
+        method: 'GET',
+        data: params
+      });
+    },
+    createNotice(data) {
+      if (USE_MOCK) {
+        return mockService.createNotice(data);
+      }
+      return request({
+        url: '/admin/notices',
+        method: 'POST',
+        data
+      });
+    },
+    updateNotice(id, data) {
+      if (USE_MOCK) {
+        return mockService.updateNotice(id, data);
+      }
+      return request({
+        url: `/admin/notices/${id}`,
+        method: 'PUT',
+        data
+      });
+    },
     // 学习内容管理
     listContents(params = {}) {
       if (USE_MOCK) {
@@ -959,6 +1005,10 @@ module.exports = {
         // 根据类型过滤
         if (params.type) {
           contents = contents.filter(c => c.type === params.type);
+        }
+        // 根据状态过滤
+        if (params.status) {
+          contents = contents.filter(c => (c.status || 'published') === params.status);
         }
         return Promise.resolve({ code: 200, message: 'success', data: contents });
       }

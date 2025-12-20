@@ -130,13 +130,20 @@ Page({
       const visibleRoleIndex = this.data.visibleRoleOptions.findIndex(
         (o) => o.value === form.visible_roles
       );
-      const statusIndex = this.data.statusOptions.findIndex((o) => o.value === form.status);
+      const baseStatusOptions = this.data.statusOptions || [];
+      let statusOptions = baseStatusOptions;
+      const hasOffline = baseStatusOptions.some((o) => o.value === "offline");
+      if (!hasOffline) {
+        statusOptions = [...baseStatusOptions, { label: "已下线", value: "offline" }];
+      }
+      const statusIndex = statusOptions.findIndex((o) => o.value === form.status);
 
       this.setData({
         form,
         typeIndex: typeIndex >= 0 ? typeIndex : 0,
         visibleRoleIndex: visibleRoleIndex >= 0 ? visibleRoleIndex : 0,
         statusIndex: statusIndex >= 0 ? statusIndex : 0,
+        statusOptions,
         coverPreviewUrl: form.cover_url ? api.buildFileUrl(form.cover_url) : ""
       });
 

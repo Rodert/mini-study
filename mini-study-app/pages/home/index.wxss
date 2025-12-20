@@ -480,3 +480,58 @@
   height: 40rpx;
 }
 
+/* 系统公告弹窗 */
+.notice-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.notice-dialog {
+  width: 80%;
+  max-height: 80vh;
+  background: #ffffff;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(15, 23, 42, 0.25);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.notice-header {
+  padding: 24rpx 28rpx 16rpx;
+  border-bottom: 1rpx solid rgba(148, 163, 184, 0.35);
+}
+
+.notice-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.notice-body {
+  padding: 16rpx 40rpx;
+  max-height: 480rpx;
+}
+
+.notice-image {
+  width: 100%;
+  border-radius: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.notice-content {
+  font-size: 26rpx;
+  color: var(--text);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.notice-confirm {
+  margin: 8rpx 24rpx 24rpx;
+}
+

@@ -138,6 +138,70 @@ module.exports = {
     user.managers = mock.managers.filter(m => managerIds.includes(m.id));
     const { password: _ignored, ...safeUser } = user;
     return respond(safeUser);
+  },
+
+  // 公告相关
+  fetchNotices() {
+    const list = [...mock.notices].sort((a, b) => {
+      const ta = new Date(a.created_at || a.start_at || 0).getTime();
+      const tb = new Date(b.created_at || b.start_at || 0).getTime();
+      return tb - ta; // 倒序：时间新的在前
+    });
+    return respond(list);
+  },
+
+  latestNotice() {
+    if (!mock.notices || mock.notices.length === 0) {
+      return respond(null);
+    }
+    const now = new Date();
+    const active = mock.notices.filter((item) => {
+      if (item.status === false) return false;
+      if (item.start_at && new Date(item.start_at) > now) return false;
+      if (item.end_at && new Date(item.end_at) < now) return false;
+      return true;
+    });
+    if (!active.length) {
+      return respond(null);
+    }
+    const latest = active.reduce((prev, cur) => {
+      if (!prev) return cur;
+      const prevTime = new Date(prev.created_at || prev.start_at || 0).getTime();
+      const curTime = new Date(cur.created_at || cur.start_at || 0).getTime();
+      return curTime >= prevTime ? cur : prev;
+    }, null);
+    return respond(latest || null);
+  },
+
+  createNotice(payload) {
+    const now = new Date().toISOString();
+    const notice = {
+      id: Date.now(),
+      title: payload.title || "",
+      content: payload.content || "",
+      image_url: payload.image_url || "",
+      status: payload.status !== undefined ? payload.status : true,
+      start_at: payload.start_at || null,
+      end_at: payload.end_at || null,
+      created_at: now
+    };
+    mock.notices.push(notice);
+    return respond(notice);
+  },
+
+  updateNotice(id, updates) {
+    const noticeId = Number(id);
+    const notice = mock.notices.find((item) => item.id === noticeId);
+    if (!notice) {
+      return errorResponse("公告不存在", 404);
+    }
+    if (updates.title !== undefined) notice.title = updates.title;
+    if (updates.content !== undefined) notice.content = updates.content;
+    if (updates.image_url !== undefined) notice.image_url = updates.image_url;
+    if (updates.status !== undefined) notice.status = updates.status;
+    if (updates.start_at !== undefined) notice.start_at = updates.start_at;
+    if (updates.end_at !== undefined) notice.end_at = updates.end_at;
+    return respond(notice);
   }
 };
 

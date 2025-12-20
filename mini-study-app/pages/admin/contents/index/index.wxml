@@ -44,7 +44,7 @@
     <button class="btn-primary" bindtap="goCreate">新增内容</button>
 
     <view class="content-list" wx:if="{{contents.length}}">
-      <view class="content-item" wx:for="{{contents}}" wx:key="id">
+      <view class="content-item status-{{item.status}}" wx:for="{{contents}}" wx:key="id">
         <view class="item-main">
           <view class="item-title">{{item.title}}</view>
           <view class="item-meta">
@@ -53,11 +53,29 @@
           </view>
           <view class="item-meta">
             <text>可见：{{item.visibleRolesText}}</text>
-            <text>状态：{{item.statusText}}</text>
+            <view class="status-pill status-pill-{{item.status}}">{{item.statusText}}</view>
           </view>
         </view>
         <view class="item-actions">
           <button class="btn-secondary" data-id="{{item.id}}" bindtap="goEdit">编辑</button>
+          <button
+            class="btn-danger"
+            wx:if="{{item.status === 'published'}}"
+            data-id="{{item.id}}"
+            data-status="{{item.status}}"
+            bindtap="handleToggleStatus"
+          >
+            下线
+          </button>
+          <button
+            class="btn-danger"
+            wx:if="{{item.status === 'offline'}}"
+            data-id="{{item.id}}"
+            data-status="{{item.status}}"
+            bindtap="handleToggleStatus"
+          >
+            上线
+          </button>
         </view>
       </view>
     </view>

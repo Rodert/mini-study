@@ -85,6 +85,7 @@ Page({
       console.log("用户信息:", user);
       app.globalData.user = user;
       wx.setStorageSync("user", user);
+      app.globalData.hasShownNotice = false;
       wx.showToast({ title: "登录成功", icon: "success" });
       setTimeout(() => {
         wx.reLaunch({ url: "/pages/home/index" });

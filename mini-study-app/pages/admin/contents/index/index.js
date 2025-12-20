@@ -109,6 +109,47 @@ Page({
     wx.navigateTo({ url: `/pages/admin/contents/add/index?id=${id}` });
   },
 
+  async handleToggleStatus(e) {
+    const id = Number(e.currentTarget.dataset.id);
+    const currentStatus = e.currentTarget.dataset.status;
+    if (!id || !currentStatus) return;
+
+    let targetStatus = "";
+    let actionText = "";
+    if (currentStatus === "published") {
+      targetStatus = "offline";
+      actionText = "下线";
+    } else if (currentStatus === "offline") {
+      targetStatus = "published";
+      actionText = "重新上线";
+    } else {
+      return;
+    }
+
+    wx.showModal({
+      title: "确认操作",
+      content: `确定要${actionText}该内容吗？`,
+      success: async (res) => {
+        if (!res.confirm) return;
+        try {
+          wx.showLoading({ title: "处理中..." });
+          const resp = await api.admin.updateContent(id, { status: targetStatus });
+          if (resp.code === 200) {
+            wx.showToast({ title: `${actionText}成功`, icon: "success" });
+            this.loadContents();
+          } else {
+            wx.showToast({ title: resp.message || `${actionText}失败`, icon: "none" });
+          }
+        } catch (err) {
+          console.error("toggle content status error", err);
+          wx.showToast({ title: `${actionText}失败`, icon: "none" });
+        } finally {
+          wx.hideLoading();
+        }
+      }
+    });
+  },
+
   goBack() {
     wx.navigateBack();
   }
