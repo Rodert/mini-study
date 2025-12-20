@@ -48,3 +48,8 @@
   width: fit-content;
 }
 
+.course-progress {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: var(--muted);
+}

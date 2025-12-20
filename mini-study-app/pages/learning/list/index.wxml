@@ -15,6 +15,12 @@
         <view class="course-type-pill">
           {{item.type === 'video' ? '视频课程' : '图文课程'}} · {{item.duration || '--'}}
         </view>
+        <view
+          wx:if="{{item.type === 'video'}}"
+          class="course-progress"
+        >
+          学习进度：{{item.progressText || '未开始'}}
+        </view>
       </view>
     </view>
   </view>
