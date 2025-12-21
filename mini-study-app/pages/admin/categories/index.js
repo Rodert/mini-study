@@ -1,6 +1,6 @@
 const api = require("../../../services/api");
 const app = getApp();
-const DEFAULT_CATEGORY_COVER = "/assets/icons/classify-logo.png";
+const DEFAULT_CATEGORY_COVER = "https://img2024.cnblogs.com/blog/1326459/202512/1326459-20251221224420399-2001683945.png";
 
 Page({
   data: {

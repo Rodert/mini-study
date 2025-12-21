@@ -204,7 +204,11 @@
           <view class="entry-arrow">›</view>
         </view>
         <view class="entry-cover">
-          <image class="entry-cover-img" src="/assets/icons/kaoshi-logo.png" mode="aspectFit" />
+          <image
+            class="entry-cover-img"
+            src="https://img2024.cnblogs.com/blog/1326459/202512/1326459-20251221223440165-943226619.png"
+            mode="aspectFill"
+          />
         </view>
       </view>
 
@@ -218,7 +222,11 @@
           <view class="entry-arrow">›</view>
         </view>
         <view class="entry-cover">
-          <image class="entry-cover-img" src="/assets/icons/kaohejindu-logo.png" mode="aspectFit" />
+          <image
+            class="entry-cover-img"
+            src="https://img2024.cnblogs.com/blog/1326459/202512/1326459-20251221223425702-1126940807.png"
+            mode="aspectFill"
+          />
         </view>
       </view>
     </view>
