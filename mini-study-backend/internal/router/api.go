@@ -114,6 +114,12 @@ func RegisterRoutes(
 		admin.GET("/users/:id/points", pointHandler.AdminGetUserPoints)
 		admin.GET("/points", pointHandler.AdminListAllPoints)
 
+		adminCategories := admin.Group("/categories")
+		{
+			adminCategories.GET("/", contentHandler.AdminListCategories)
+			adminCategories.PUT("/:id", contentHandler.AdminUpdateCategory)
+		}
+
 		adminNotices := admin.Group("/notices")
 		{
 			adminNotices.GET("/", noticeHandler.AdminListNotices)

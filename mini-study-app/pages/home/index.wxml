@@ -20,6 +20,24 @@
     </view>
   </view>
 
+  <!-- 系统公告横幅（非管理员，存在最新公告时展示） -->
+  <view class="section notice-banner-section" wx:if="{{latestNotice && user.role !== 'admin'}}">
+    <view class="notice-banner-card" bindtap="goNoticeList">
+      <view class="notice-inline-list">
+        <view class="notice-inline-item">
+          <view class="notice-inline-main">
+            <view class="notice-inline-title">
+              <text class="notice-inline-tag">重要</text>
+              <text>{{latestNotice.title}}</text>
+            </view>
+            <view class="notice-inline-meta">系统公告 · 点击查看详情</view>
+          </view>
+          <text class="notice-inline-arrow">›</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
   <!-- 企业资讯（非管理员显示） -->
   <view class="section" wx:if="{{user.role !== 'admin'}}">
     <view class="section-header">
@@ -91,6 +109,13 @@
         <view class="action-arrow">→</view>
       </view>
 
+      <view class="admin-action-card" bindtap="goCategoryManagement">
+        <view class="action-icon">🏷️</view>
+        <view class="action-title">分类管理</view>
+        <view class="action-desc">设置课程分类封面</view>
+        <view class="action-arrow">→</view>
+      </view>
+
       <view class="admin-action-card" bindtap="goNoticeManagement">
         <view class="action-icon">📢</view>
         <view class="action-title">公告管理</view>
@@ -153,10 +178,19 @@
         bindtap="handleSelectCategory"
         data-item="{{item}}"
       >
-        <view class="entry-icon">{{item.icon || '📖'}}</view>
-        <view class="entry-title">{{item.name}}</view>
-        <view class="entry-desc">{{item.count || 0}} 门课程</view>
-        <view class="entry-arrow">→</view>
+        <view class="entry-inner">
+          <view class="entry-title">{{item.name}}</view>
+          <view class="entry-desc">{{item.count || 0}} 门课程</view>
+          <view class="entry-arrow">›</view>
+        </view>
+        <view class="entry-cover">
+          <block wx:if="{{item.cover}}">
+            <image class="entry-cover-img" src="{{item.cover}}" mode="aspectFill" />
+          </block>
+          <block wx:else>
+            <view class="entry-cover-placeholder"></view>
+          </block>
+        </view>
       </view>
 
       <view
@@ -164,18 +198,29 @@
         bindtap="goExamList"
         wx:if="{{user.role !== 'admin'}}"
       >
-        <view class="entry-icon">📝</view>
-        <view class="entry-title">考试中心</view>
-        <view class="entry-desc">参加考核 · 查看成绩</view>
-        <view class="entry-arrow">→</view>
+        <view class="entry-inner">
+          <view class="entry-title">考试中心</view>
+          <view class="entry-desc">参加考核 · 查看成绩</view>
+          <view class="entry-arrow">›</view>
+        </view>
+        <view class="entry-cover">
+          <image class="entry-cover-img" src="/assets/icons/kaoshi-logo.png" mode="aspectFit" />
+        </view>
       </view>
 
-      <button class="entry-card manager-card" bindtap="goProgress" wx:if="{{user.role === 'manager'}}">
-        <view class="entry-icon">📊</view>
-        <view class="entry-title">考核进度</view>
-        <view class="entry-desc">跟进学习状态</view>
-        <view class="entry-arrow">→</view>
-      </button>
+      <view class="entry-card manager-card" bindtap="goProgress" wx:if="{{user.role === 'manager'}}">
+        <view class="entry-inner">
+          <view class="manager-badge-row">
+            <text class="manager-badge">店长专属</text>
+          </view>
+          <view class="entry-title">考核进度</view>
+          <view class="entry-desc">查看门店整体考核情况</view>
+          <view class="entry-arrow">›</view>
+        </view>
+        <view class="entry-cover">
+          <image class="entry-cover-img" src="/assets/icons/kaohejindu-logo.png" mode="aspectFit" />
+        </view>
+      </view>
     </view>
   </view>
 

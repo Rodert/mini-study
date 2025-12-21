@@ -51,7 +51,7 @@ func (s *ContentService) ListCategoriesWithCount(userID uint) ([]model.ContentCa
 	if err != nil {
 		return nil, nil, err
 	}
-	
+
 	counts := make([]int64, len(categories))
 	for i, category := range categories {
 		count, err := s.contents.CountPublishedByCategoryAndRole(category.ID, roleFilter)
@@ -60,7 +60,27 @@ func (s *ContentService) ListCategoriesWithCount(userID uint) ([]model.ContentCa
 		}
 		counts[i] = count
 	}
-	
+
+	return categories, counts, nil
+}
+
+func (s *ContentService) AdminListCategories(adminID uint) ([]model.ContentCategory, []int64, error) {
+	if err := s.ensureAdmin(adminID); err != nil {
+		return nil, nil, err
+	}
+	categories, err := s.categories.ListByRole("")
+	if err != nil {
+		return nil, nil, err
+	}
+
+	counts := make([]int64, len(categories))
+	for i, category := range categories {
+		count, err := s.contents.CountPublishedByCategoryAndRole(category.ID, "")
+		if err != nil {
+			return nil, nil, err
+		}
+		counts[i] = count
+	}
 	return categories, counts, nil
 }
 
@@ -194,6 +214,26 @@ func (s *ContentService) AdminUpdateContent(adminID, contentID uint, req dto.Adm
 		return nil, err
 	}
 	return content, nil
+}
+
+func (s *ContentService) AdminUpdateCategory(adminID, categoryID uint, req dto.AdminUpdateCategoryRequest) (*model.ContentCategory, error) {
+	if err := s.ensureAdmin(adminID); err != nil {
+		return nil, err
+	}
+
+	category, err := s.categories.FindByID(categoryID)
+	if err != nil {
+		return nil, err
+	}
+
+	if req.CoverURL != nil {
+		category.CoverURL = *req.CoverURL
+	}
+
+	if err := s.categories.Update(category); err != nil {
+		return nil, err
+	}
+	return category, nil
 }
 
 // AdminListContents lists contents for admin.

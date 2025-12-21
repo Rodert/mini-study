@@ -8,7 +8,7 @@
   </view>
 
   <view class="content">
-    <button class="btn-primary" bindtap="openCreateForm">新增公告</button>
+    <button class="btn-primary" wx:if="{{user.role === 'admin'}}" bindtap="openCreateForm">新增公告</button>
 
     <view class="banner-list" wx:if="{{notices.length}}">
       <view class="banner-item" wx:for="{{notices}}" wx:key="id">
@@ -29,10 +29,34 @@
           <image wx:if="{{item.image_preview_url}}" class="notice-cover" src="{{item.image_preview_url}}" mode="aspectFill" />
           <view wx:if="{{item.content}}" class="notice-content-text">{{item.content}}</view>
         </view>
-        <view class="banner-actions">
+        <!-- 非管理员：确认已读 -->
+        <view class="notice-confirm-row" wx:if="{{user.role !== 'admin'}}">
+          <button
+            class="btn-confirm"
+            wx:if="{{!item.confirmed_at}}"
+            data-id="{{item.id}}"
+            data-index="{{index}}"
+            bindtap="handleConfirmNotice"
+          >
+            确认已读
+          </button>
+          <view class="confirm-info" wx:else>
+            <text>已确认 · {{item.confirmed_at}}</text>
+          </view>
+        </view>
+
+        <!-- 管理员操作区 -->
+        <view class="banner-actions" wx:if="{{user.role === 'admin'}}">
           <button class="btn-secondary" data-index="{{index}}" bindtap="openEditForm">编辑</button>
           <button class="btn-danger" data-index="{{index}}" bindtap="toggleNoticeStatus">
             {{item.status ? '停用' : '启用'}}
+          </button>
+          <button
+            class="btn-secondary"
+            data-id="{{item.id}}"
+            bindtap="viewConfirmations"
+          >
+            确认情况
           </button>
         </view>
       </view>
@@ -93,6 +117,33 @@
         <button class="btn-cancel" bindtap="closeForm">取消</button>
         <button class="btn-submit" bindtap="handleSubmit">{{editingId ? '保存' : '创建'}}</button>
       </view>
+    </view>
+  </view>
+
+  <!-- 公告确认情况列表（管理员查看） -->
+  <view class="confirm-modal" wx:if="{{showConfirmList}}">
+    <view class="confirm-mask" bindtap="closeConfirmList"></view>
+    <view class="confirm-panel">
+      <view class="confirm-header">
+        <view class="confirm-title">确认情况</view>
+        <view class="confirm-subtitle">{{confirmNoticeTitle}}</view>
+      </view>
+
+      <view class="confirm-list" wx:if="{{confirmList.length}}">
+        <view class="confirm-item" wx:for="{{confirmList}}" wx:key="user_id">
+          <view class="confirm-main">
+            <view class="confirm-name">{{item.name || '未知用户'}}</view>
+            <view class="confirm-meta">工号：{{item.work_no || '-'}} </view>
+          </view>
+          <view class="confirm-time">{{item.display_time || item.confirmed_at}}</view>
+        </view>
+      </view>
+
+      <view class="confirm-empty" wx:if="{{!confirmList.length}}">
+        <text>暂无确认记录</text>
+      </view>
+
+      <button class="btn-confirm-close" bindtap="closeConfirmList">知道了</button>
     </view>
   </view>
 </view>

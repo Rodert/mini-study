@@ -57,6 +57,38 @@ func (h *ContentHandler) ListCategories(c *gin.Context) {
 			Name:      item.Name,
 			RoleScope: item.RoleScope,
 			SortOrder: item.SortOrder,
+			CoverURL:  item.CoverURL,
+			Count:     count,
+		})
+	}
+	utils.NewSuccessResponse(resp).JSON(c)
+}
+
+func (h *ContentHandler) AdminListCategories(c *gin.Context) {
+	adminID := middleware.GetUserID(c)
+	if adminID == 0 {
+		utils.NewErrorResponse(http.StatusUnauthorized, "未登录").JSON(c)
+		return
+	}
+
+	categories, counts, err := h.service.AdminListCategories(adminID)
+	if err != nil {
+		utils.NewErrorResponse(http.StatusBadRequest, err.Error()).JSON(c)
+		return
+	}
+
+	resp := make([]dto.ContentCategoryResponse, 0, len(categories))
+	for i, item := range categories {
+		count := int64(0)
+		if i < len(counts) {
+			count = counts[i]
+		}
+		resp = append(resp, dto.ContentCategoryResponse{
+			ID:        item.ID,
+			Name:      item.Name,
+			RoleScope: item.RoleScope,
+			SortOrder: item.SortOrder,
+			CoverURL:  item.CoverURL,
 			Count:     count,
 		})
 	}
@@ -196,6 +228,43 @@ func (h *ContentHandler) AdminCreateContent(c *gin.Context) {
 		return
 	}
 	utils.NewSuccessResponse(h.toContentResponse(content)).JSON(c)
+}
+
+func (h *ContentHandler) AdminUpdateCategory(c *gin.Context) {
+	adminID := middleware.GetUserID(c)
+	if adminID == 0 {
+		utils.NewErrorResponse(http.StatusUnauthorized, "未登录").JSON(c)
+		return
+	}
+
+	idParam := c.Param("id")
+	categoryID, err := strconv.ParseUint(idParam, 10, 64)
+	if err != nil {
+		utils.NewErrorResponse(http.StatusBadRequest, "非法的分类ID").JSON(c)
+		return
+	}
+
+	var req dto.AdminUpdateCategoryRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.NewErrorResponse(http.StatusBadRequest, err.Error()).JSON(c)
+		return
+	}
+
+	category, err := h.service.AdminUpdateCategory(adminID, uint(categoryID), req)
+	if err != nil {
+		utils.NewErrorResponse(http.StatusBadRequest, err.Error()).JSON(c)
+		return
+	}
+
+	resp := dto.ContentCategoryResponse{
+		ID:        category.ID,
+		Name:      category.Name,
+		RoleScope: category.RoleScope,
+		SortOrder: category.SortOrder,
+		CoverURL:  category.CoverURL,
+		Count:     0,
+	}
+	utils.NewSuccessResponse(resp).JSON(c)
 }
 
 // AdminUpdateContent godoc

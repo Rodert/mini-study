@@ -137,6 +137,132 @@
   gap: 12rpx;
 }
 
+.notice-confirm-row {
+  margin-top: 8rpx;
+}
+
+.btn-confirm {
+  width: 100%;
+  padding: 16rpx 0;
+  border-radius: 12rpx;
+  border: none;
+  font-size: 26rpx;
+  font-weight: 600;
+  background: #ecfdf5;
+  color: #16a34a;
+}
+
+.confirm-info {
+  font-size: 24rpx;
+  color: var(--muted);
+}
+
+/* 确认情况列表弹层 */
+.confirm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 210;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.confirm-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.confirm-panel {
+  position: relative;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 24rpx 24rpx 32rpx;
+  max-height: 80vh;
+  box-shadow: 0 -6rpx 20rpx rgba(15, 23, 42, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.confirm-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.confirm-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.confirm-subtitle {
+  font-size: 24rpx;
+  color: var(--muted);
+}
+
+.confirm-list {
+  margin-top: 8rpx;
+  max-height: 50vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.confirm-item {
+  padding: 12rpx 16rpx;
+  border-radius: 14rpx;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12rpx;
+}
+
+.confirm-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.confirm-name {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.confirm-meta {
+  font-size: 22rpx;
+  color: var(--muted);
+}
+
+.confirm-time {
+  font-size: 22rpx;
+  color: #4b5563;
+  white-space: nowrap;
+}
+
+.confirm-empty {
+  margin-top: 24rpx;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--muted);
+}
+
+.btn-confirm-close {
+  margin-top: 16rpx;
+  padding: 16rpx 0;
+  border-radius: 16rpx;
+  border: none;
+  font-size: 28rpx;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: var(--text);
+}
+
 .btn-secondary,
 .btn-danger {
   flex: 1;

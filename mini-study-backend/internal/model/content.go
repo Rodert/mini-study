@@ -14,6 +14,7 @@ type ContentCategory struct {
 	RoleScope string `gorm:"size:16;comment:可见角色范围(employee员工/manager店长)" json:"role_scope"`
 	SortOrder int    `gorm:"default:0;comment:排序顺序" json:"sort_order"`
 	Status    bool   `gorm:"default:true;comment:状态(启用/禁用)" json:"status"`
+	CoverURL  string `gorm:"size:512;comment:分类封面图片URL" json:"cover_url"`
 }
 
 // TableName 指定表名

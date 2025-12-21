@@ -1,0 +1,41 @@
+<view class="page">
+  <view class="header">
+    <view class="title">内容分类管理</view>
+    <view class="subtitle">设置每个分类的封面图（可选）</view>
+  </view>
+
+  <scroll-view scroll-y="true" class="list" wx:if="{{categories.length}}">
+    <view class="item" wx:for="{{categories}}" wx:key="id">
+      <view class="item-main">
+        <view class="item-title-row">
+          <view class="item-name">{{item.name}}</view>
+          <view class="item-role">{{item.roleText}}</view>
+        </view>
+        <view class="item-meta">{{item.count}} 门课程 · 排序 {{item.sort_order}}</view>
+      </view>
+      <view class="item-cover-block">
+        <view class="cover-wrapper">
+          <image
+            class="item-cover"
+            src="{{item.display_cover}}"
+            mode="aspectFill"
+          />
+          <view class="cover-badge" wx:if="{{item.hasCustomCover}}">
+            <text class="badge badge-custom">自定义</text>
+          </view>
+          <view class="cover-badge" wx:if="{{!item.hasCustomCover}}">
+            <text class="badge badge-default">默认</text>
+          </view>
+        </view>
+        <view class="item-actions">
+          <text class="link-action link-primary" data-id="{{item.id}}" bindtap="handleChangeCover">更换</text>
+          <text class="link-action link-secondary" data-id="{{item.id}}" bindtap="handleClearCover">重置</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="empty" wx:if="{{!categories.length && !loading}}">
+    <text>暂无分类数据</text>
+  </view>
+</view>

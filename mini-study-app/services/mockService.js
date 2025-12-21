@@ -11,6 +11,9 @@ function errorResponse(message, code = 400) {
   return delay().then(() => ({ code, message, data: null }));
 }
 
+// 公告确认记录（仅 Mock 模式内存保存）
+const noticeConfirmations = {};
+
 module.exports = {
   login({ work_no, password }) {
     const user = mock.users.find(
@@ -202,6 +205,47 @@ module.exports = {
     if (updates.start_at !== undefined) notice.start_at = updates.start_at;
     if (updates.end_at !== undefined) notice.end_at = updates.end_at;
     return respond(notice);
+  },
+
+  // 员工确认公告已读
+  confirmNotice(id) {
+    const noticeId = Number(id);
+    const notice = mock.notices.find((item) => item.id === noticeId);
+    if (!notice) {
+      return errorResponse("公告不存在", 404);
+    }
+
+    // 从本地存储获取当前用户（与登录逻辑保持一致）
+    const user = wx.getStorageSync("user");
+    if (!user || !user.id) {
+      return errorResponse("未登录", 401);
+    }
+
+    const now = new Date().toISOString();
+    const list = noticeConfirmations[noticeId] || (noticeConfirmations[noticeId] = []);
+    const exist = list.find((item) => item.user_id === user.id);
+    if (exist) {
+      exist.confirmed_at = now;
+    } else {
+      list.push({
+        user_id: user.id,
+        name: user.name,
+        work_no: user.work_no,
+        confirmed_at: now
+      });
+    }
+
+    return respond({
+      notice_id: noticeId,
+      confirmed_at: now
+    });
+  },
+
+  // 管理员查看公告确认情况
+  getNoticeConfirmations(id) {
+    const noticeId = Number(id);
+    const list = noticeConfirmations[noticeId] || [];
+    return respond(list);
   }
 };
 

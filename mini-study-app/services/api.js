@@ -737,6 +737,7 @@ module.exports = {
     }
   },
 
+  // 公告（用户侧）
   notice: {
     latest() {
       if (USE_MOCK) {
@@ -746,9 +747,28 @@ module.exports = {
         url: '/notices/latest',
         method: 'GET'
       });
+    },
+    list(params = {}) {
+      if (USE_MOCK) {
+        return mockService.fetchNotices();
+      }
+      return request({
+        url: '/notices',
+        method: 'GET',
+        data: params
+      });
+    },
+    confirm(id) {
+      if (USE_MOCK) {
+        return mockService.confirmNotice(id);
+      }
+      return request({
+        url: `/notices/${id}/confirm`,
+        method: 'POST'
+      });
     }
   },
-  
+
   // 管理员相关
   admin: {
     // 查询用户列表
@@ -989,6 +1009,49 @@ module.exports = {
       }
       return request({
         url: `/admin/notices/${id}`,
+        method: 'PUT',
+        data
+      });
+    },
+    getNoticeConfirmations(id) {
+      if (USE_MOCK) {
+        return mockService.getNoticeConfirmations(id);
+      }
+      return request({
+        url: `/admin/notices/${id}/confirmations`,
+        method: 'GET'
+      });
+    },
+    listCategories() {
+      if (USE_MOCK) {
+        const mock = require('../mock/mockData');
+        const list = (mock.courseCategories || []).map((item) => ({
+          id: item.id,
+          name: item.name,
+          role_scope: item.role_scope,
+          sort_order: item.sort_order,
+          cover_url: item.cover_url || '',
+          count: item.count || 0
+        }));
+        return Promise.resolve({ code: 200, message: 'success', data: list });
+      }
+      return request({
+        url: '/admin/categories',
+        method: 'GET'
+      });
+    },
+    updateCategory(id, data) {
+      if (USE_MOCK) {
+        const mock = require('../mock/mockData');
+        const category = mock.courseCategories.find(c => c.id === id);
+        if (!category) {
+          return Promise.resolve({ code: 404, message: '分类不存在', data: null });
+        }
+        if (data.cover_url !== undefined) category.cover_url = data.cover_url;
+        return Promise.resolve({ code: 200, message: 'success', data: category });
+      }
+      return request({
+        url: `/admin/categories/${id}`,
         method: 'PUT',
         data
       });

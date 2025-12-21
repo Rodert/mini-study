@@ -19,14 +19,32 @@ Page({
     editingId: null,
     uploadingImage: false,
     imagePreviewUrl: "",
-    form: createDefaultForm()
+    form: createDefaultForm(),
+    // 公告确认列表
+    showConfirmList: false,
+    confirmList: [],
+    confirmNoticeTitle: ""
+  },
+
+  // 时间格式化：YYYY-MM-DD HH:mm:ss
+  formatDateTime(str) {
+    if (!str) return "";
+    const d = new Date(str);
+    if (isNaN(d.getTime())) return str;
+    const pad = (n) => (n < 10 ? "0" + n : "" + n);
+    const Y = d.getFullYear();
+    const M = pad(d.getMonth() + 1);
+    const D = pad(d.getDate());
+    const h = pad(d.getHours());
+    const m = pad(d.getMinutes());
+    const s = pad(d.getSeconds());
+    return `${Y}-${M}-${D} ${h}:${m}:${s}`;
   },
 
   onShow() {
     const user = app.globalData.user || wx.getStorageSync("user");
-    if (!user || user.role !== "admin") {
-      wx.showToast({ title: "仅管理员可访问", icon: "none" });
-      setTimeout(() => wx.navigateBack(), 800);
+    if (!user || !user.id) {
+      wx.reLaunch({ url: "/pages/login/index" });
       return;
     }
     this.setData({ user });
@@ -36,7 +54,8 @@ Page({
   async loadNotices() {
     this.setData({ loading: true });
     try {
-      const res = await api.admin.listNotices();
+      // 所有角色共用公告列表接口
+      const res = await api.notice.list();
       if (res.code === 200) {
         const notices = (res.data || [])
           .map((item) => ({
@@ -254,6 +273,73 @@ Page({
     } finally {
       wx.hideLoading();
     }
+  },
+
+  // 员工/店长：确认公告已读
+  async handleConfirmNotice(e) {
+    const id = Number(e.currentTarget.dataset.id);
+    const index = Number(e.currentTarget.dataset.index);
+    if (!id && id !== 0) return;
+
+    wx.showLoading({ title: "提交中..." });
+    try {
+      const res = await api.notice.confirm(id);
+      if (res.code === 200) {
+        wx.showToast({ title: "已确认", icon: "success" });
+        const { notices } = this.data;
+        const item = notices[index];
+        if (item) {
+          const confirmedAt = (res.data && res.data.confirmed_at) || new Date().toISOString();
+          item.confirmed = true;
+          item.confirmed_at = confirmedAt;
+          this.setData({ [`notices[${index}]`]: item });
+        }
+      } else {
+        wx.showToast({ title: res.message || "操作失败", icon: "none" });
+      }
+    } catch (err) {
+      console.error("confirm notice error", err);
+      wx.showToast({ title: "操作失败", icon: "none" });
+    } finally {
+      wx.hideLoading();
+    }
+  },
+
+  // 管理员：查看某条公告的确认情况
+  async viewConfirmations(e) {
+    const id = Number(e.currentTarget.dataset.id);
+    if (!id && id !== 0) return;
+
+    wx.showLoading({ title: "加载中..." });
+    try {
+      const res = await api.admin.getNoticeConfirmations(id);
+      if (res.code !== 200) {
+        wx.showToast({ title: res.message || "加载失败", icon: "none" });
+        return;
+      }
+      const rawList = res.data || [];
+
+      const list = rawList.map((item) => ({
+        ...item,
+        display_time: this.formatDateTime(item.confirmed_at)
+      }));
+
+      const notice = (this.data.notices || []).find((n) => n.id === id);
+      this.setData({
+        confirmList: list,
+        confirmNoticeTitle: notice ? notice.title : "",
+        showConfirmList: true
+      });
+    } catch (err) {
+      console.error("get confirmations error", err);
+      wx.showToast({ title: "加载失败", icon: "none" });
+    } finally {
+      wx.hideLoading();
+    }
+  },
+
+  closeConfirmList() {
+    this.setData({ showConfirmList: false });
   },
 
   async toggleNoticeStatus(e) {

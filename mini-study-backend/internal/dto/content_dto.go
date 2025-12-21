@@ -55,7 +55,12 @@ type ContentCategoryResponse struct {
 	Name      string `json:"name" example:"产品培训"`       // 分类名称
 	RoleScope string `json:"role_scope" example:"both"` // 可见角色范围：employee(员工) manager(店长) both(全部)
 	SortOrder int    `json:"sort_order" example:"1"`    // 排序序号
+	CoverURL  string `json:"cover_url" example:"/uploads/category-cover.png"` // 分类封面图片URL
 	Count     int64  `json:"count" example:"5"`         // 该分类下已发布且对当前用户可见的课程数量
+}
+
+type AdminUpdateCategoryRequest struct {
+	CoverURL *string `json:"cover_url"`
 }
 
 // ContentResponse is returned to clients.

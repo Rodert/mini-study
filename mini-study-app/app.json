@@ -8,6 +8,7 @@
     "pages/admin/employees/add/index",
     "pages/admin/managers/add/index",
     "pages/admin/banners/index",
+    "pages/admin/categories/index",
     "pages/admin/notices/index",
     "pages/admin/contents/index/index",
     "pages/admin/contents/add/index",

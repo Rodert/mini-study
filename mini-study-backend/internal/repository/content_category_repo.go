@@ -39,6 +39,14 @@ func (r *ContentCategoryRepository) FindByID(id uint) (*model.ContentCategory, e
 	return &category, nil
 }
 
+// Update saves changes to an existing category.
+func (r *ContentCategoryRepository) Update(category *model.ContentCategory) error {
+	if err := r.db.Save(category).Error; err != nil {
+		return errors.Wrap(err, "update category")
+	}
+	return nil
+}
+
 // EnsureDefaults 确保默认分类存在，缺失则插入。
 func (r *ContentCategoryRepository) EnsureDefaults(defaults []model.ContentCategory) error {
 	for _, item := range defaults {

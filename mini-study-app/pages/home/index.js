@@ -1,5 +1,6 @@
 const api = require("../../services/api");
 const app = getApp();
+const DEFAULT_CATEGORY_COVER = "/assets/icons/classify-logo.png";
 
 Page({
   data: {
@@ -62,6 +63,7 @@ Page({
           id: item.id,
           name: item.name,
           icon: "📖",
+          cover: item.cover_url ? api.buildFileUrl(item.cover_url) : DEFAULT_CATEGORY_COVER,
           count: item.count || 0
         }));
         this.setData({ categories });
@@ -180,6 +182,10 @@ Page({
     wx.navigateTo({ url: "/pages/admin/banners/index" });
   },
 
+  goCategoryManagement() {
+    wx.navigateTo({ url: "/pages/admin/categories/index" });
+  },
+
   goContentCreate() {
     wx.navigateTo({ url: "/pages/admin/contents/index/index" });
   },
@@ -205,6 +211,10 @@ Page({
   },
 
   goNoticeManagement() {
+    wx.navigateTo({ url: "/pages/admin/notices/index" });
+  },
+
+  goNoticeList() {
     wx.navigateTo({ url: "/pages/admin/notices/index" });
   }
 });
