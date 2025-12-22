@@ -35,3 +35,6 @@ mini-study-backend/storage/uploads/**/*.rtf
 mini-study-backend/storage/uploads/**/*.odt
 mini-study-backend/storage/uploads/**/*.ods
 mini-study-backend/storage/uploads/**/*.odp
+
+# 忽略 IDE 配置目录
+.idea/

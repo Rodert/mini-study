@@ -13,7 +13,7 @@
         <text class="course-title">{{item.title}}</text>
         <text class="course-summary">{{item.summary || '课程简介待补充'}}</text>
         <view class="course-type-pill">
-          {{item.type === 'video' ? '视频课程' : '图文课程'}} · {{item.duration || '--'}}
+          {{item.type === 'video' ? '视频课程' : (item.type === 'article' ? '图文课程' : '文档课程')}} · {{item.duration || '--'}}
         </view>
         <view
           wx:if="{{item.type === 'video'}}"
