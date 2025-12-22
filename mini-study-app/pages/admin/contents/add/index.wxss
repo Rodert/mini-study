@@ -116,6 +116,7 @@
   flex: 1;
   font-size: 24rpx;
   color: var(--text);
+  word-break: break-all;
 }
 
 .cover-preview {
