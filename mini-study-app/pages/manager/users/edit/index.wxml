@@ -68,7 +68,7 @@
           </view>
           <view class="role-info">
             <view class="role-name">店长</view>
-            <view class="role-desc">门店管理者</view>
+            <view class="role-desc">管理者</view>
           </view>
         </view>
 

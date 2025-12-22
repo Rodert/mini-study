@@ -13,7 +13,7 @@
     <view class="publish-title">发布成长圈</view>
     <textarea
       class="publish-input"
-      placeholder="分享门店日常、经验或表扬员工..."
+      placeholder="分享日常、经验或表扬员工..."
       value="{{form.content}}"
       auto-height
       maxlength="1000"

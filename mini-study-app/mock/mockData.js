@@ -72,7 +72,7 @@ const courses = [
     type: "doc",
     file_path: "/uploads/doc1.pdf",
     duration_seconds: 0,
-    summary: "聚焦门店管理、团队带教",
+    summary: "聚焦运营管理、团队带教",
     status: "published",
     visible_roles: "manager",
     publish_at: "2024-01-01T00:00:00Z"
@@ -169,7 +169,7 @@ const managerProgressEmployees = [
   {
     id: 11,
     name: "王晓",
-    store: "门店 01",
+    store: "部门 01",
     completed: 4,
     total: 5,
     pending: "老员工进阶"
@@ -177,7 +177,7 @@ const managerProgressEmployees = [
   {
     id: 12,
     name: "李静",
-    store: "门店 03",
+    store: "部门 03",
     completed: 2,
     total: 5,
     pending: "管理知识与自我提升"
@@ -185,7 +185,7 @@ const managerProgressEmployees = [
   {
     id: 13,
     name: "赵晨",
-    store: "门店 02",
+    store: "部门 02",
     completed: 3,
     total: 5,
     pending: "店长特训"

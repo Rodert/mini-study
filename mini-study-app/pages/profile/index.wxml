@@ -26,10 +26,6 @@
         </view>
       </view>
     </view>
-    <view class="user-store">
-      <text class="store-icon">🏢</text>
-      <text>{{user.store || '未设置门店'}}</text>
-    </view>
   </view>
 
   <!-- 编辑信息卡片 -->

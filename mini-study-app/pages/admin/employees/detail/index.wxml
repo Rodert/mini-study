@@ -32,10 +32,6 @@
           <view class="info-label">手机号</view>
           <view class="info-value">{{employee.mobile}}</view>
         </view>
-        <view class="info-row">
-          <view class="info-label">门店</view>
-          <view class="info-value">{{employee.store || '—'}}</view>
-        </view>
         <view class="info-row" wx:if="{{employee.managers && employee.managers.length}}">
           <view class="info-label">所属店长</view>
           <view class="info-value manager-tags">
@@ -82,7 +78,7 @@
           </view>
           <view class="role-info">
             <view class="role-name">店长</view>
-            <view class="role-desc">门店管理者</view>
+            <view class="role-desc">管理者</view>
           </view>
         </view>
 

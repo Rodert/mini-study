@@ -218,7 +218,7 @@
             <text class="manager-badge">店长专属</text>
           </view>
           <view class="entry-title">考核进度</view>
-          <view class="entry-desc">查看门店整体考核情况</view>
+          <view class="entry-desc">查看团队整体考核情况</view>
           <view class="entry-arrow">›</view>
         </view>
         <view class="entry-cover">
