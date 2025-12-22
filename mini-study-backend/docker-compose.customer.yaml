@@ -1,0 +1,57 @@
+version: '3.9'
+
+services:
+  app:
+    image: crpi-4otucz63tm2q5dhq.cn-beijing.personal.cr.aliyuncs.com/project-shiyu/mini-study-backend:v1.0.0
+    ports:
+      - "8080:8080"
+    environment:
+      - APP_ENV=prod
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    volumes:
+      - ./storage/uploads:/app/storage/uploads
+
+  mysql:
+    image: crpi-4otucz63tm2q5dhq.cn-beijing.personal.cr.aliyuncs.com/library-shiyu/mysql:8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mini_study
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    volumes:
+      - mysql_data:/var/lib/mysql 
+
+  redis:
+    image: crpi-4otucz63tm2q5dhq.cn-beijing.personal.cr.aliyuncs.com/library-shiyu/redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  migrate:
+    image: crpi-4otucz63tm2q5dhq.cn-beijing.personal.cr.aliyuncs.com/project-shiyu/mini-study-backend:v1.0.0
+    environment:
+      - APP_ENV=prod
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: "no"
+    entrypoint: ["/app/migrate"]
+
+volumes:
+  mysql_data:
+  redis_data:
