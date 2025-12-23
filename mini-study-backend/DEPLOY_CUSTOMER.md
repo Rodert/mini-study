@@ -99,7 +99,72 @@
 
 ---
 
-## 六、离线部署（可选说明，供交付方使用）
+## 六、数据备份与恢复
+
+> 以下命令示例基于当前 `docker-compose.customer.yaml` 中的默认配置：
+> - MySQL 容器服务名为 `mysql`
+> - 数据库名称为 `mini_study`
+> - MySQL root 密码为 `root`
+
+### 1. 备份 MySQL 数据库
+
+1. 在部署目录下创建备份目录：
+
+   ```bash
+   mkdir -p backup
+   ```
+
+2. 执行备份命令（在部署目录下）：
+
+   ```bash
+   docker compose -f docker-compose.customer.yaml exec -T mysql \
+     mysqldump -uroot -proot --databases mini_study > backup/mini_study_$(date +%F).sql
+   ```
+
+   - 会在 `backup` 目录下生成一个形如 `mini_study_2025-12-23.sql` 的备份文件。
+   - 若实际的数据库名称、账号或密码有调整，请相应修改上述命令中的参数。
+
+### 2. 备份上传文件
+
+上传的文件存放在部署目录下的 `storage/uploads` 目录（已通过 Volume 映射到容器内）。
+
+在部署目录下执行：
+
+```bash
+mkdir -p backup
+
+tar czf backup/uploads_$(date +%F).tar.gz storage/uploads
+```
+
+将生成形如 `uploads_2025-12-23.tar.gz` 的文件，可用于迁移或归档。
+
+### 3. 恢复数据（仅供参考）
+
+#### 3.1 恢复数据库
+
+在目标环境中，确保已部署好本系统且 MySQL 已可用，然后在部署目录下执行：
+
+```bash
+cat backup/mini_study_2025-12-23.sql | \
+  docker compose -f docker-compose.customer.yaml exec -T mysql \
+  mysql -uroot -proot
+```
+
+请根据实际备份文件名和数据库账号信息调整命令。
+
+#### 3.2 恢复上传文件
+
+在目标环境的部署目录下，将备份文件解压到当前目录：
+
+```bash
+tar xzf backup/uploads_2025-12-23.tar.gz -C .
+```
+
+解压后会恢复 `storage/uploads` 目录中的文件结构。
+
+---
+
+## 七、离线部署（可选说明，供交付方使用）
 
 > 本节主要给系统提供方参考，客户如需完全离线部署，可由提供方先打包镜像，再在客户现场导入。
 
